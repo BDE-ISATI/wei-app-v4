@@ -1,26 +1,73 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import { createTheme, useTheme } from "@mui/material/styles";
 
-function App() {
+import Fab from "@mui/material/Fab";
+import Box from "@mui/material/Box";
+
+import { BottomBar } from "./Components/BottomBar";
+import { ChallengeList, ScoreBoard, Profile } from "./Containers";
+import { ThemeProvider } from "@emotion/react";
+
+const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+
+export default function App() {
+  const [page, setPage] = useState(0);
+  const [mode, setMode] = React.useState<"light" | "dark">("dark");
+  const colorMode = React.useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+      },
+    }),
+    []
+  );
+
+  const theme = React.useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+      }),
+    [mode]
+  );
+  console.log(theme.palette.background.default);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <React.Fragment>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            <Box
+              sx={{
+                position: "relative",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                alignItems: "center",
+                backgroundColor: "#e5e5f7",
+                backgroundSize: "11px 11px",
+                backgroundImage: `repeating-linear-gradient(45deg, ${theme.palette.grey[900]} 0, ${theme.palette.grey[900]} 1.1px, ${theme.palette.background.default} 0, ${theme.palette.background.default} 50%)`,
+                padding: 2,
+              }}
+            >
+              {page === 0 && <ChallengeList />}
+              {page === 1 && <ScoreBoard />}
+              {page === 2 && <Profile />}
+            </Box>
+            <BottomBar onPageChanged={(x: number) => setPage(x)} />
+          </Box>
+        </React.Fragment>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
-export default App;
+export { ColorModeContext };
