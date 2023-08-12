@@ -20,8 +20,7 @@
     "@types/react": "^18.2.19",
     "@types/react-dom": "^18.2.7",
     "@types/seamless-immutable": "^7.1.16",
-    "apisauce": "^3.0.1",
-    "axios": "^1.4.0",
+    "apisauce": "3.0.0",
     "konva": "^9.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -72,5 +71,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy" : "https://xrprowiv1i.execute-api.eu-west-1.amazonaws.com"
 }

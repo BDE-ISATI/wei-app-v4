@@ -3,7 +3,13 @@ import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Avatar from "@mui/material/Avatar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRankingStar, faStar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRankingStar,
+  faStar,
+  faUser,
+  faUserCircle,
+  faUserShield,
+} from "@fortawesome/free-solid-svg-icons";
 import Paper from "@mui/material/Paper";
 import { AvatarView, HeadShape, IAvatar } from "../MyAvatar";
 import { useTheme } from "@mui/material/styles";
@@ -56,9 +62,7 @@ const BottomBar: React.FC<Props> = (props) => {
           />
           <BottomNavigationAction
             icon={
-              <Avatar sx={{ width: 24, height: 24, pointerEvents: "none" }}>
-                <AvatarView width={32} height={32} avatar={avatar} />
-              </Avatar>
+              <FontAwesomeIcon icon={faUserCircle} size="xl" color="black" />
             }
             onClick={() => props.onPageChanged(2)}
           />

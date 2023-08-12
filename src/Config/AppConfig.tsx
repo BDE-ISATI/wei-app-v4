@@ -4,6 +4,7 @@ const cognitoUserPoolClientId = "600c0salfhpv788iis2g61d69n";
 
 const apiUrls = {
   dev: URL + "/dev/",
+  cognito: cognitoURL,
 };
 
-export default { apiUrls };
+export default { apiUrls, cognitoUserPoolClientId };

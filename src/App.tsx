@@ -8,10 +8,9 @@ import Box from "@mui/material/Box";
 import { BottomBar } from "./Components/BottomBar";
 import { ChallengeList, ScoreBoard, Profile } from "./Containers";
 import { ThemeProvider } from "@emotion/react";
-import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import { store } from "./Reducers";
+import { LoginScreen } from "./Containers/LoginScreen";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -39,41 +38,39 @@ export default function App() {
   );
   console.log(theme.palette.background.default);
   return (
-    <Provider store={store}>
-      <ColorModeContext.Provider value={colorMode}>
-        <ThemeProvider theme={theme}>
-          <React.Fragment>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <React.Fragment>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
             <Box
               sx={{
+                position: "relative",
+                overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
-                minHeight: "100vh",
+                flex: 1,
+                alignItems: "center",
+                backgroundColor: "#e5e5f7",
+                backgroundSize: "11px 11px",
+                backgroundImage: `repeating-linear-gradient(45deg, ${theme.palette.grey[900]} 0, ${theme.palette.grey[900]} 1.1px, ${theme.palette.background.default} 0, ${theme.palette.background.default} 50%)`,
+                padding: 2,
               }}
             >
-              <Box
-                sx={{
-                  position: "relative",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                  flex: 1,
-                  alignItems: "center",
-                  backgroundColor: "#e5e5f7",
-                  backgroundSize: "11px 11px",
-                  backgroundImage: `repeating-linear-gradient(45deg, ${theme.palette.grey[900]} 0, ${theme.palette.grey[900]} 1.1px, ${theme.palette.background.default} 0, ${theme.palette.background.default} 50%)`,
-                  padding: 2,
-                }}
-              >
-                {page === 0 && <ChallengeList />}
-                {page === 1 && <ScoreBoard />}
-                {page === 2 && <Profile />}
-              </Box>
-              <BottomBar onPageChanged={(x: number) => setPage(x)} />
+              {page === 0 && <ChallengeList />}
+              {page === 1 && <ScoreBoard />}
+              {page === 2 && <Profile />}
             </Box>
-          </React.Fragment>
-        </ThemeProvider>
-      </ColorModeContext.Provider>
-    </Provider>
+            <BottomBar onPageChanged={(x: number) => setPage(x)} />
+          </Box>
+        </React.Fragment>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 

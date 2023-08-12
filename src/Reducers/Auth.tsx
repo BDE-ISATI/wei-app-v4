@@ -1,5 +1,6 @@
 import { Handlers, createActions, createReducer } from "reduxsauce";
 import Immutable from "seamless-immutable";
+import { BASE_API } from "../Services/Api";
 
 interface IAuthState {
   accessToken: string;
@@ -31,6 +32,7 @@ const login = (
 };
 
 const logout = (state: IAuthStateImmutable) => {
+  BASE_API.deleteHeader("Authorization");
   return state.merge(INITIAL_STATE);
 };
 
