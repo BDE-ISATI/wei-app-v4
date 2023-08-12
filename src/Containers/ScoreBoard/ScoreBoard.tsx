@@ -47,17 +47,6 @@ const generateUserList = (users: string[]) => {
 
 const ScoreBoard = () => {
   const [userList, setUserList] = useState(["Test A", "Test B", "Test C"]);
-  /*useEffect(() => {
-    const loadUserList = async () => {
-      // Await make wait until that
-      // promise settles and return its result
-      const response = await axios.get(AppConfig.apiUrls.dev + "/users");
-      console.log(response);
-    };
-
-    // Call the function
-    loadUserList();
-  }, []);*/
   return (
     <List
       sx={{
