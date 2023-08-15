@@ -1,5 +1,6 @@
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import {
+  Alert,
   Button,
   FormControl,
   IconButton,
@@ -13,6 +14,7 @@ import React from "react";
 import Api from "../../Services/Api";
 import { useDispatch } from "react-redux";
 import { AuthActions } from "../../Reducers/Auth";
+import { UserActions } from "../../Reducers/User";
 
 /**
  * Api.apiCalls.USER_LOGIN().then((response) => {
@@ -33,6 +35,7 @@ function LoginScreen() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [inccorectCreds, setIncorrectCreds] = React.useState(false);
   const dispatch = useDispatch();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -45,20 +48,29 @@ function LoginScreen() {
 
   const handleLogin = () => {
     Api.apiCalls.USER_LOGIN({ username, password }).then((response) => {
-      dispatch(
-        AuthActions.loginSuccess({
-          accessToken: response?.AccessToken,
-          expiresAt: response?.ExpiresIn.toString(),
-          idToken: response?.IdToken,
-          refreshToken: response?.RefreshToken,
-        })
-      );
+      if (response.ok) {
+        dispatch(
+          AuthActions.loginSuccess({
+            accessToken: response.data?.AuthenticationResult.AccessToken,
+            expiresAt: response.data?.AuthenticationResult.ExpiresIn.toString(),
+            idToken: response.data?.AuthenticationResult.IdToken,
+            refreshToken: response.data?.AuthenticationResult.RefreshToken,
+          })
+        );
+        Api.apiCalls.GET_SELF().then((response) => {
+          if (response.ok) {
+            dispatch(UserActions.setUserData(response.data));
+          }
+        });
+      } else {
+        setIncorrectCreds(true);
+      }
     });
   };
   return (
     <>
       <TextField
-        sx={{ width: "25ch", m: 1 }}
+        sx={{ maxWidth: "300px", width: "100%", m: 1 }}
         InputProps={{
           sx: {
             borderRadius: 0,
@@ -70,7 +82,10 @@ function LoginScreen() {
         onChange={(event) => setUsername(event.target.value)}
       />
 
-      <FormControl sx={{ width: "25ch", m: 1 }} variant="outlined">
+      <FormControl
+        sx={{ maxWidth: "300px", width: "100%", m: 1 }}
+        variant="outlined"
+      >
         <InputLabel htmlFor="outlined-adornment-password">
           Mot de passe
         </InputLabel>
@@ -98,9 +113,21 @@ function LoginScreen() {
           onChange={(event) => setPassword(event.target.value)}
         />
       </FormControl>
+      {inccorectCreds && (
+        <Alert
+          variant="outlined"
+          severity="error"
+          sx={{
+            marginTop: 1,
+            borderRadius: 0,
+          }}
+        >
+          Nom d'utilisateur ou mot de passe incorrect
+        </Alert>
+      )}
       <Button
         variant="contained"
-        sx={{ marginTop: 5, width: "25ch", borderRadius: 0 }}
+        sx={{ marginTop: 5, maxWidth: "300px", width: "100%", borderRadius: 0 }}
         onClick={handleLogin}
       >
         Se connecter

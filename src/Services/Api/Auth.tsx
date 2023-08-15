@@ -23,7 +23,9 @@ interface ILoginData {
 
 const login =
   (api: ApisauceInstance) =>
-  async (data: ILoginData): Promise<IAuthLoginData | undefined> => {
+  async (
+    data: ILoginData
+  ): Promise<ApiResponse<IAuthLoginResponse, IRequestError>> => {
     const apiResponse = await api.post<IAuthLoginResponse, IRequestError>("", {
       AuthParameters: {
         USERNAME: data.username,
@@ -39,9 +41,8 @@ const login =
         "Authorization",
         authData.TokenType + " " + authData.IdToken
       );
-      return authData;
     }
-    return undefined;
+    return apiResponse;
   };
 
 export const authApiCalls = (api: ApisauceInstance) => ({
