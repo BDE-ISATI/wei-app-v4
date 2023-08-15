@@ -1,29 +1,35 @@
 import { ApiResponse, ApisauceInstance } from "apisauce";
 import AppConfig from "../../Config/AppConfig";
-import { IRequestError } from "../../Transforms/ApiError";
-
-interface IUserData {
-  challenges_pending: [];
-  mail: string;
-  username: string;
-  show: boolean;
-  challenges_to_do: string;
-  display_name: string;
-  challenges_done: [];
-  points: number;
-}
+import { IRequestError, IUserData } from "../../Transforms";
 
 const getSelf =
-  (api: ApisauceInstance) => async (): Promise<IUserData | undefined> => {
-    console.log("la requete est partie lezgo");
+  (api: ApisauceInstance) =>
+  async (): Promise<ApiResponse<IUserData | IRequestError>> => {
     const apiResponse = await api.get<IUserData, IRequestError>("/users/me");
 
-    if (apiResponse.ok) {
-      return apiResponse.data;
-    }
-    return undefined;
+    return apiResponse;
+  };
+
+const getAll =
+  (api: ApisauceInstance) =>
+  async (): Promise<ApiResponse<IUserData[], IRequestError>> => {
+    const apiResponse = await api.get<IUserData[], IRequestError>("/users");
+
+    return apiResponse;
+  };
+
+const getUser =
+  (api: ApisauceInstance) =>
+  async (username: string): Promise<ApiResponse<IUserData, IRequestError>> => {
+    const apiResponse = await api.get<IUserData, IRequestError>(
+      `/users/${username}`
+    );
+
+    return apiResponse;
   };
 
 export const userApiCalls = (api: ApisauceInstance) => ({
   GET_SELF: getSelf(api),
+  GET_ALL_USERS: getAll(api),
+  GET_USER: getUser(api),
 });
