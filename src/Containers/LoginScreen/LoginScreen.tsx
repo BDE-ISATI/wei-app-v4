@@ -6,29 +6,18 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   OutlinedInput,
   TextField,
   useTheme,
 } from "@mui/material";
 import React from "react";
 import Api from "../../Services/Api";
-import { useDispatch } from "react-redux";
-import { AuthActions } from "../../Reducers/Auth";
+import { useDispatch, useSelector } from "react-redux";
+import { AuthActions, loggedIn } from "../../Reducers/Auth";
 import { UserActions } from "../../Reducers/User";
-
-/**
- * Api.apiCalls.USER_LOGIN().then((response) => {
-        dispatch(
-          AuthActions.loginSuccess({
-            accessToken: response?.AccessToken,
-            expiresAt: response?.ExpiresIn.toString(),
-            idToken: response?.IdToken,
-            refreshToken: response?.RefreshToken,
-          })
-        );
-      });
- * 
- */
+import { useNavigate } from "react-router-dom";
+import { IState } from "../../Reducers";
 
 function LoginScreen() {
   const theme = useTheme();
@@ -37,6 +26,14 @@ function LoginScreen() {
   const [password, setPassword] = React.useState("");
   const [inccorectCreds, setIncorrectCreds] = React.useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
+
+  React.useEffect(() => {
+    if (userLoggedIn) {
+      navigate("/account");
+    }
+  }, []);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -62,6 +59,7 @@ function LoginScreen() {
             dispatch(UserActions.setUserData(response.data));
           }
         });
+        navigate("/account");
       } else {
         setIncorrectCreds(true);
       }
@@ -132,6 +130,9 @@ function LoginScreen() {
       >
         Se connecter
       </Button>
+      <Link sx={{ m: 1 }} href="/register">
+        Je n'ai pas de compte
+      </Link>
     </>
   );
 }
