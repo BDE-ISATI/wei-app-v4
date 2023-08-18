@@ -19,6 +19,9 @@ import { Link } from "react-router-dom";
 const BottomBar = () => {
   const pathname = window.location.pathname;
   const [value, setValue] = React.useState(pathname);
+  if (value === "/") {
+    setValue("/challenges");
+  }
   const onChange = (
     event: React.SyntheticEvent<Element, Event>,
     newValue: any

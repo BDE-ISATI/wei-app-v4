@@ -1,36 +1,36 @@
-import { VisibilityOff, Visibility } from "@mui/icons-material";
 import {
   Alert,
   Button,
-  FormControl,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
-  InputAdornment,
-  InputLabel,
   Link,
-  OutlinedInput,
+  Slide,
   TextField,
   useTheme,
 } from "@mui/material";
 import React from "react";
 import Api from "../../Services/Api";
-import { useDispatch } from "react-redux";
-import { AuthActions } from "../../Reducers/Auth";
-import { UserActions } from "../../Reducers/User";
+import { useSelector } from "react-redux";
+import { loggedIn } from "../../Reducers/Auth";
 import { PasswordInput } from "../../Components/PasswordInput";
+import { TransitionProps } from "@mui/material/transitions";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-/**
- * Api.apiCalls.USER_LOGIN().then((response) => {
-        dispatch(
-          AuthActions.loginSuccess({
-            accessToken: response?.AccessToken,
-            expiresAt: response?.ExpiresIn.toString(),
-            idToken: response?.IdToken,
-            refreshToken: response?.RefreshToken,
-          })
-        );
-      });
- * 
- */
+import { useNavigate } from "react-router-dom";
+import { IState } from "../../Reducers";
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function RegisterScreen() {
   const theme = useTheme();
@@ -42,16 +42,28 @@ function RegisterScreen() {
   const [errorMessage, setErrorMessage] = React.useState<String | undefined>(
     undefined
   );
-  const dispatch = useDispatch();
+  const [openDialogue, setOpenDialogue] = React.useState(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const navigate = useNavigate();
+  const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
+
+  React.useEffect(() => {
+    if (userLoggedIn) {
+      navigate("/account");
+    }
+  }, []);
+
+  const handleClose = () => {
+    setOpenDialogue(false);
+    navigate("/login");
+  };
 
   const handleLogin = () => {
     Api.apiCalls
       .USER_REGISTER({ username, password, email })
       .then((response) => {
         if (response.ok) {
-          console.log("Authentification réussie!");
+          setOpenDialogue(true);
         } else {
           setErrorMessage(response.data!.message);
         }
@@ -123,6 +135,44 @@ function RegisterScreen() {
       <Link sx={{ m: 1 }} href="/login">
         J'ai déjà un compte
       </Link>
+
+      <Dialog
+        open={openDialogue}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        aria-describedby="alert-dialog-slide-description"
+        PaperProps={{
+          style: {
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: `10px 10px 0px black`,
+            border: "solid black",
+          },
+        }}
+      >
+        <DialogTitle>{"On t'a envoyé un mail de confirmation 🤙"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Va voir ta boite{" "}
+            <b style={{ color: theme.palette.text.primary }}>{email}</b> pour
+            finir ton inscription 🔥🔥🔥
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <IconButton
+            size="small"
+            sx={{
+              marginLeft: "auto",
+              borderRadius: 0,
+              backgroundColor: theme.palette.primary.main,
+              border: "solid black",
+            }}
+            onClick={handleClose}
+          >
+            <ArrowForwardIcon sx={{ color: "black" }} />
+          </IconButton>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
