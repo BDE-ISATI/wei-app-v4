@@ -6,7 +6,6 @@ import { userApiCalls } from "./User";
 export const AUTH_API = create({
   baseURL: AppConfig.apiUrls.cognito,
   headers: {
-    "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
     "Content-Type": "application/x-amz-json-1.1",
   },
 });

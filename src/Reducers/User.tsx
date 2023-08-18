@@ -27,10 +27,16 @@ const login = (
   state: IUserStateImmutable,
   { data }: { data: IUserStateImmutable }
 ) => {
+  if (!Immutable.isImmutable(state)) {
+    state = Immutable.from(state);
+  }
   return state.merge(data);
 };
 
 const logout = (state: IUserStateImmutable) => {
+  if (!Immutable.isImmutable(state)) {
+    state = Immutable.from(state);
+  }
   return state.merge(INITIAL_STATE);
 };
 

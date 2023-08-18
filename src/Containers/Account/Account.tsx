@@ -8,11 +8,14 @@ import { AuthActions, loggedIn } from "../../Reducers/Auth";
 import Api from "../../Services/Api";
 import { LoginScreen } from "../LoginScreen";
 import { UserActions } from "../../Reducers/User";
-const Profile = () => {
+import RegisterScreen from "../RegisterScreen/RegisterScreen";
+import { useNavigate } from "react-router-dom";
+const Account = () => {
   const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
   const userData = useSelector((state: IState) => state.user);
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const avatar: IAvatar = {
     headShape: HeadShape.circle,
@@ -30,6 +33,10 @@ const Profile = () => {
   const handleLogout = () => {
     dispatch(AuthActions.logout());
     dispatch(UserActions.logout());
+  };
+
+  const handleConnect = () => {
+    navigate("/login");
   };
 
   return (
@@ -67,10 +74,22 @@ const Profile = () => {
           </Button>
         </>
       ) : (
-        <LoginScreen />
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{
+            marginTop: 5,
+            maxWidth: "300px",
+            width: "100%",
+            borderRadius: 0,
+          }}
+          onClick={handleConnect}
+        >
+          Me connecter
+        </Button>
       )}
     </>
   );
 };
 
-export default Profile;
+export default Account;

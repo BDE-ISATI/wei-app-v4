@@ -14,12 +14,18 @@ import Paper from "@mui/material/Paper";
 import { AvatarView, HeadShape, IAvatar } from "../MyAvatar";
 import { useTheme } from "@mui/material/styles";
 
-interface Props {
-  onPageChanged: (index: number) => void;
-}
+import { Link } from "react-router-dom";
 
-const BottomBar: React.FC<Props> = (props) => {
-  const [value, setValue] = React.useState(0);
+const BottomBar = () => {
+  const pathname = window.location.pathname;
+  const [value, setValue] = React.useState(pathname);
+  const onChange = (
+    event: React.SyntheticEvent<Element, Event>,
+    newValue: any
+  ) => {
+    setValue(newValue);
+  };
+
   const [avatarHeadShape, setAvatarHeadShape] = React.useState<HeadShape>(
     HeadShape.circle
   );
@@ -38,9 +44,7 @@ const BottomBar: React.FC<Props> = (props) => {
         <BottomNavigation
           showLabels
           value={value}
-          onChange={(event, newValue) => {
-            setValue(newValue);
-          }}
+          onChange={onChange}
           sx={{
             borderTop: "solid black",
             color: theme.palette.secondary.main,
@@ -51,20 +55,26 @@ const BottomBar: React.FC<Props> = (props) => {
           }}
         >
           <BottomNavigationAction
+            component={Link}
+            to="/challenges"
+            value={"/challenges" || "/"}
             icon={<FontAwesomeIcon icon={faStar} size="xl" color="black" />}
-            onClick={() => props.onPageChanged(0)}
           />
           <BottomNavigationAction
+            component={Link}
+            to="/scoreboard"
+            value={"/scoreboard"}
             icon={
               <FontAwesomeIcon icon={faRankingStar} size="xl" color="black" />
             }
-            onClick={() => props.onPageChanged(1)}
           />
           <BottomNavigationAction
+            component={Link}
+            to="/account"
+            value={"/account"}
             icon={
               <FontAwesomeIcon icon={faUserCircle} size="xl" color="black" />
             }
-            onClick={() => props.onPageChanged(2)}
           />
         </BottomNavigation>
       </Paper>
