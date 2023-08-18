@@ -46,3 +46,7 @@ const HANDLERS: Handlers<IUserStateImmutable> = {
 };
 
 export const userReducer = createReducer(INITIAL_STATE, HANDLERS);
+
+export const isUserDataSet = (state: IUserStateImmutable) => {
+  return state.username !== INITIAL_STATE.username;
+};

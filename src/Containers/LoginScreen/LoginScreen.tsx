@@ -13,10 +13,11 @@ import {
 } from "@mui/material";
 import React from "react";
 import Api from "../../Services/Api";
-import { useDispatch } from "react-redux";
-import { AuthActions } from "../../Reducers/Auth";
+import { useDispatch, useSelector } from "react-redux";
+import { AuthActions, loggedIn } from "../../Reducers/Auth";
 import { UserActions } from "../../Reducers/User";
 import { useNavigate } from "react-router-dom";
+import { IState } from "../../Reducers";
 
 function LoginScreen() {
   const theme = useTheme();
@@ -26,6 +27,13 @@ function LoginScreen() {
   const [inccorectCreds, setIncorrectCreds] = React.useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
+
+  React.useEffect(() => {
+    if (userLoggedIn) {
+      navigate("/account");
+    }
+  }, []);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
