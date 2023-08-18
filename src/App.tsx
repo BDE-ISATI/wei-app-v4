@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { createTheme, useTheme } from "@mui/material/styles";
 
@@ -6,17 +6,74 @@ import Fab from "@mui/material/Fab";
 import Box from "@mui/material/Box";
 
 import { BottomBar } from "./Components/BottomBar";
-import { ChallengeList, ScoreBoard, Profile } from "./Containers";
+import { ChallengeList, ScoreBoard, Account } from "./Containers";
 import { ThemeProvider } from "@emotion/react";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { LoginScreen } from "./Containers/LoginScreen";
 
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  useNavigate,
+} from "react-router-dom";
+import { RegisterScreen } from "./Containers/RegisterScreen";
+
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+
+const RedirectTo: React.FC<{ path: string }> = (props: { path: string }) => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate(props.path);
+  });
+  return <></>;
+};
 
 export default function App() {
   const [page, setPage] = useState(0);
   const [mode, setMode] = React.useState<"light" | "dark">("dark");
+
+  const BottomBarLayout = () => (
+    <>
+      <Outlet />
+      <header>
+        <BottomBar />
+      </header>
+    </>
+  );
+
+  const router = createBrowserRouter([
+    {
+      element: <BottomBarLayout />,
+      children: [
+        {
+          path: "/",
+          element: <RedirectTo path="/challenges" />,
+        },
+        {
+          path: "/challenges",
+          element: <ChallengeList />,
+        },
+        {
+          path: "/scoreboard",
+          element: <ScoreBoard />,
+        },
+        {
+          path: "/account",
+          element: <Account />,
+        },
+      ],
+    },
+    {
+      path: "/login",
+      element: <LoginScreen />,
+    },
+    {
+      path: "/register",
+      element: <RegisterScreen />,
+    },
+  ]);
 
   const colorMode = React.useMemo(
     () => ({
@@ -62,11 +119,8 @@ export default function App() {
                 padding: 2,
               }}
             >
-              {page === 0 && <ChallengeList />}
-              {page === 1 && <ScoreBoard />}
-              {page === 2 && <Profile />}
+              <RouterProvider router={router} />
             </Box>
-            <BottomBar onPageChanged={(x: number) => setPage(x)} />
           </Box>
         </React.Fragment>
       </ThemeProvider>

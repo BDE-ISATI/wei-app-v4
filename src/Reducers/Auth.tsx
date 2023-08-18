@@ -28,10 +28,16 @@ const login = (
   state: IAuthStateImmutable,
   { data }: { data: IAuthStateImmutable }
 ) => {
+  if (!Immutable.isImmutable(state)) {
+    state = Immutable.from(state);
+  }
   return state.merge(data);
 };
 
-const logout = (state: IAuthStateImmutable) => {
+const logout = (state: IAuthStateImmutable = INITIAL_STATE) => {
+  if (!Immutable.isImmutable(state)) {
+    state = Immutable.from(state);
+  }
   BASE_API.deleteHeader("Authorization");
   return state.merge(INITIAL_STATE);
 };

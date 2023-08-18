@@ -21,19 +21,33 @@ interface ILoginData {
   password: string;
 }
 
+interface IRegisterData {
+  username: string;
+  email: string;
+  password: string;
+}
+
 const login =
   (api: ApisauceInstance) =>
   async (
     data: ILoginData
   ): Promise<ApiResponse<IAuthLoginResponse, IRequestError>> => {
-    const apiResponse = await api.post<IAuthLoginResponse, IRequestError>("", {
-      AuthParameters: {
-        USERNAME: data.username,
-        PASSWORD: data.password,
+    const apiResponse = await api.post<IAuthLoginResponse, IRequestError>(
+      "",
+      {
+        AuthParameters: {
+          USERNAME: data.username,
+          PASSWORD: data.password,
+        },
+        AuthFlow: "USER_PASSWORD_AUTH",
+        ClientId: AppConfig.cognitoUserPoolClientId,
       },
-      AuthFlow: "USER_PASSWORD_AUTH",
-      ClientId: AppConfig.cognitoUserPoolClientId,
-    });
+      {
+        headers: {
+          "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
+        },
+      }
+    );
 
     if (apiResponse.ok) {
       let authData = apiResponse.data!.AuthenticationResult;
@@ -45,6 +59,36 @@ const login =
     return apiResponse;
   };
 
+const register =
+  (api: ApisauceInstance) =>
+  async (
+    data: IRegisterData
+  ): Promise<ApiResponse<IAuthLoginResponse, IRequestError>> => {
+    const apiResponse = await api.post<IAuthLoginResponse, IRequestError>(
+      "",
+      {
+        Username: data.username,
+        Password: data.password,
+        UserAttributes: [
+          {
+            Name: "email",
+            Value: data.email,
+          },
+        ],
+        ClientId: AppConfig.cognitoUserPoolClientId,
+      },
+      {
+        headers: {
+          "X-Amz-Target": "AWSCognitoIdentityProviderService.SignUp",
+        },
+      }
+    );
+    console.log(apiResponse);
+
+    return apiResponse;
+  };
+
 export const authApiCalls = (api: ApisauceInstance) => ({
   USER_LOGIN: login(api),
+  USER_REGISTER: register(api),
 });
