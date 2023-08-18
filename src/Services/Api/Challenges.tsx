@@ -52,7 +52,7 @@ const acceptChallengeRequest =
 
       return apiResponse;
     }
-export const userApiCalls = (api: ApisauceInstance) => ({
+export const challengeApiCalls = (api: ApisauceInstance) => ({
   GET_ALL_CHALLENGES: getAll(api),
   GET_CHALLENGE: getChallenge(api),
   REQUEST_CHALLENGE: requestChallenge(api),
