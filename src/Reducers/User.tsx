@@ -27,10 +27,16 @@ const login = (
   state: IUserStateImmutable,
   { data }: { data: IUserStateImmutable }
 ) => {
+  if (!Immutable.isImmutable(state)) {
+    state = Immutable.from(state);
+  }
   return state.merge(data);
 };
 
 const logout = (state: IUserStateImmutable) => {
+  if (!Immutable.isImmutable(state)) {
+    state = Immutable.from(state);
+  }
   return state.merge(INITIAL_STATE);
 };
 
@@ -40,3 +46,7 @@ const HANDLERS: Handlers<IUserStateImmutable> = {
 };
 
 export const userReducer = createReducer(INITIAL_STATE, HANDLERS);
+
+export const isUserDataSet = (state: IUserStateImmutable) => {
+  return state.username !== INITIAL_STATE.username;
+};

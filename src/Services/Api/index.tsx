@@ -6,11 +6,10 @@ import {teamApiCalls} from "./Teams";
 import {challengeApiCalls} from "./Challenges";
 
 export const AUTH_API = create({
-    baseURL: AppConfig.apiUrls.cognito,
-    headers: {
-        "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
-        "Content-Type": "application/x-amz-json-1.1",
-    },
+  baseURL: AppConfig.apiUrls.cognito,
+  headers: {
+    "Content-Type": "application/x-amz-json-1.1",
+  },
 });
 
 export const BASE_API = create({
