@@ -1,7 +1,9 @@
-import { create } from "apisauce";
+import {create} from "apisauce";
 import AppConfig from "../../Config/AppConfig";
-import { authApiCalls } from "./Auth";
-import { userApiCalls } from "./User";
+import {authApiCalls} from "./Auth";
+import {userApiCalls} from "./User";
+import {teamApiCalls} from "./Teams";
+import {challengeApiCalls} from "./Challenges";
 
 export const AUTH_API = create({
   baseURL: AppConfig.apiUrls.cognito,
@@ -11,12 +13,14 @@ export const AUTH_API = create({
 });
 
 export const BASE_API = create({
-  baseURL: AppConfig.apiUrls.dev,
+    baseURL: AppConfig.apiUrls.dev,
 });
 
 export default {
-  apiCalls: {
-    ...authApiCalls(AUTH_API),
-    ...userApiCalls(BASE_API),
-  },
+    apiCalls: {
+        ...authApiCalls(AUTH_API),
+        ...userApiCalls(BASE_API),
+        ...teamApiCalls(BASE_API),
+        ...challengeApiCalls(BASE_API),
+    },
 };
