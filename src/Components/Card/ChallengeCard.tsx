@@ -14,6 +14,7 @@ import Badge from "@mui/material/Badge";
 import { IChallengeData } from "../../Transforms";
 import { useNavigate } from "react-router-dom";
 import { UserAvatarGroup } from "../UserAvatarGroup";
+import { unix } from "dayjs";
 
 interface Props {
   challengeData: IChallengeData;
@@ -21,8 +22,8 @@ interface Props {
 
 function ChallengeCard(props: Props) {
   const theme = useTheme();
-  const start = new Date(props.challengeData.start);
-  const end = new Date(props.challengeData.end);
+  const start = unix(props.challengeData.start).toDate();
+  const end = unix(props.challengeData.end).toDate();
   const navigate = useNavigate();
 
   const handleOpenButtonClick = () => {
