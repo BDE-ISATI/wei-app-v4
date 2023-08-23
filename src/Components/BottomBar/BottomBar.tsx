@@ -8,10 +8,10 @@ import {
   faStar,
   faUser,
   faUserCircle,
+  faUserGroup,
   faUserShield,
 } from "@fortawesome/free-solid-svg-icons";
 import Paper from "@mui/material/Paper";
-import { AvatarView, HeadShape, IAvatar } from "../MyAvatar";
 import { useTheme } from "@mui/material/styles";
 
 import { Link } from "react-router-dom";
@@ -29,14 +29,7 @@ const BottomBar = () => {
     setValue(newValue);
   };
 
-  const [avatarHeadShape, setAvatarHeadShape] = React.useState<HeadShape>(
-    HeadShape.circle
-  );
   const theme = useTheme();
-
-  const avatar: IAvatar = {
-    headShape: avatarHeadShape,
-  };
 
   return (
     <>
@@ -69,6 +62,14 @@ const BottomBar = () => {
             value={"/scoreboard"}
             icon={
               <FontAwesomeIcon icon={faRankingStar} size="xl" color="black" />
+            }
+          />
+          <BottomNavigationAction
+            component={Link}
+            to="/teams"
+            value={"/teams"}
+            icon={
+              <FontAwesomeIcon icon={faUserGroup} size="xl" color="black" />
             }
           />
           <BottomNavigationAction

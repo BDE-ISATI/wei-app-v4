@@ -12,15 +12,18 @@ import {
 } from "redux-persist";
 import { authReducer, IAuthStateImmutable } from "./Auth";
 import { userReducer, IUserStateImmutable } from "./User";
+import { appReducer, IAppStateImmutable } from "./App";
 
 export interface IState {
   auth: IAuthStateImmutable;
   user: IUserStateImmutable;
+  app: IAppStateImmutable;
 }
 
 const reducers = combineReducers<IState>({
   auth: authReducer,
   user: userReducer,
+  app: appReducer,
 });
 
 const persistedReducer = persistReducer(PERSIST_CONFIG.storeConfig, reducers);
