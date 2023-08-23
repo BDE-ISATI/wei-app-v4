@@ -2,6 +2,8 @@ import { ApiResponse, ApisauceInstance } from "apisauce";
 import AppConfig from "../../Config/AppConfig";
 import { IRequestError } from "../../Transforms/ApiError";
 import { BASE_API } from ".";
+import store from "../../Reducers";
+import { AuthActions } from "../../Reducers/Auth";
 
 interface IAuthLoginData {
   AccessToken: string;
@@ -55,6 +57,14 @@ const login =
         "Authorization",
         authData.TokenType + " " + authData.IdToken
       );
+      store.dispatch(
+        AuthActions.loginSuccess({
+          accessToken: authData.AccessToken,
+          expiresAt: authData.ExpiresIn.toString(),
+          idToken: authData.IdToken,
+          refreshToken: authData.RefreshToken,
+        })
+      );
     }
     return apiResponse;
   };
@@ -83,12 +93,53 @@ const register =
         },
       }
     );
-    console.log(apiResponse);
+    return apiResponse;
+  };
 
+const refreshToken =
+  (api: ApisauceInstance) =>
+  async (): Promise<ApiResponse<IAuthLoginResponse, IRequestError>> => {
+    console.log("Refreshing token...");
+    const refreshToken = await store.getState().auth.refreshToken;
+    const apiResponse = await api.post<IAuthLoginResponse, IRequestError>(
+      "",
+      {
+        AuthParameters: {
+          REFRESH_TOKEN: refreshToken,
+        },
+        AuthFlow: "REFRESH_TOKEN_AUTH",
+        ClientId: AppConfig.cognitoUserPoolClientId,
+      },
+      {
+        headers: {
+          "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
+        },
+      }
+    );
+
+    if (!apiResponse.ok) {
+      // if refreshToken invalid, logout
+      store.dispatch(AuthActions.logout());
+    } else {
+      let authData = apiResponse.data!.AuthenticationResult;
+      BASE_API.setHeader(
+        "Authorization",
+        authData.TokenType + " " + authData.IdToken
+      );
+      store.dispatch(
+        AuthActions.loginSuccess({
+          accessToken: authData.AccessToken,
+          expiresAt: authData.ExpiresIn.toString(),
+          idToken: authData.IdToken,
+          refreshToken: refreshToken,
+        })
+      );
+    }
     return apiResponse;
   };
 
 export const authApiCalls = (api: ApisauceInstance) => ({
   USER_LOGIN: login(api),
   USER_REGISTER: register(api),
+  REFRESH_TOKEN: refreshToken(api),
 });

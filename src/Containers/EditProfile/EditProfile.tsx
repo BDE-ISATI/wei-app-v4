@@ -13,11 +13,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Alert,
 } from "@mui/material";
 import React, { useState } from "react";
 import { UserAvatar } from "../../Components/UserAvatar";
 import { IUserUpdateData, reduceUserData } from "../../Transforms/User";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IState } from "../../Reducers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -25,10 +26,11 @@ import { TransitionProps } from "@mui/material/transitions";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Api from "../../Services/Api";
-import { useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
 import type { Area } from "react-easy-crop";
 import getCroppedImg from "../../Utils/cropImage";
+import { UserActions } from "../../Reducers/User";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -60,13 +62,17 @@ function EditProfile() {
     string | undefined
   >(undefined);
 
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined
+  );
   const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
 
   const theme = useTheme();
-  const navigate = useNavigation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -81,7 +87,6 @@ function EditProfile() {
   const handleEditSelf = async () => {
     var editedUser: IUserUpdateData = {};
     if (newProfilePic) {
-      console.log(newProfilePic);
       let response = await Api.apiCalls.POST_PICTURE(newProfilePic);
       if (response.ok) {
         editedUser.picture_id = response.data?.id;
@@ -96,9 +101,11 @@ function EditProfile() {
     ) {
       Api.apiCalls.EDIT_SELF(editedUser).then((response) => {
         if (response.ok) {
-          alert("C fait!");
+          navigate(-1);
+          setErrorMessage(undefined);
+          Api.apiCalls.GET_SELF();
         } else {
-          alert(response.data?.message);
+          setErrorMessage(response.data?.message);
         }
       });
     }
@@ -194,6 +201,18 @@ function EditProfile() {
         >
           Appliquer
         </Button>
+        {errorMessage && (
+          <Alert
+            variant="outlined"
+            severity="error"
+            sx={{
+              marginTop: 1,
+              borderRadius: 0,
+            }}
+          >
+            {errorMessage}
+          </Alert>
+        )}
       </Box>
       <Dialog
         onClose={handleClose}
