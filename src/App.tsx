@@ -19,6 +19,12 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { RegisterScreen } from "./Containers/RegisterScreen";
+import { TeamsList } from "./Containers/TeamsList";
+import Challenge from "./Containers/Challenge/Challenge";
+import { useDispatch, useSelector } from "react-redux";
+import { IState } from "./Reducers";
+import { AppActions } from "./Reducers/App";
+import { EditProfile } from "./Containers/EditProfile";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -31,8 +37,10 @@ const RedirectTo: React.FC<{ path: string }> = (props: { path: string }) => {
 };
 
 export default function App() {
-  const [page, setPage] = useState(0);
-  const [mode, setMode] = React.useState<"light" | "dark">("dark");
+  const mode: "light" | "dark" = useSelector(
+    (state: IState) => state.app.colorMode
+  );
+  const dispatch = useDispatch();
 
   const BottomBarLayout = () => (
     <>
@@ -42,7 +50,6 @@ export default function App() {
       </header>
     </>
   );
-
   const router = createBrowserRouter([
     {
       element: <BottomBarLayout />,
@@ -56,12 +63,24 @@ export default function App() {
           element: <ChallengeList />,
         },
         {
+          path: "/challenges/:id",
+          element: <Challenge />,
+        },
+        {
           path: "/scoreboard",
           element: <ScoreBoard />,
         },
         {
+          path: "/teams",
+          element: <TeamsList />,
+        },
+        {
           path: "/account",
           element: <Account />,
+        },
+        {
+          path: "/account/edit",
+          element: <EditProfile />,
         },
       ],
     },
@@ -78,7 +97,7 @@ export default function App() {
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+        dispatch(AppActions.setColorMode(mode === "light" ? "dark" : "light"));
       },
     }),
     []

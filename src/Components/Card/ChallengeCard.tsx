@@ -11,25 +11,31 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import Badge from "@mui/material/Badge";
+import { IChallengeData } from "../../Transforms";
+import { useNavigate } from "react-router-dom";
+import { UserAvatarGroup } from "../UserAvatarGroup";
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
+interface Props {
+  challengeData: IChallengeData;
+}
 
-function BasicCard() {
+function ChallengeCard(props: Props) {
   const theme = useTheme();
+  const start = new Date(props.challengeData.start);
+  const end = new Date(props.challengeData.end);
+  const navigate = useNavigate();
+
+  const handleOpenButtonClick = () => {
+    navigate(props.challengeData.challenge);
+  };
   return (
     <Card
       variant="outlined"
       sx={{
         boxShadow: `10px 10px 0px black`,
         border: "solid black",
-        width: "250px",
+        width: "500px",
+        maxWidth: "90vw",
       }}
       square
     >
@@ -43,37 +49,23 @@ function BasicCard() {
           color={theme.palette.getContrastText(theme.palette.primary.main)}
           sx={{ fontWeight: 800, textAlign: "center" }}
         >
-          NOM DU CHALLENGE
+          {props.challengeData.name}
+          <br />
+          {props.challengeData.points} point
+          {props.challengeData.points > 1 ? "s" : ""}
         </Typography>
       </CardContent>
       <CardContent>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          jusqu'au XX/XX
+          {start.toLocaleDateString("fr")} - {end.toLocaleDateString("fr")}
         </Typography>
         <Typography variant="body2">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
-          aut consequuntur soluta omnis ex amet reprehenderit veniam sapiente
-          dolor quis, illo hic dolorum voluptatibus quibusdam, fuga cumque minus
-          a itaque.
+          {props.challengeData.description}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
         <Box marginLeft={1}>
-          <AvatarGroup total={24} max={4}>
-            <Badge
-              badgeContent={"👑"}
-              overlap="circular"
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-            >
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </Badge>
-            <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-            <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
-            <Avatar alt="Trevor Henderson" src="/static/images/avatar/5.jpg" />
-          </AvatarGroup>
+          <UserAvatarGroup userData={props.challengeData.users} max={5} />
         </Box>
         <IconButton
           size="small"
@@ -83,6 +75,7 @@ function BasicCard() {
             backgroundColor: theme.palette.primary.main,
             border: "solid black",
           }}
+          onClick={handleOpenButtonClick}
         >
           <ArrowForwardIcon sx={{ color: "black" }} />
         </IconButton>
@@ -91,4 +84,4 @@ function BasicCard() {
   );
 }
 
-export default BasicCard;
+export default ChallengeCard;
