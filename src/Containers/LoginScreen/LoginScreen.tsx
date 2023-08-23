@@ -24,7 +24,9 @@ function LoginScreen() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [inccorectCreds, setIncorrectCreds] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<String | undefined>(
+    undefined
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
@@ -61,7 +63,7 @@ function LoginScreen() {
         });
         navigate("/account");
       } else {
-        setIncorrectCreds(true);
+        setErrorMessage(response.data?.message);
       }
     });
   };
@@ -111,7 +113,7 @@ function LoginScreen() {
           onChange={(event) => setPassword(event.target.value)}
         />
       </FormControl>
-      {inccorectCreds && (
+      {errorMessage && (
         <Alert
           variant="outlined"
           severity="error"
@@ -120,7 +122,7 @@ function LoginScreen() {
             borderRadius: 0,
           }}
         >
-          Nom d'utilisateur ou mot de passe incorrect
+          {errorMessage}
         </Alert>
       )}
       <Button
