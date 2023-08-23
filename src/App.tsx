@@ -25,6 +25,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { IState } from "./Reducers";
 import { AppActions } from "./Reducers/App";
 import { EditProfile } from "./Containers/EditProfile";
+import { loggedIn } from "./Reducers/Auth";
+import Api from "./Services/Api";
+import { UserActions } from "./Reducers/User";
+import { CreateChallenge } from "./Containers/CreateChallenge";
+import { EditChallenge } from "./Containers/EditChallenge";
+import { ChallengeRequest } from "./Containers/ChallengeRequests";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -40,7 +46,14 @@ export default function App() {
   const mode: "light" | "dark" = useSelector(
     (state: IState) => state.app.colorMode
   );
+  const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
   const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    if (userLoggedIn) {
+      Api.apiCalls.GET_SELF();
+    }
+  }, []);
 
   const BottomBarLayout = () => (
     <>
@@ -63,8 +76,16 @@ export default function App() {
           element: <ChallengeList />,
         },
         {
+          path: "/create/challenge",
+          element: <CreateChallenge />,
+        },
+        {
           path: "/challenges/:id",
           element: <Challenge />,
+        },
+        {
+          path: "/challenges/:id/edit",
+          element: <EditChallenge />,
         },
         {
           path: "/scoreboard",
@@ -83,6 +104,10 @@ export default function App() {
           element: <EditProfile />,
         },
       ],
+    },
+    {
+      path: "/validation",
+      element: <ChallengeRequest />,
     },
     {
       path: "/login",
@@ -112,7 +137,6 @@ export default function App() {
       }),
     [mode]
   );
-  console.log(theme.palette.background.default);
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
