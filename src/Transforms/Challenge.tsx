@@ -12,13 +12,23 @@ export interface IChallengeData {
   users: IUserSmallData[];
 }
 
+export interface ICreateChallengeData {
+  challenge: string;
+  name: string;
+  points: number;
+  start: number;
+  end: number;
+  description: string;
+  picture_id?: string;
+}
+
 export interface IChallengeUpdateData {
   challenge: string;
   picture_id?: string;
   points?: number;
   start?: number;
   end?: number;
-  description?: number;
+  description?: string;
   max_count?: number;
-  name?: number;
+  name?: string;
 }

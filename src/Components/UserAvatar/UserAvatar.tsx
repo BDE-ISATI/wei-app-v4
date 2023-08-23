@@ -18,7 +18,8 @@ const UserAvatar: React.FC<Props> = (props: Props) => {
       src={
         props.imageURL
           ? props.imageURL
-          : Api.apiCalls.GET_PICTURE_URL(props.user.picture_id || "")
+          : props.user.picture_id &&
+            Api.apiCalls.GET_PICTURE_URL(props.user.picture_id)
       }
       sx={{ border: "solid black", width: props.width, height: props.height }}
     />

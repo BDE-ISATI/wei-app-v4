@@ -20,6 +20,7 @@ interface Props {
 
 function TeamCard(props: Props) {
   const theme = useTheme();
+  console.log(props);
   return (
     <Card
       variant="outlined"
@@ -51,12 +52,7 @@ function TeamCard(props: Props) {
       </CardContent>
       <CardActions disableSpacing>
         <Box marginLeft={1}>
-          <UserAvatarGroup
-            userData={props.teamData.members.map((member) => ({
-              username: member,
-            }))}
-            max={5}
-          />
+          <UserAvatarGroup userData={props.teamData.members} max={5} />
         </Box>
         <IconButton
           size="small"

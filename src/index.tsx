@@ -9,6 +9,8 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 let persistor = persistStore(store);
 
@@ -19,7 +21,9 @@ root.render(
   //<React.StrictMode>
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <App />
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+        <App />
+      </LocalizationProvider>
     </PersistGate>
   </Provider>
   //</React.StrictMode>

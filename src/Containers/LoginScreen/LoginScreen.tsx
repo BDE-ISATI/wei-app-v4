@@ -46,22 +46,12 @@ function LoginScreen() {
   };
 
   const handleLogin = () => {
+    console.log("Start Login!");
     Api.apiCalls.USER_LOGIN({ username, password }).then((response) => {
       if (response.ok) {
-        dispatch(
-          AuthActions.loginSuccess({
-            accessToken: response.data?.AuthenticationResult.AccessToken,
-            expiresAt: response.data?.AuthenticationResult.ExpiresIn.toString(),
-            idToken: response.data?.AuthenticationResult.IdToken,
-            refreshToken: response.data?.AuthenticationResult.RefreshToken,
-          })
-        );
-        Api.apiCalls.GET_SELF().then((response) => {
-          if (response.ok) {
-            dispatch(UserActions.setUserData(response.data));
-          }
-        });
         navigate("/account");
+        navigate(0);
+        Api.apiCalls.GET_SELF();
       } else {
         setErrorMessage(response.data?.message);
       }

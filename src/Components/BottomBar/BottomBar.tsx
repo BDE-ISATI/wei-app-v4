@@ -34,7 +34,13 @@ const BottomBar = () => {
   return (
     <>
       <Paper
-        sx={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100 }}
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: (theme) => theme.zIndex.drawer + 2,
+        }}
         elevation={3}
       >
         <BottomNavigation

@@ -29,18 +29,13 @@ const Account = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userTokens = useSelector((state: IState) => state.auth);
 
-  console.log(userData);
   React.useEffect(() => {
-    console.log(userLoggedIn);
     if (!userLoggedIn) {
     } else {
       if (!userDataSet) {
-        Api.apiCalls.GET_SELF().then((response) => {
-          if (response.ok) {
-            dispatch(UserActions.setUserData(response.data));
-          }
-        });
+        Api.apiCalls.GET_SELF();
       }
     }
   }, []);
@@ -74,6 +69,14 @@ const Account = () => {
             width={150}
             height={150}
           />
+          {userData.is_admin && (
+            <Typography
+              color={theme.palette.warning.main}
+              sx={{ fontWeight: 800, textAlign: "center" }}
+            >
+              Compte administrateur
+            </Typography>
+          )}
           <Typography
             color={theme.palette.text.primary}
             sx={{ fontWeight: 800, textAlign: "center" }}
@@ -89,6 +92,21 @@ const Account = () => {
           <IconButton size="large" onClick={() => navigate("edit")}>
             <EditIcon />
           </IconButton>
+          {userData.is_admin && (
+            <Button
+              variant="contained"
+              color="warning"
+              sx={{
+                marginTop: 5,
+                marginBottom: 5,
+                maxWidth: "300px",
+                width: "100%",
+                borderRadius: 0,
+              }}
+            >
+              Validations en attente
+            </Button>
+          )}
           <Button
             variant="outlined"
             color="error"
