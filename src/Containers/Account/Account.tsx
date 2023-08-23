@@ -1,6 +1,14 @@
-import { Avatar, Box, Button, Typography, useTheme } from "@mui/material";
-import React from "react";
-import { AvatarView, HeadShape, IAvatar } from "../../Components/MyAvatar";
+import {
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import React, { useState } from "react";
+import { UserAvatar } from "../../Components/UserAvatar";
 import { ColorModeToggle } from "../../Components/ColorModeToggle";
 import { useDispatch, useSelector } from "react-redux";
 import { IState } from "../../Reducers";
@@ -11,6 +19,9 @@ import { LoginScreen } from "../LoginScreen";
 import { UserActions } from "../../Reducers/User";
 import RegisterScreen from "../RegisterScreen/RegisterScreen";
 import { useNavigate } from "react-router-dom";
+import { reduceUserData } from "../../Transforms/User";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import EditIcon from "@mui/icons-material/Edit";
 const Account = () => {
   const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
   const userDataSet = useSelector((state: IState) => isUserDataSet(state.user));
@@ -18,10 +29,6 @@ const Account = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const avatar: IAvatar = {
-    headShape: HeadShape.circle,
-  };
 
   console.log(userData);
   React.useEffect(() => {
@@ -62,29 +69,26 @@ const Account = () => {
             flex: 1,
           }}
         >
-          <Avatar
-            sx={{
-              width: 150,
-              height: 150,
-              pointerEvents: "none",
-              marginTop: theme.spacing(4),
-            }}
-          >
-            <AvatarView width={150} height={150} avatar={avatar} />
-          </Avatar>
+          <UserAvatar
+            user={reduceUserData(userData)}
+            width={150}
+            height={150}
+          />
           <Typography
             color={theme.palette.text.primary}
             sx={{ fontWeight: 800, textAlign: "center" }}
           >
-            {userData.username}
+            {userData.display_name}
           </Typography>
           <Typography
             color={theme.palette.text.secondary}
             sx={{ fontWeight: 300, textAlign: "center" }}
           >
-            {userData.mail}
+            {userData.username}
           </Typography>
-          <ColorModeToggle />
+          <IconButton size="large" onClick={() => navigate("edit")}>
+            <EditIcon />
+          </IconButton>
           <Button
             variant="outlined"
             color="error"
@@ -99,6 +103,7 @@ const Account = () => {
           >
             Déconnexion
           </Button>
+          <ColorModeToggle />
         </Box>
       ) : (
         <Button
