@@ -103,6 +103,7 @@ const Account = () => {
                 width: "100%",
                 borderRadius: 0,
               }}
+              onClick={() => navigate("/validation")}
             >
               Validations en attente
             </Button>
