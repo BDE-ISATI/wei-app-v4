@@ -31,6 +31,10 @@ import { UserActions } from "./Reducers/User";
 import { CreateChallenge } from "./Containers/CreateChallenge";
 import { EditChallenge } from "./Containers/EditChallenge";
 import { ChallengeRequest } from "./Containers/ChallengeRequests";
+import { Team } from "./Containers/Team";
+import { CreateTeam } from "./Containers/CreateTeam";
+import { EditTeam } from "./Containers/EditTeam";
+import { TeamRequests } from "./Containers/TeamRequests";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -80,6 +84,10 @@ export default function App() {
           element: <CreateChallenge />,
         },
         {
+          path: "/create/team",
+          element: <CreateTeam />,
+        },
+        {
           path: "/challenges/:id",
           element: <Challenge />,
         },
@@ -96,6 +104,14 @@ export default function App() {
           element: <TeamsList />,
         },
         {
+          path: "/teams/:id",
+          element: <Team />,
+        },
+        {
+          path: "/teams/:id/edit",
+          element: <EditTeam />,
+        },
+        {
           path: "/account",
           element: <Account />,
         },
@@ -106,8 +122,12 @@ export default function App() {
       ],
     },
     {
-      path: "/validation",
+      path: "/validations/challenges",
       element: <ChallengeRequest />,
+    },
+    {
+      path: "/validations/teams",
+      element: <TeamRequests />,
     },
     {
       path: "/login",

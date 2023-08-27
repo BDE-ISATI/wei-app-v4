@@ -13,6 +13,7 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import Badge from "@mui/material/Badge";
 import { IChallengeData, ITeamData } from "../../Transforms";
 import { UserAvatarGroup } from "../UserAvatarGroup";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   teamData: ITeamData;
@@ -20,7 +21,11 @@ interface Props {
 
 function TeamCard(props: Props) {
   const theme = useTheme();
-  console.log(props);
+  const navigate = useNavigate();
+
+  const handleOpenButtonClick = () => {
+    navigate(props.teamData.team);
+  };
   return (
     <Card
       variant="outlined"
@@ -62,6 +67,7 @@ function TeamCard(props: Props) {
             backgroundColor: theme.palette.primary.main,
             border: "solid black",
           }}
+          onClick={handleOpenButtonClick}
         >
           <ArrowForwardIcon sx={{ color: "black" }} />
         </IconButton>
