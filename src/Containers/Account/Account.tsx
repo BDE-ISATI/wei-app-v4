@@ -93,20 +93,35 @@ const Account = () => {
             <EditIcon />
           </IconButton>
           {userData.is_admin && (
-            <Button
-              variant="contained"
-              color="warning"
-              sx={{
-                marginTop: 5,
-                marginBottom: 5,
-                maxWidth: "300px",
-                width: "100%",
-                borderRadius: 0,
-              }}
-              onClick={() => navigate("/validation")}
-            >
-              Validations en attente
-            </Button>
+            <>
+              <Button
+                variant="contained"
+                color="warning"
+                sx={{
+                  marginTop: 5,
+                  maxWidth: "300px",
+                  width: "100%",
+                  borderRadius: 0,
+                }}
+                onClick={() => navigate("/validations/challenges")}
+              >
+                Valider des challenges
+              </Button>
+              <Button
+                variant="contained"
+                color="warning"
+                sx={{
+                  marginTop: 2,
+                  marginBottom: 5,
+                  maxWidth: "300px",
+                  width: "100%",
+                  borderRadius: 0,
+                }}
+                onClick={() => navigate("/validations/teams")}
+              >
+                Accepter dans l'équipe
+              </Button>
+            </>
           )}
           <Button
             variant="outlined"

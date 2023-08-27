@@ -18,27 +18,27 @@ import React, { ReactNode, useState, useEffect } from "react";
 import { UserAvatar } from "../../Components/UserAvatar";
 import { useTheme } from "@mui/material/styles";
 import Api from "../../Services/Api";
-import { IChallengeData, IUserData } from "../../Transforms";
+import { IChallengeData, ITeamData, IUserData } from "../../Transforms";
 import { reduceUserData } from "../../Transforms/User";
 import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
 
-interface IUserListItem {
-  user: IUserData;
-  challenges: IChallengeData[];
+interface ITeamListItem {
+  team: ITeamData;
+  users: IUserData[];
 }
 
-const ChallengeListItem = (props: {
-  data: IChallengeData | undefined;
-  user: IUserData;
+const UserListItem = (props: {
+  user: IUserData | undefined;
+  team: ITeamData;
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
 
   const validateChallenge = () => {
     Api.apiCalls
-      .ACCEPT_CHALLENGE_REQUEST(props.user.username, props.data!.challenge)
+      .ACCEPT_JOIN_TEAM(props.user!.username, props.team.team)
       .then((response) => {
         navigate(0);
       });
@@ -63,17 +63,10 @@ const ChallengeListItem = (props: {
           </IconButton>
         }
       >
-        <ListItemButton
-          sx={{ pl: 4, color: theme.palette.text.primary }}
-          onClick={() => navigate("/challenges/" + props.data?.challenge)}
-        >
+        <ListItemButton sx={{ pl: 4, color: theme.palette.text.primary }}>
           <ListItemText
-            primary={props.data?.name || ""}
-            secondary={
-              props.data?.points +
-                " point" +
-                (props.data!.points > 1 ? "s" : "") || ""
-            }
+            primary={props.user?.display_name || ""}
+            secondary={props.user?.mail}
           />
         </ListItemButton>
       </ListItem>
@@ -81,26 +74,20 @@ const ChallengeListItem = (props: {
   );
 };
 
-const generateChallengeList = (
-  challenges: string[],
-  challengesData: IChallengeData[],
-  user: IUserData
-) => {
-  return challenges.map((data: string, index: number) => {
+const generateUserList = (team: ITeamData, users: IUserData[]) => {
+  return team.pending.map((data: string, index: number) => {
     return (
       <div>
-        <ChallengeListItem
-          data={challengesData.find(
-            (challenge) => challenge.challenge === data
-          )}
-          user={user}
+        <UserListItem
+          user={users.find((user) => user.username === data)}
+          team={team}
         />
       </div>
     );
   });
 };
 
-const UserListItem = (props: IUserListItem) => {
+const TeamListItem = (props: ITeamListItem) => {
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {
@@ -120,28 +107,19 @@ const UserListItem = (props: IUserListItem) => {
       >
         <ListItemAvatar>
           <Badge
-            badgeContent={props.user.challenges_pending.length}
+            badgeContent={props.team.pending.length}
             color="primary"
             max={9}
             overlap="circular"
-          >
-            <UserAvatar user={reduceUserData(props.user)} />
-          </Badge>
+          ></Badge>
         </ListItemAvatar>
 
-        <ListItemText
-          primary={props.user.display_name}
-          secondary={props.user.mail}
-        />
+        <ListItemText primary={props.team.display_name} />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          {generateChallengeList(
-            props.user.challenges_pending,
-            props.challenges,
-            props.user
-          )}
+          {generateUserList(props.team, props.users)}
         </List>
       </Collapse>
     </>
@@ -153,53 +131,49 @@ const NoPendingValidation = () => {
   return (
     <ListItem>
       <ListItemText sx={{ pl: 4, color: theme.palette.text.primary }}>
-        Aucune demande de validation.
+        Personne n'attend pour rejoindre une équipe!
       </ListItemText>
     </ListItem>
   );
 };
 
-const generateUserList = (
-  users: IUserData[] | undefined,
-  challenges: IChallengeData[] | undefined
+const generateTeamList = (
+  teams: ITeamData[] | undefined,
+  users: IUserData[] | undefined
 ) => {
-  if (users === undefined || challenges === undefined) {
+  if (users === undefined || teams === undefined) {
     return <></>;
   }
 
-  let userWithPendingChallenges = users.filter(
-    (user) => user.challenges_pending.length > 0
-  );
-  if (userWithPendingChallenges.length === 0) {
+  let teamsWithPendingUsers = teams.filter((team) => team.pending.length > 0);
+  if (teamsWithPendingUsers.length === 0) {
     return <NoPendingValidation />;
   }
-  return userWithPendingChallenges
-    .sort((a: IUserData, b: IUserData) => {
-      return b.challenges_pending.length - a.challenges_pending.length;
+  return teamsWithPendingUsers
+    .sort((a: ITeamData, b: ITeamData) => {
+      return b.pending.length - a.pending.length;
     })
     .map((data, index) => (
       <div key={index}>
-        <UserListItem user={data} challenges={challenges!} />
+        <TeamListItem team={data} users={users!} />
         <Divider component="li" />
       </div>
     ));
 };
 
-const ChallengeRequest = () => {
+const TeamRequests = () => {
+  const [teamList, setTeamList] = useState<ITeamData[] | undefined>();
   const [userList, setUserList] = useState<IUserData[] | undefined>();
-  const [challengesList, setChallengesList] = useState<
-    IChallengeData[] | undefined
-  >();
   const theme = useTheme();
   React.useEffect(() => {
+    Api.apiCalls.GET_ALL_TEAMS().then((response) => {
+      if (response.ok) {
+        setTeamList(response.data);
+      }
+    });
     Api.apiCalls.GET_ALL_USERS().then((response) => {
       if (response.ok) {
         setUserList(response.data);
-      }
-    });
-    Api.apiCalls.GET_ALL_CHALLENGES().then((response) => {
-      if (response.ok) {
-        setChallengesList(response.data);
       }
     });
   }, []);
@@ -214,11 +188,11 @@ const ChallengeRequest = () => {
           maxWidth: "90vw",
         }}
       >
-        {generateUserList(userList, challengesList)}
+        {generateTeamList(teamList, userList)}
       </List>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={userList === undefined}
+        open={teamList === undefined}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -226,4 +200,4 @@ const ChallengeRequest = () => {
   );
 };
 
-export default ChallengeRequest;
+export default TeamRequests;
