@@ -60,14 +60,14 @@ const BottomBar = () => {
             component={Link}
             to="/challenges"
             value={"/challenges" || "/"}
-            icon={<FontAwesomeIcon icon={faStar} size="xl" color="black" />}
+            icon={<FontAwesomeIcon icon={faStar} size="xl" color={theme.palette.text.primary} />}
           />
           <BottomNavigationAction
             component={Link}
             to="/scoreboard"
             value={"/scoreboard"}
             icon={
-              <FontAwesomeIcon icon={faRankingStar} size="xl" color="black" />
+              <FontAwesomeIcon icon={faRankingStar} size="xl" color={theme.palette.text.primary} />
             }
           />
           <BottomNavigationAction
@@ -75,7 +75,7 @@ const BottomBar = () => {
             to="/teams"
             value={"/teams"}
             icon={
-              <FontAwesomeIcon icon={faUserGroup} size="xl" color="black" />
+              <FontAwesomeIcon icon={faUserGroup} size="xl" color={theme.palette.text.primary} />
             }
           />
           <BottomNavigationAction
@@ -83,7 +83,7 @@ const BottomBar = () => {
             to="/account"
             value={"/account"}
             icon={
-              <FontAwesomeIcon icon={faUserCircle} size="xl" color="black" />
+              <FontAwesomeIcon icon={faUserCircle} size="xl" color={theme.palette.text.primary} />
             }
           />
         </BottomNavigation>

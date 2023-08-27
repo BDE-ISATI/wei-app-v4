@@ -3,7 +3,11 @@ import Stack from "@mui/material/Stack";
 import { ITeamData } from "../../Transforms";
 import Api from "../../Services/Api";
 import TeamCard from "../../Components/Card/TeamCard";
-import { Backdrop, CircularProgress, useTheme } from "@mui/material";
+import { Backdrop, Box, CircularProgress, Fab, useTheme } from "@mui/material";
+import { useSelector } from "react-redux";
+import { IState } from "../../Reducers";
+import { useNavigate } from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
 
 const generateTeamsList = (teams: ITeamData[] | undefined) => {
   if (teams === undefined) {
@@ -23,6 +27,9 @@ const generateTeamsList = (teams: ITeamData[] | undefined) => {
 const TeamsList = () => {
   const [teamsList, setTeamsList] = React.useState<ITeamData[] | undefined>();
   const theme = useTheme();
+  const isAdmin = useSelector((state: IState) => state.user.is_admin);
+  const navigate = useNavigate();
+
   React.useEffect(() => {
     Api.apiCalls.GET_ALL_TEAMS().then((response) => {
       if (response.ok) {
@@ -31,7 +38,21 @@ const TeamsList = () => {
     });
   }, []);
   return (
-    <div>
+    <Box flex={1} position={"relative"}>
+      {isAdmin && (
+        <Fab
+          color="warning"
+          aria-label="add"
+          sx={{
+            position: "fixed",
+            zIndex: (theme) => theme.zIndex.drawer,
+            right: 16,
+          }}
+          onClick={() => navigate("/create/team")}
+        >
+          <AddIcon />
+        </Fab>
+      )}
       <Stack
         direction="column"
         justifyContent="center"
@@ -46,7 +67,7 @@ const TeamsList = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    </div>
+    </Box>
   );
 };
 
