@@ -1,11 +1,10 @@
 import { Box, Button, useTheme, TextField, Alert } from "@mui/material";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Dayjs } from "dayjs";
 import { useNavigate } from "react-router-dom";
-import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
+import { DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
-import { ITeamData, ITeamUpdateData } from "../../Transforms";
+import { ITeamUpdateData } from "../../Transforms";
+import { validIDRegex } from "../../Config/AppConfig";
 
 function CreateTeam() {
   const [teamId, setteamId] = useState<string | null>(null);
@@ -21,11 +20,15 @@ function CreateTeam() {
   const navigate = useNavigate();
 
   const createteam = () => {
+    setErrorMessage("");
     if (!teamId || !teamName) {
       setErrorMessage("Faut remplir tous les champs en fait");
       return;
     }
-    setErrorMessage("");
+    if (!validIDRegex.test(teamId)) {
+      setErrorMessage("L'ID de l'équipe ne peux pas contenir de caractères spéciaux");
+      return;
+    }
     const teamData: ITeamUpdateData = {
       team: teamId,
       display_name: teamName,
@@ -51,6 +54,7 @@ function CreateTeam() {
           flexDirection: "column",
           alignItems: "center",
           width: "90vw",
+          padding: "10px",
           flex: 1,
         }}
       >
