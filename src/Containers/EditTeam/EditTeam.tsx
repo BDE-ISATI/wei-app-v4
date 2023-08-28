@@ -78,7 +78,7 @@ function EditTeam() {
             },
           }}
           label="Nom de l'équipe"
-          value={teamName}
+          value={teamName ? teamName : ""}
           onChange={(event) => setteamName(event.target.value)}
         />
 
