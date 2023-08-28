@@ -1,5 +1,4 @@
 import {
-  Avatar,
   List,
   ListItem,
   ListItemAvatar,
@@ -50,6 +49,9 @@ const generateUserList = (users: IUserData[] | undefined) => {
   return users
     .sort((a: IUserData, b: IUserData) => {
       return b.points - a.points;
+    })
+    .filter((data, index) => {
+      return data.show;
     })
     .map((data, index) => (
       <div key={index}>
