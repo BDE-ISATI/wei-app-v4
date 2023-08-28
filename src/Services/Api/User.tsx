@@ -11,8 +11,8 @@ import { UserActions } from "../../Reducers/User";
 
 const getSelf =
   (api: ApisauceInstance) =>
-  async (): Promise<ApiResponse<IUserData | IRequestError>> => {
-    const apiResponse = await api.get<IUserData, IRequestError>("/users/me");
+  async (force_refresh: boolean = false): Promise<ApiResponse<IUserData | IRequestError>> => {
+    const apiResponse = await api.get<IUserData, IRequestError>("/users/me" + (force_refresh ? "?force_refresh" : ""));
     if (apiResponse.ok) {
       state.dispatch(UserActions.setUserData(apiResponse.data));
     }
@@ -21,17 +21,17 @@ const getSelf =
 
 const getAll =
   (api: ApisauceInstance) =>
-  async (): Promise<ApiResponse<IUserData[], IRequestError>> => {
-    const apiResponse = await api.get<IUserData[], IRequestError>("/users");
+  async (force_refresh: boolean = false): Promise<ApiResponse<IUserData[], IRequestError>> => {
+    const apiResponse = await api.get<IUserData[], IRequestError>("/users" + (force_refresh ? "?force_refresh" : ""));
 
     return apiResponse;
   };
 
 const getUser =
   (api: ApisauceInstance) =>
-  async (username: string): Promise<ApiResponse<IUserData, IRequestError>> => {
+  async (username: string, force_refresh: boolean = false): Promise<ApiResponse<IUserData, IRequestError>> => {
     const apiResponse = await api.get<IUserData, IRequestError>(
-      `/users/${username}`
+      `/users/${username}` + (force_refresh ? "?force_refresh" : "")
     );
 
     return apiResponse;
