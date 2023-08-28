@@ -1,61 +1,38 @@
 import {
   Box,
-  Modal,
   IconButton,
   Button,
   useTheme,
   TextField,
   Badge,
   Slide,
-  CardContent,
-  Card,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Alert,
+  Alert
 } from "@mui/material";
-import React, { useState } from "react";
-import { UserAvatar } from "../../Components/UserAvatar";
-import { IUserUpdateData, reduceUserData } from "../../Transforms/User";
-import { useDispatch, useSelector } from "react-redux";
-import { IState } from "../../Reducers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faPencil } from "@fortawesome/free-solid-svg-icons";
-import { TransitionProps } from "@mui/material/transitions";
+import React, {useState} from "react";
+import {UserAvatar} from "../../Components/UserAvatar";
+import {IUserUpdateData, reduceUserData} from "../../Transforms/User";
+import {useDispatch, useSelector} from "react-redux";
+import {IState} from "../../Reducers";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPenToSquare, faPencil} from "@fortawesome/free-solid-svg-icons";
+import {TransitionProps} from "@mui/material/transitions";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Api from "../../Services/Api";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Cropper from "react-easy-crop";
-import type { Area } from "react-easy-crop";
+import type {Area} from "react-easy-crop";
 import getCroppedImg from "../../Utils/cropImage";
-import { UserActions } from "../../Reducers/User";
-
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-function getModalStyle() {
-  const top = 25;
-  const left = 25;
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
-  };
-}
 
 function EditProfile() {
   const userData = useSelector((state: IState) => state.user);
   const [username, setUsername] = useState(userData.display_name);
   const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [showUser, setShowUser] = useState<boolean>(userData.show);
   const [preview, setPreview] = useState<string | undefined>(undefined);
   const [newProfilePic, setNewProfilePic] = useState<File | null>(null);
   const [newProfilePicPreview, setNewProfilePicPreview] = useState<
@@ -67,12 +44,11 @@ function EditProfile() {
   );
   const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [open, setOpen] = useState<boolean>(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [crop, setCrop] = useState({x: 0, y: 0});
   const [zoom, setZoom] = useState(1);
 
   const theme = useTheme();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -95,9 +71,13 @@ function EditProfile() {
     if (username != userData.display_name) {
       editedUser.display_name = username;
     }
+    if (showUser != userData.show) {
+      editedUser.show = showUser;
+    }
     if (
       editedUser.display_name != undefined ||
-      editedUser.picture_id != undefined
+      editedUser.picture_id != undefined ||
+      editedUser.show != undefined
     ) {
       Api.apiCalls.EDIT_SELF(editedUser).then((response) => {
         if (response.ok) {
@@ -145,7 +125,7 @@ function EditProfile() {
       >
         <IconButton component="label">
           <Badge
-            badgeContent={<FontAwesomeIcon icon={faPencil} />}
+            badgeContent={<FontAwesomeIcon icon={faPencil}/>}
             color="primary"
             overlap="circular"
             sx={{
@@ -178,7 +158,7 @@ function EditProfile() {
           />
         </IconButton>
         <TextField
-          sx={{ maxWidth: "300px", width: "100%", m: 1, marginTop: 4 }}
+          sx={{maxWidth: "300px", width: "100%", m: 1, marginTop: 4}}
           InputProps={{
             sx: {
               borderRadius: 0,
@@ -189,6 +169,18 @@ function EditProfile() {
           value={username}
           onChange={(event) => setUsername(event.target.value)}
         />
+        <Button
+          variant={showUser ? "contained" : "outlined"}
+          sx={{
+            marginTop: 5,
+            maxWidth: "300px",
+            width: "100%",
+            borderRadius: 0
+          }}
+          onClick={() => setShowUser(!showUser)}
+        >
+          Afficher sur le classement
+        </Button>
         <Button
           variant="contained"
           sx={{
@@ -213,6 +205,7 @@ function EditProfile() {
             {errorMessage}
           </Alert>
         )}
+
       </Box>
       <Dialog
         onClose={handleClose}
@@ -261,7 +254,7 @@ function EditProfile() {
             }}
             onClick={handleCreateCroppedImage}
           >
-            <CheckIcon sx={{ color: "black" }} />
+            <CheckIcon sx={{color: "black"}}/>
           </IconButton>
           <IconButton
             size="small"
@@ -273,7 +266,7 @@ function EditProfile() {
             }}
             onClick={handleClose}
           >
-            <CloseIcon sx={{ color: "black" }} />
+            <CloseIcon sx={{color: "black"}}/>
           </IconButton>
         </DialogActions>
       </Dialog>
