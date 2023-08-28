@@ -24,7 +24,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import EditIcon from "@mui/icons-material/Edit";
 const Account = () => {
   const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
-  const userDataSet = useSelector((state: IState) => isUserDataSet(state.user));
   const userData = useSelector((state: IState) => state.user);
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -32,13 +31,13 @@ const Account = () => {
   const userTokens = useSelector((state: IState) => state.auth);
 
   React.useEffect(() => {
-    if (!userLoggedIn) {
-    } else {
-      if (!userDataSet) {
+    console.log(userData);
+    if (userLoggedIn) {
+      if (userData.mail === "") {
         Api.apiCalls.GET_SELF();
       }
     }
-  }, []);
+  }, [userLoggedIn]);
 
   const handleLogout = () => {
     dispatch(AuthActions.logout());
