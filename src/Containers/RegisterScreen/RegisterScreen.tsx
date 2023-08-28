@@ -19,9 +19,9 @@ import { loggedIn } from "../../Reducers/Auth";
 import { PasswordInput } from "../../Components/PasswordInput";
 import { TransitionProps } from "@mui/material/transitions";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-
 import { useNavigate } from "react-router-dom";
 import { IState } from "../../Reducers";
+import { validIDRegex } from "../../Config/AppConfig";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -59,6 +59,13 @@ function RegisterScreen() {
   };
 
   const handleLogin = () => {
+    setErrorMessage("");
+    if (!validIDRegex.test(username))
+    {
+      setErrorMessage("Le nom d'utilisateur ne peut pas contenir de caractères spéciaux");
+      return;
+    }
+
     Api.apiCalls
       .USER_REGISTER({ username, password, email })
       .then((response) => {

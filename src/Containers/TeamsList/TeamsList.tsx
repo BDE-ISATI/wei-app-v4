@@ -47,6 +47,9 @@ const TeamsList = () => {
             position: "fixed",
             zIndex: (theme) => theme.zIndex.drawer,
             right: 16,
+            marginLeft: "auto",
+            borderRadius: 0,
+            border: "solid black",
           }}
           onClick={() => navigate("/create/team")}
         >

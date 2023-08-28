@@ -13,7 +13,10 @@ const INITIAL_STATE = Immutable<IUserData>({
   challenges_to_do: "",
   display_name: "",
   challenges_done: [],
+  challenges_times: {},
+  picture_id: "",
   points: 0,
+  is_admin: false,
 });
 
 const { Types, Creators } = createActions({
@@ -34,6 +37,7 @@ const login = (
 };
 
 const logout = (state: IUserStateImmutable) => {
+  console.log("log out");
   if (!Immutable.isImmutable(state)) {
     state = Immutable.from(state);
   }

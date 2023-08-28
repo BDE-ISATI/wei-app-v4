@@ -5,8 +5,8 @@ import { Dayjs } from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
-import { IChallengeData } from "../../Transforms";
 import { ICreateChallengeData } from "../../Transforms/Challenge";
+import { validIDRegex } from "../../Config/AppConfig";
 
 function CreateChallenge() {
   const [challengeId, setChallengeId] = useState<string | null>(null);
@@ -49,6 +49,7 @@ function CreateChallenge() {
   const dispatch = useDispatch();
 
   const createChallenge = () => {
+    setErrorMessage("");
     if (
       !challengeId ||
       !challengeName ||
@@ -56,6 +57,10 @@ function CreateChallenge() {
       !challengePoints
     ) {
       setErrorMessage("Faut remplir tous les champs en fait");
+      return;
+    }
+    if (!validIDRegex.test(challengeId)) {
+      setErrorMessage("L'ID du challenge ne peux pas contenir de caractères spéciaux");
       return;
     }
     if (!challengeStartDate) {
@@ -69,7 +74,6 @@ function CreateChallenge() {
     if (challengeStartDate!.isAfter(challengeEndDate!)) {
       setErrorMessage("La date de début est après la date de fin?????????");
     }
-    setErrorMessage("");
     const challengeData: ICreateChallengeData = {
       challenge: challengeId,
       points: challengePoints,
@@ -98,6 +102,7 @@ function CreateChallenge() {
           flexDirection: "column",
           alignItems: "center",
           width: "90vw",
+          padding: "10px",
           flex: 1,
         }}
       >

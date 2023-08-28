@@ -45,7 +45,9 @@ function EditTeam() {
     };
     Api.apiCalls.UPDATE_TEAM(teamData).then((response) => {
       if (response.ok) {
-        navigate("/teams/" + id!);
+        Api.apiCalls.GET_TEAM(id!, true).then((response) => {
+          navigate("/teams/" + id!);
+        });
       } else {
         setErrorMessage(response.data?.message);
       }
@@ -62,6 +64,7 @@ function EditTeam() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          padding: "10px",
           width: "90vw",
           flex: 1,
         }}
@@ -76,7 +79,7 @@ function EditTeam() {
             },
           }}
           label="Nom de l'équipe"
-          value={teamName}
+          value={teamName ? teamName : ""}
           onChange={(event) => setteamName(event.target.value)}
         />
 

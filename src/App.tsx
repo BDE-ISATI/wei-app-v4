@@ -145,7 +145,7 @@ export default function App() {
         dispatch(AppActions.setColorMode(mode === "light" ? "dark" : "light"));
       },
     }),
-    []
+    [mode]
   );
 
   const theme = React.useMemo(

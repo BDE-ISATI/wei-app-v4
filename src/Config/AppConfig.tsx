@@ -10,4 +10,6 @@ const apiUrls = {
   picture: pictureStorageUrl,
 };
 
+export const validIDRegex = /^[A-Za-z_\-0-9.]+$/g;
+
 export default { apiUrls, cognitoUserPoolClientId };
