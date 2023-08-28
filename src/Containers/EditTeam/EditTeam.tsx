@@ -45,7 +45,9 @@ function EditTeam() {
     };
     Api.apiCalls.UPDATE_TEAM(teamData).then((response) => {
       if (response.ok) {
-        navigate("/teams/" + id!);
+        Api.apiCalls.GET_TEAM(id!, true).then((response) => {
+          navigate("/teams/" + id!);
+        });
       } else {
         setErrorMessage(response.data?.message);
       }
