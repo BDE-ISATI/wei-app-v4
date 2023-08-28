@@ -35,7 +35,7 @@ function LoginScreen() {
     if (userLoggedIn) {
       navigate("/account");
     }
-  }, []);
+  }, [userLoggedIn]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -45,18 +45,13 @@ function LoginScreen() {
     event.preventDefault();
   };
 
-  const handleLogin = () => {
-    console.log("Start Login!");
-    Api.apiCalls.USER_LOGIN({ username, password }).then((response) => {
-      if (response.ok) {
-        navigate("/account");
-        navigate(0);
-        Api.apiCalls.GET_SELF();
-      } else {
-        setErrorMessage(response.data?.message);
-      }
-    });
+  const handleLogin = async () => {
+    const response = await Api.apiCalls.USER_LOGIN({ username, password });
+    if (!response.ok) {
+      setErrorMessage(response.data?.message);
+    }
   };
+
   return (
     <>
       <TextField

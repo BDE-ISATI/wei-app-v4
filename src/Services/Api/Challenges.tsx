@@ -9,17 +9,17 @@ import { ICreateChallengeData } from "../../Transforms/Challenge";
 
 const getAll =
   (api: ApisauceInstance) =>
-  async (): Promise<ApiResponse<IChallengeData[], IResult>> => {
-    const apiResponse = await api.get<IChallengeData[], IResult>("/challenges");
+  async (force_refresh: boolean = false): Promise<ApiResponse<IChallengeData[], IResult>> => {
+    const apiResponse = await api.get<IChallengeData[], IResult>("/challenges" + (force_refresh ? "?force_refresh" : ""));
 
     return apiResponse;
   };
 
 const getChallenge =
   (api: ApisauceInstance) =>
-  async (challenge: string): Promise<ApiResponse<IChallengeData, IResult>> => {
+  async (challenge: string, force_refresh: boolean = false): Promise<ApiResponse<IChallengeData, IResult>> => {
     const apiResponse = await api.get<IChallengeData, IResult>(
-      `/challenges/${challenge}`
+      `/challenges/${challenge}` + (force_refresh ? "?force_refresh" : "")
     );
 
     return apiResponse;

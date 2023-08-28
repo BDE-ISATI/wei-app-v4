@@ -9,6 +9,7 @@ export interface IUserData {
   challenges_to_do: string;
   display_name: string;
   challenges_done: string[];
+  challenges_times: { [key: string]: number };
   points: number;
   is_admin?: boolean;
 }

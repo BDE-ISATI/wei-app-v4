@@ -166,7 +166,7 @@ const TeamRequests = () => {
   const [userList, setUserList] = useState<IUserData[] | undefined>();
   const theme = useTheme();
   React.useEffect(() => {
-    Api.apiCalls.GET_ALL_TEAMS().then((response) => {
+    Api.apiCalls.GET_ALL_TEAMS(true).then((response) => {
       if (response.ok) {
         setTeamList(response.data);
       }

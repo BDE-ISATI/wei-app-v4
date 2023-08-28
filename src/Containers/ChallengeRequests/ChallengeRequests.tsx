@@ -192,7 +192,7 @@ const ChallengeRequest = () => {
   >();
   const theme = useTheme();
   React.useEffect(() => {
-    Api.apiCalls.GET_ALL_USERS().then((response) => {
+    Api.apiCalls.GET_ALL_USERS(true).then((response) => {
       if (response.ok) {
         setUserList(response.data);
       }
