@@ -7,19 +7,18 @@ import {
   Backdrop,
   CircularProgress,
 } from "@mui/material";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import dayjs, { Dayjs, unix } from "dayjs";
-import { useNavigate, useParams } from "react-router-dom";
-import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
+import React, {useState} from "react";
+import {useDispatch} from "react-redux";
+import dayjs, {Dayjs, unix} from "dayjs";
+import {useNavigate, useParams} from "react-router-dom";
+import {DateTimePicker, DateTimeValidationError} from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
 import {
   IChallengeUpdateData,
-  ICreateChallengeData,
 } from "../../Transforms/Challenge";
 
 function EditChallenge() {
-  const { id } = useParams();
+  const {id} = useParams();
   const [challengeName, setChallengeName] = useState<string | null>(null);
   const [challengeDescription, setChallengeDescription] = useState<
     string | null
@@ -71,7 +70,6 @@ function EditChallenge() {
 
   const theme = useTheme();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const updateChallenge = () => {
     if (!challengeName || !challengeDescription || !challengePoints) {
@@ -119,12 +117,13 @@ function EditChallenge() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          padding: "10px",
           width: "90vw",
           flex: 1,
         }}
       >
         <TextField
-          sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
+          sx={{maxWidth: "600px", width: "100%", m: 1, marginTop: 2}}
           error={challengeName == null && errorMessage != undefined}
           InputProps={{
             sx: {
@@ -137,7 +136,7 @@ function EditChallenge() {
           onChange={(event) => setChallengeName(event.target.value)}
         />
         <TextField
-          sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
+          sx={{maxWidth: "600px", width: "100%", m: 1, marginTop: 2}}
           error={challengeDescription == null && errorMessage != undefined}
           InputProps={{
             sx: {
@@ -152,7 +151,7 @@ function EditChallenge() {
           multiline
         />
         <TextField
-          sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
+          sx={{maxWidth: "600px", width: "100%", m: 1, marginTop: 2}}
           error={challengePoints == null && errorMessage != undefined}
           InputProps={{
             sx: {
@@ -177,14 +176,14 @@ function EditChallenge() {
           <DateTimePicker
             label="Début"
             ampm={false}
-            sx={{ flex: 1, mr: 1 }}
+            sx={{flex: 1, mr: 1}}
             value={challengeStartDate}
             onChange={(newValue) => setChallengeStartDate(newValue)}
           />
           <DateTimePicker
             label="Fin"
             ampm={false}
-            sx={{ flex: 1, ml: 1 }}
+            sx={{flex: 1, ml: 1}}
             value={challengeEndDate}
             onChange={(newValue) => setChallengeEndDate(newValue)}
             minDateTime={challengeStartDate}
@@ -229,7 +228,7 @@ function EditChallenge() {
         }}
         open={!loaded}
       >
-        <CircularProgress color="inherit" />
+        <CircularProgress color="inherit"/>
       </Backdrop>
     </>
   );
