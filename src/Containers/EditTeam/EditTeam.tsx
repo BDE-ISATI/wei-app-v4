@@ -64,6 +64,7 @@ function EditTeam() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          padding: "10px",
           width: "90vw",
           flex: 1,
         }}
