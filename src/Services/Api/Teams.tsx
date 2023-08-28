@@ -4,16 +4,16 @@ import { ITeamUpdateData, ITeamData, IResult } from "../../Transforms";
 
 const getAll =
   (api: ApisauceInstance) =>
-  async (): Promise<ApiResponse<ITeamData[], IResult>> => {
-    const apiResponse = await api.get<ITeamData[], IResult>("/teams");
+  async (force_refresh: boolean = false): Promise<ApiResponse<ITeamData[], IResult>> => {
+    const apiResponse = await api.get<ITeamData[], IResult>("/teams" + (force_refresh ? "?force_refresh" : ""));
 
     return apiResponse;
   };
 
 const getTeam =
   (api: ApisauceInstance) =>
-  async (team: string): Promise<ApiResponse<ITeamData, IResult>> => {
-    const apiResponse = await api.get<ITeamData, IResult>(`/teams/${team}`);
+  async (team: string, force_refresh: boolean = false): Promise<ApiResponse<ITeamData, IResult>> => {
+    const apiResponse = await api.get<ITeamData, IResult>(`/teams/${team}` + (force_refresh ? "?force_refresh" : ""));
 
     return apiResponse;
   };
