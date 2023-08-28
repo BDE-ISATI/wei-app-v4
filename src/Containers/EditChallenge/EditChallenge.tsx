@@ -100,7 +100,9 @@ function EditChallenge() {
     };
     Api.apiCalls.UPDATE_CHALLENGE(challengeData).then((response) => {
       if (response.ok) {
-        navigate("/challenges/" + id);
+        Api.apiCalls.GET_CHALLENGE(id!, true).then((response) => {
+          navigate("/challenges/" + id);
+        });
       } else {
         setErrorMessage(response.data?.message);
       }
