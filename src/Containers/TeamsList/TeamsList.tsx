@@ -46,7 +46,8 @@ const TeamsList = () => {
           sx={{
             position: "fixed",
             zIndex: (theme) => theme.zIndex.drawer,
-            right: 16,
+            left: 16,
+            bottom: 75,
             marginLeft: "auto",
             borderRadius: 0,
             border: "solid black",
