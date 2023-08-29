@@ -27,6 +27,7 @@ import {useNavigate} from "react-router-dom";
 import Cropper from "react-easy-crop";
 import type {Area} from "react-easy-crop";
 import getCroppedImg from "../../Utils/cropImage";
+import {BackButton} from "../../Components/BackButton";
 
 function EditProfile() {
   const userData = useSelector((state: IState) => state.user);
@@ -111,6 +112,7 @@ function EditProfile() {
 
   return (
     <>
+      <BackButton />
       <Box
         sx={{
           bgcolor: "background.paper",

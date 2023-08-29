@@ -23,6 +23,7 @@ import { UserAvatar } from "../../Components/UserAvatar";
 import { useNavigate } from "react-router-dom";
 
 import { unix } from "dayjs";
+import {BackButton} from "../../Components/BackButton";
 
 const UserListItem = (props: { user: IUserSmallData }) => {
   const theme = useTheme();
@@ -91,6 +92,7 @@ const Team = () => {
   };
   return (
     <>
+      <BackButton />
       {teamData && (
         <Box
           sx={{
