@@ -23,6 +23,7 @@ import { reduceUserData } from "../../Transforms/User";
 import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
+import {BackButton} from "../../Components/BackButton";
 
 interface IUserListItem {
   user: IUserData;
@@ -205,6 +206,7 @@ const ChallengeRequest = () => {
   }, []);
   return (
     <div>
+      <BackButton />
       <List
         sx={{
           bgcolor: "background.paper",

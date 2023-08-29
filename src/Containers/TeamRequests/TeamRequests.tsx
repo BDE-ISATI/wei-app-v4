@@ -23,6 +23,7 @@ import { reduceUserData } from "../../Transforms/User";
 import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
+import {BackButton} from "../../Components/BackButton";
 
 interface ITeamListItem {
   team: ITeamData;
@@ -46,6 +47,7 @@ const UserListItem = (props: {
 
   return (
     <>
+      <BackButton />
       <Divider component="li" />
       <ListItem
         secondaryAction={
@@ -179,6 +181,7 @@ const TeamRequests = () => {
   }, []);
   return (
     <div>
+      <BackButton />
       <List
         sx={{
           bgcolor: "background.paper",
