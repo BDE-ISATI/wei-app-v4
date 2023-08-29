@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
 import { ITeamData, ITeamUpdateData } from "../../Transforms";
+import {BackButton} from "../../Components/BackButton";
 
 function EditTeam() {
   const [teamName, setteamName] = useState<string | null>(null);
@@ -56,6 +57,7 @@ function EditTeam() {
 
   return (
     <>
+      <BackButton />
       <Box
         sx={{
           bgcolor: "background.paper",

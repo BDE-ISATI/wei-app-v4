@@ -7,6 +7,7 @@ import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
 import { ICreateChallengeData } from "../../Transforms/Challenge";
 import { validIDRegex } from "../../Config/AppConfig";
+import { BackButton } from "../../Components/BackButton";
 
 function CreateChallenge() {
   const [challengeId, setChallengeId] = useState<string | null>(null);
@@ -93,6 +94,7 @@ function CreateChallenge() {
 
   return (
     <>
+      <BackButton />
       <Box
         sx={{
           bgcolor: "background.paper",

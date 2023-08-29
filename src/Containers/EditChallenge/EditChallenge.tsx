@@ -16,6 +16,7 @@ import Api from "../../Services/Api";
 import {
   IChallengeUpdateData,
 } from "../../Transforms/Challenge";
+import {BackButton} from "../../Components/BackButton";
 
 function EditChallenge() {
   const {id} = useParams();
@@ -109,6 +110,7 @@ function EditChallenge() {
 
   return (
     <>
+      <BackButton />
       <Box
         sx={{
           bgcolor: "background.paper",
