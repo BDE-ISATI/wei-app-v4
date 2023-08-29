@@ -2,14 +2,11 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import { createTheme, useTheme } from "@mui/material/styles";
 
-import Fab from "@mui/material/Fab";
 import Box from "@mui/material/Box";
 
 import { BottomBar } from "./Components/BottomBar";
 import { ChallengeList, ScoreBoard, Account } from "./Containers";
 import { ThemeProvider } from "@emotion/react";
-import { persistStore } from "redux-persist";
-import { PersistGate } from "redux-persist/integration/react";
 import { LoginScreen } from "./Containers/LoginScreen";
 
 import {
@@ -27,7 +24,6 @@ import { AppActions } from "./Reducers/App";
 import { EditProfile } from "./Containers/EditProfile";
 import { loggedIn } from "./Reducers/Auth";
 import Api from "./Services/Api";
-import { UserActions } from "./Reducers/User";
 import { CreateChallenge } from "./Containers/CreateChallenge";
 import { EditChallenge } from "./Containers/EditChallenge";
 import { ChallengeRequest } from "./Containers/ChallengeRequests";
@@ -35,6 +31,7 @@ import { Team } from "./Containers/Team";
 import { CreateTeam } from "./Containers/CreateTeam";
 import { EditTeam } from "./Containers/EditTeam";
 import { TeamRequests } from "./Containers/TeamRequests";
+import { NewsList } from "./Containers/NewsList";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -78,6 +75,10 @@ export default function App() {
         {
           path: "/challenges",
           element: <ChallengeList />,
+        },
+        {
+          path: "/news",
+          element: <NewsList/>,
         },
         {
           path: "/create/challenge",
