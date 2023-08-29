@@ -10,6 +10,7 @@ import {
   faUserCircle,
   faUserGroup,
   faUserShield,
+  faNewspaper
 } from "@fortawesome/free-solid-svg-icons";
 import Paper from "@mui/material/Paper";
 import { useTheme } from "@mui/material/styles";
@@ -56,6 +57,12 @@ const BottomBar = () => {
             background: theme.palette.action.disabledOpacity,
           }}
         >
+          <BottomNavigationAction
+            component={Link}
+            to="/news"
+            value={"/news" || "/"}
+            icon={<FontAwesomeIcon icon={faNewspaper} size="xl" color={theme.palette.text.primary} />}
+          />
           <BottomNavigationAction
             component={Link}
             to="/challenges"
