@@ -143,7 +143,7 @@ const Account = () => {
           variant="contained"
           color="primary"
           sx={{
-            marginTop: "auto",
+            marginTop: 2,
             maxWidth: "300px",
             width: "100%",
             borderRadius: 0,
