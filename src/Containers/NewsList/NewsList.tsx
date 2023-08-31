@@ -121,7 +121,7 @@ const generateNewsList = (aggregatedNews: IAggregatedNewsInfo[] | undefined) => 
 }
 
 const NewsList = () => {
-  const [list, setList] = React.useState<IAggregatedNewsInfo[] | undefined>([]);
+  const [list, setList] = React.useState<IAggregatedNewsInfo[] | undefined>(undefined);
 
   React.useEffect(() => {
     Promise.all([Api.apiCalls.GET_ALL_USERS(), Api.apiCalls.GET_ALL_CHALLENGES()]).then((res) => {
