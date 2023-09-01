@@ -6,6 +6,7 @@ import {
   Alert,
   Backdrop,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -16,6 +17,7 @@ import Api from "../../Services/Api";
 import { IChallengeUpdateData } from "../../Transforms/Challenge";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
+import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
 
 function EditChallenge() {
   const { id } = useParams();
@@ -28,6 +30,10 @@ function EditChallenge() {
     null
   );
   const [challengeEndDate, setChallengeEndDate] = useState<Dayjs | null>(null);
+  const [challengePictureId, setChallengePictureId] = useState<
+    string | undefined
+  >(undefined);
+
   const [loaded, setLoaded] = useState<boolean>(false);
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
@@ -38,6 +44,34 @@ function EditChallenge() {
   const [dateError, setDateError] =
     React.useState<DateTimeValidationError | null>(null);
 
+  const [open, setOpen] = useState<boolean>(false);
+  const [preview, setPreview] = useState<string | undefined>(undefined);
+  const [challengePic, setChallengePic] = useState<File | null>(null);
+  const [newChallengePic, setNewChallengePic] = useState<File | null>(null);
+  const [newChallengePicPreview, setNewChallengePicPreview] = useState<
+    string | undefined
+  >(undefined);
+
+  const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file != null) {
+      setPreview(URL.createObjectURL(file));
+      setChallengePic(file);
+      setOpen(true);
+    }
+    event.target.value = "";
+  };
+
+  const handleImageCreate = (croppedImage: File | undefined) => {
+    setNewChallengePic(croppedImage!);
+    setNewChallengePicPreview(URL.createObjectURL(croppedImage!));
+    setOpen(false);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   React.useEffect(() => {
     Api.apiCalls.GET_CHALLENGE(id!).then((response) => {
       if (response.ok) {
@@ -47,6 +81,7 @@ function EditChallenge() {
         setChallengePoints(challengeData.points);
         setChallengeStartDate(unix(challengeData.start));
         setChallengeEndDate(unix(challengeData.end));
+        setChallengePictureId(challengeData.picture_id);
       }
       setLoaded(true);
     });
@@ -72,7 +107,7 @@ function EditChallenge() {
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const updateChallenge = () => {
+  const updateChallenge = async () => {
     if (!challengeName || !challengeDescription || !challengePoints) {
       setErrorMessage("Faut remplir tous les champs en fait");
       return;
@@ -88,6 +123,7 @@ function EditChallenge() {
     if (challengeStartDate!.isAfter(challengeEndDate!)) {
       setErrorMessage("La date de début est après la date de fin?????????");
     }
+
     setErrorMessage("");
     const challengeData: IChallengeUpdateData = {
       challenge: id!,
@@ -96,8 +132,16 @@ function EditChallenge() {
       description: challengeDescription,
       name: challengeName,
       start: challengeStartDate.unix(),
+      max_count: 1,
     };
+
     setLoadingButton(true);
+    if (newChallengePic) {
+      let response = await Api.apiCalls.POST_PICTURE(newChallengePic, "banner");
+      if (response.ok) {
+        challengeData.picture_id = response.data?.id;
+      }
+    }
     Api.apiCalls.UPDATE_CHALLENGE(challengeData).then((response) => {
       setLoadingButton(false);
       if (response.ok) {
@@ -197,6 +241,34 @@ function EditChallenge() {
             }}
           />
         </Box>
+        <IconButton
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            aspectRatio: "3/1",
+            borderRadius: 0,
+            overflow: "hidden",
+            border: "solid 1px",
+            borderColor: theme.palette.text.disabled,
+          }}
+          component="label"
+        >
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleFileInput}
+          />
+          <img
+            src={
+              newChallengePicPreview ||
+              (challengePictureId &&
+                Api.apiCalls.GET_PICTURE_URL(challengePictureId))
+            }
+            width="100%"
+            height="100%"
+          />
+        </IconButton>
 
         <LoadingButton
           onClick={() => updateChallenge()}
@@ -217,6 +289,15 @@ function EditChallenge() {
           </Alert>
         )}
       </Box>
+      <ImageCropPrompt
+        onClose={handleClose}
+        open={open}
+        image={preview}
+        onImageCreate={handleImageCreate}
+        title={""}
+        aspectRatio={3 / 1}
+        cropShape="rect"
+      />
       <Backdrop
         sx={{
           color: "#fff",

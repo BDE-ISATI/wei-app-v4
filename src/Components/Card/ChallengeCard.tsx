@@ -15,6 +15,8 @@ import { IChallengeData } from "../../Transforms";
 import { useNavigate } from "react-router-dom";
 import { UserAvatarGroup } from "../UserAvatarGroup";
 import { unix } from "dayjs";
+import Api from "../../Services/Api";
+import { Divider } from "@mui/material";
 
 interface Props {
   challengeData: IChallengeData;
@@ -29,6 +31,10 @@ function ChallengeCard(props: Props) {
   const handleOpenButtonClick = () => {
     navigate(props.challengeData.challenge);
   };
+  var background: string | undefined = undefined;
+  if (props.challengeData.picture_id && props.challengeData.picture_id != "") {
+    background = Api.apiCalls.GET_PICTURE_URL(props.challengeData.picture_id);
+  }
   return (
     <Card
       variant="outlined"
@@ -40,24 +46,41 @@ function ChallengeCard(props: Props) {
       }}
       square
     >
-      <CardContent
-        style={{
-          backgroundColor: `${theme.palette.secondary.main}`,
-          borderBottom: "solid black",
-        }}
-      >
+      {background ? (
+        <img
+          src={background}
+          style={{
+            maxWidth: "100%",
+            width: "100%",
+            borderBottom: "solid black",
+          }}
+        />
+      ) : (
+        <CardContent
+          style={{
+            backgroundColor: `${theme.palette.secondary.main}`,
+            borderBottom: "solid black",
+          }}
+        />
+      )}
+
+      <CardContent sx={{ display: "flex", flexDirection: "column" }}>
         <Typography
-          color={theme.palette.getContrastText(theme.palette.primary.main)}
-          sx={{ fontWeight: 800, textAlign: "center" }}
+          color="text.primary"
+          sx={{
+            alignSelf: "center",
+            textAlign: "center",
+            fontWeight: 800,
+            marginBottom: 2,
+          }}
         >
           {props.challengeData.name}
           <br />
           {props.challengeData.points} point
           {props.challengeData.points > 1 ? "s" : ""}
         </Typography>
-      </CardContent>
-      <CardContent>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        <Divider flexItem />
+        <Typography sx={{ mb: 1.5, mt: 1.5 }}>
           {start.toLocaleDateString("fr")} - {end.toLocaleDateString("fr")}
         </Typography>
         <Typography variant="body2">

@@ -24,8 +24,7 @@ import {
   faPencil,
 } from "@fortawesome/free-solid-svg-icons";
 import { TransitionProps } from "@mui/material/transitions";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
+
 import Api from "../../Services/Api";
 import { useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
@@ -33,6 +32,7 @@ import type { Area } from "react-easy-crop";
 import getCroppedImg from "../../Utils/cropImage";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
+import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
 
 function EditProfile() {
   const userData = useSelector((state: IState) => state.user);
@@ -48,10 +48,7 @@ function EditProfile() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
-  const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [open, setOpen] = useState<boolean>(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
   const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const theme = useTheme();
@@ -69,6 +66,7 @@ function EditProfile() {
 
   const handleEditSelf = async () => {
     var editedUser: IUserUpdateData = {};
+    setLoadingButton(true);
     if (newProfilePic) {
       let response = await Api.apiCalls.POST_PICTURE(newProfilePic);
       if (response.ok) {
@@ -86,7 +84,6 @@ function EditProfile() {
       editedUser.picture_id != undefined ||
       editedUser.show != undefined
     ) {
-      setLoadingButton(true);
       Api.apiCalls.EDIT_SELF(editedUser).then((response) => {
         setLoadingButton(false);
         if (response.ok) {
@@ -97,18 +94,12 @@ function EditProfile() {
           setErrorMessage(response.data?.message);
         }
       });
+    } else {
+      setLoadingButton(false);
     }
   };
 
-  const onCropComplete = (
-    croppedAreaPercentage: Area,
-    croppedAreaPixels: Area
-  ) => {
-    setCroppedArea(croppedAreaPixels);
-  };
-
-  const handleCreateCroppedImage = async () => {
-    const croppedImage = await getCroppedImg(preview!, croppedArea!);
+  const handleImageCreate = (croppedImage: File | undefined) => {
     setNewProfilePic(croppedImage!);
     setNewProfilePicPreview(URL.createObjectURL(croppedImage!));
     setOpen(false);
@@ -207,68 +198,13 @@ function EditProfile() {
           </Alert>
         )}
       </Box>
-      <Dialog
+      <ImageCropPrompt
         onClose={handleClose}
         open={open}
-        sx={{
-          "& .MuiDialog-paper": {
-            boxShadow: `10px 10px 0px black`,
-            border: "solid black",
-            borderRadius: 0,
-          },
-        }}
-      >
-        <DialogTitle>C'est bien ça ta tête?</DialogTitle>
-        <DialogContent>
-          <Box
-            style={{
-              width: "50vh",
-              maxWidth: "100%",
-              aspectRatio: "1",
-              position: "relative",
-            }}
-          >
-            <Cropper
-              image={preview}
-              crop={crop}
-              zoom={zoom}
-              aspect={1}
-              maxZoom={5}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
-              objectFit="cover"
-              cropShape="round"
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <IconButton
-            size="small"
-            sx={{
-              marginLeft: "auto",
-              borderRadius: 0,
-              backgroundColor: theme.palette.success.light,
-              border: "solid black",
-            }}
-            onClick={handleCreateCroppedImage}
-          >
-            <CheckIcon sx={{ color: "black" }} />
-          </IconButton>
-          <IconButton
-            size="small"
-            sx={{
-              marginLeft: "auto",
-              borderRadius: 0,
-              backgroundColor: theme.palette.error.light,
-              border: "solid black",
-            }}
-            onClick={handleClose}
-          >
-            <CloseIcon sx={{ color: "black" }} />
-          </IconButton>
-        </DialogActions>
-      </Dialog>
+        image={preview}
+        onImageCreate={handleImageCreate}
+        title={"C'est bien ta tête ça?"}
+      />
     </>
   );
 }
