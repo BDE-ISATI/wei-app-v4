@@ -7,6 +7,7 @@ interface IAuthState {
   expiresAt: string;
   idToken: string;
   refreshToken: string;
+  tokenType: string;
 }
 
 export type IAuthStateImmutable = Immutable.ImmutableObject<IAuthState>;
@@ -16,6 +17,7 @@ const INITIAL_STATE = Immutable<IAuthState>({
   expiresAt: "",
   idToken: "",
   refreshToken: "",
+  tokenType: "",
 });
 
 const { Types, Creators } = createActions({
