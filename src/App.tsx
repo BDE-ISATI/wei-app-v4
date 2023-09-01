@@ -32,6 +32,7 @@ import { CreateTeam } from "./Containers/CreateTeam";
 import { EditTeam } from "./Containers/EditTeam";
 import { TeamRequests } from "./Containers/TeamRequests";
 import { NewsList } from "./Containers/NewsList";
+import { MyChallenges } from "./Containers/MyChallenges";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -78,7 +79,7 @@ export default function App() {
         },
         {
           path: "/news",
-          element: <NewsList/>,
+          element: <NewsList />,
         },
         {
           path: "/create/challenge",
@@ -119,6 +120,10 @@ export default function App() {
         {
           path: "/account/edit",
           element: <EditProfile />,
+        },
+        {
+          path: "/account/challenges",
+          element: <MyChallenges />,
         },
       ],
     },
