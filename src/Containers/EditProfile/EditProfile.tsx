@@ -223,9 +223,8 @@ function EditProfile() {
           <Box
             style={{
               width: "50vh",
-              height: "50vh",
-              maxWidth: "75vw",
-              maxHeight: "75vw",
+              maxWidth: "100%",
+              aspectRatio: "1",
               position: "relative",
             }}
           >
