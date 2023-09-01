@@ -19,16 +19,6 @@ export const BASE_API = create({
   baseURL: AppConfig.apiUrls.dev,
 });
 
-BASE_API.addAsyncRequestTransform(async (request) => {
-  if (loggedIn(store.getState().auth)) {
-    const authData = store.getState().auth;
-    BASE_API.setHeader(
-      "Authorization",
-      authData.tokenType + " " + authData.idToken
-    );
-  }
-});
-
 BASE_API.addAsyncResponseTransform(async (response) => {
   if (response.data?.message === "The incoming token has expired") {
     await authApiCalls(AUTH_API).REFRESH_TOKEN();

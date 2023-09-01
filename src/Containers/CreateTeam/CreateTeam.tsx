@@ -5,7 +5,8 @@ import { DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
 import { ITeamUpdateData } from "../../Transforms";
 import { validIDRegex } from "../../Config/AppConfig";
-import {BackButton} from "../../Components/BackButton";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
 
 function CreateTeam() {
   const [teamId, setteamId] = useState<string | null>(null);
@@ -13,6 +14,7 @@ function CreateTeam() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const [dateError, setDateError] =
     React.useState<DateTimeValidationError | null>(null);
@@ -27,7 +29,9 @@ function CreateTeam() {
       return;
     }
     if (!validIDRegex.test(teamId)) {
-      setErrorMessage("L'ID de l'équipe ne peux pas contenir de caractères spéciaux");
+      setErrorMessage(
+        "L'ID de l'équipe ne peux pas contenir de caractères spéciaux"
+      );
       return;
     }
     const teamData: ITeamUpdateData = {
@@ -35,7 +39,9 @@ function CreateTeam() {
       display_name: teamName,
       picture_id: "",
     };
+    setLoadingButton(true);
     Api.apiCalls.CREATE_TEAM(teamData).then((response) => {
+      setLoadingButton(false);
       if (response.ok) {
         navigate("/teams/" + teamId);
       } else {
@@ -87,18 +93,9 @@ function CreateTeam() {
           onChange={(event) => setteamName(event.target.value)}
         />
 
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: 5,
-            maxWidth: "600px",
-            width: "100%",
-            borderRadius: 0,
-          }}
-          onClick={() => createteam()}
-        >
+        <LoadingButton onClick={() => createteam()} loading={loadingButton}>
           Créer l'équipe
-        </Button>
+        </LoadingButton>
         {errorMessage && (
           <Alert
             variant="outlined"

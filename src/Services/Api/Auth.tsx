@@ -63,6 +63,7 @@ const login =
           expiresAt: authData.ExpiresIn.toString(),
           idToken: authData.IdToken,
           refreshToken: authData.RefreshToken,
+          tokenType: authData.TokenType,
         })
       );
     }
@@ -132,6 +133,7 @@ const refreshToken =
           expiresAt: authData.ExpiresIn.toString(),
           idToken: authData.IdToken,
           refreshToken: refreshToken,
+          tokenType: authData.TokenType,
         })
       );
     }
