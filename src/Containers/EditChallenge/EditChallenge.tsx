@@ -7,19 +7,18 @@ import {
   Backdrop,
   CircularProgress,
 } from "@mui/material";
-import React, {useState} from "react";
-import {useDispatch} from "react-redux";
-import dayjs, {Dayjs, unix} from "dayjs";
-import {useNavigate, useParams} from "react-router-dom";
-import {DateTimePicker, DateTimeValidationError} from "@mui/x-date-pickers";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import dayjs, { Dayjs, unix } from "dayjs";
+import { useNavigate, useParams } from "react-router-dom";
+import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
-import {
-  IChallengeUpdateData,
-} from "../../Transforms/Challenge";
-import {BackButton} from "../../Components/BackButton";
+import { IChallengeUpdateData } from "../../Transforms/Challenge";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
 
 function EditChallenge() {
-  const {id} = useParams();
+  const { id } = useParams();
   const [challengeName, setChallengeName] = useState<string | null>(null);
   const [challengeDescription, setChallengeDescription] = useState<
     string | null
@@ -34,6 +33,7 @@ function EditChallenge() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const [dateError, setDateError] =
     React.useState<DateTimeValidationError | null>(null);
@@ -97,11 +97,11 @@ function EditChallenge() {
       name: challengeName,
       start: challengeStartDate.unix(),
     };
+    setLoadingButton(true);
     Api.apiCalls.UPDATE_CHALLENGE(challengeData).then((response) => {
+      setLoadingButton(false);
       if (response.ok) {
-        Api.apiCalls.GET_CHALLENGE(id!, true).then((response) => {
-          navigate("/challenges/" + id);
-        });
+        navigate("/challenges/" + id);
       } else {
         setErrorMessage(response.data?.message);
       }
@@ -125,7 +125,7 @@ function EditChallenge() {
         }}
       >
         <TextField
-          sx={{maxWidth: "600px", width: "100%", m: 1, marginTop: 2}}
+          sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
           error={challengeName == null && errorMessage != undefined}
           InputProps={{
             sx: {
@@ -138,7 +138,7 @@ function EditChallenge() {
           onChange={(event) => setChallengeName(event.target.value)}
         />
         <TextField
-          sx={{maxWidth: "600px", width: "100%", m: 1, marginTop: 2}}
+          sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
           error={challengeDescription == null && errorMessage != undefined}
           InputProps={{
             sx: {
@@ -153,7 +153,7 @@ function EditChallenge() {
           multiline
         />
         <TextField
-          sx={{maxWidth: "600px", width: "100%", m: 1, marginTop: 2}}
+          sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
           error={challengePoints == null && errorMessage != undefined}
           InputProps={{
             sx: {
@@ -178,14 +178,14 @@ function EditChallenge() {
           <DateTimePicker
             label="Début"
             ampm={false}
-            sx={{flex: 1, mr: 1}}
+            sx={{ flex: 1, mr: 1 }}
             value={challengeStartDate}
             onChange={(newValue) => setChallengeStartDate(newValue)}
           />
           <DateTimePicker
             label="Fin"
             ampm={false}
-            sx={{flex: 1, ml: 1}}
+            sx={{ flex: 1, ml: 1 }}
             value={challengeEndDate}
             onChange={(newValue) => setChallengeEndDate(newValue)}
             minDateTime={challengeStartDate}
@@ -198,18 +198,12 @@ function EditChallenge() {
           />
         </Box>
 
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: 5,
-            maxWidth: "600px",
-            width: "100%",
-            borderRadius: 0,
-          }}
+        <LoadingButton
           onClick={() => updateChallenge()}
+          loading={loadingButton}
         >
           Modifier le challenge
-        </Button>
+        </LoadingButton>
         {errorMessage && (
           <Alert
             variant="outlined"
@@ -230,7 +224,7 @@ function EditChallenge() {
         }}
         open={!loaded}
       >
-        <CircularProgress color="inherit"/>
+        <CircularProgress color="inherit" />
       </Backdrop>
     </>
   );

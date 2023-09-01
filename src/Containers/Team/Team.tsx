@@ -11,7 +11,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { IChallengeData, ITeamData } from "../../Transforms";
 import Api from "../../Services/Api";
 import { useParams } from "react-router";
@@ -23,7 +23,8 @@ import { UserAvatar } from "../../Components/UserAvatar";
 import { useNavigate } from "react-router-dom";
 
 import { unix } from "dayjs";
-import {BackButton} from "../../Components/BackButton";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
 
 const UserListItem = (props: { user: IUserSmallData }) => {
   const theme = useTheme();
@@ -66,6 +67,7 @@ const Team = () => {
   const username = useSelector((state: IState) => state.user.username);
   const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
   const isAdmin = useSelector((state: IState) => state.user.is_admin);
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const theme = useTheme();
   const { id } = useParams();
@@ -80,7 +82,9 @@ const Team = () => {
   }, []);
 
   const requestJoinTeam = () => {
+    setLoadingButton(true);
     Api.apiCalls.JOIN_TEAM(id!).then((response) => {
+      setLoadingButton(false);
       if (response.ok) {
         Api.apiCalls.GET_TEAM(id!).then((response) => {
           if (response.ok) {
@@ -124,28 +128,21 @@ const Team = () => {
             </Typography>
           </Box>
           {userLoggedIn && !isAdmin && (
-            <Button
-              variant="contained"
+            <LoadingButton
               color="success"
               disabled={
                 teamData.pending.includes(username) ||
                 teamData.members.map((x) => x.username).includes(username)
               }
-              sx={{
-                marginTop: 5,
-                marginBottom: 5,
-                maxWidth: "300px",
-                width: "100%",
-                borderRadius: 0,
-              }}
               onClick={requestJoinTeam}
+              loading={loadingButton}
             >
               {teamData.pending.includes(username)
                 ? "En attente de validation"
                 : teamData.members.map((x) => x.username).includes(username)
                 ? "Vous êtes dans cette équipe!"
                 : "Rejoindre cette équipe"}
-            </Button>
+            </LoadingButton>
           )}
           {userLoggedIn && isAdmin && (
             <Button

@@ -11,7 +11,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { IChallengeData } from "../../Transforms";
 import Api from "../../Services/Api";
 import { useParams } from "react-router";
@@ -23,7 +23,8 @@ import { UserAvatar } from "../../Components/UserAvatar";
 import { useNavigate } from "react-router-dom";
 
 import { unix } from "dayjs";
-import {BackButton} from "../../Components/BackButton";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
 
 const UserListItem = (props: { user: IUserSmallData }) => {
   const theme = useTheme();
@@ -61,6 +62,7 @@ const Challenge = () => {
   const userPendingChallenges = useSelector(
     (state: IState) => state.user.challenges_pending
   );
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const theme = useTheme();
   const { id } = useParams();
@@ -75,9 +77,14 @@ const Challenge = () => {
   }, []);
 
   const requestChallengeValidation = () => {
+    setLoadingButton(true);
     Api.apiCalls.REQUEST_CHALLENGE(id!).then((response) => {
       if (response.ok) {
-        Api.apiCalls.GET_SELF();
+        Api.apiCalls.GET_SELF().then(() => {
+          setLoadingButton(false);
+        });
+      } else {
+        setLoadingButton(false);
       }
     });
   };
@@ -128,23 +135,16 @@ const Challenge = () => {
             {challengeData.description}
           </Typography>
           {userLoggedIn && !isAdmin && (
-            <Button
-              variant="contained"
+            <LoadingButton
               color="success"
               disabled={userPendingChallenges.includes(id!)}
-              sx={{
-                marginTop: 5,
-                marginBottom: 5,
-                maxWidth: "300px",
-                width: "100%",
-                borderRadius: 0,
-              }}
               onClick={requestChallengeValidation}
+              loading={loadingButton}
             >
               {userPendingChallenges.includes(id!)
                 ? "En attente de validation"
                 : "Valider ce challenge"}
-            </Button>
+            </LoadingButton>
           )}
           {userLoggedIn && isAdmin && (
             <Button
