@@ -8,6 +8,7 @@ import Api from "../../Services/Api";
 import { ICreateChallengeData } from "../../Transforms/Challenge";
 import { validIDRegex } from "../../Config/AppConfig";
 import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
 
 function CreateChallenge() {
   const [challengeId, setChallengeId] = useState<string | null>(null);
@@ -24,6 +25,7 @@ function CreateChallenge() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const [dateError, setDateError] =
     React.useState<DateTimeValidationError | null>(null);
@@ -61,7 +63,9 @@ function CreateChallenge() {
       return;
     }
     if (!validIDRegex.test(challengeId)) {
-      setErrorMessage("L'ID du challenge ne peux pas contenir de caractères spéciaux");
+      setErrorMessage(
+        "L'ID du challenge ne peux pas contenir de caractères spéciaux"
+      );
       return;
     }
     if (!challengeStartDate) {
@@ -83,12 +87,14 @@ function CreateChallenge() {
       name: challengeName,
       start: challengeStartDate.unix(),
     };
+    setLoadingButton(true);
     Api.apiCalls.CREATE_CHALLENGE(challengeData).then((response) => {
       if (response.ok) {
         navigate("/challenges/" + challengeId);
       } else {
         setErrorMessage(response.data?.message);
       }
+      setLoadingButton(false);
     });
   };
 
@@ -195,18 +201,12 @@ function CreateChallenge() {
           />
         </Box>
 
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: 5,
-            maxWidth: "600px",
-            width: "100%",
-            borderRadius: 0,
-          }}
+        <LoadingButton
           onClick={() => createChallenge()}
+          loading={loadingButton}
         >
           Créer le challenge
-        </Button>
+        </LoadingButton>
         {errorMessage && (
           <Alert
             variant="outlined"

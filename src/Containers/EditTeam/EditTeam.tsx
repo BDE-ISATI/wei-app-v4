@@ -1,4 +1,12 @@
-import { Box, Button, useTheme, TextField, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  useTheme,
+  TextField,
+  Alert,
+  Backdrop,
+  CircularProgress,
+} from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Dayjs } from "dayjs";
@@ -6,7 +14,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
 import { ITeamData, ITeamUpdateData } from "../../Transforms";
-import {BackButton} from "../../Components/BackButton";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
 
 function EditTeam() {
   const [teamName, setteamName] = useState<string | null>(null);
@@ -14,6 +23,7 @@ function EditTeam() {
     undefined
   );
   const [loaded, setLoaded] = useState<boolean>(false);
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const { id } = useParams();
 
@@ -44,11 +54,11 @@ function EditTeam() {
       display_name: teamName,
       picture_id: "",
     };
+    setLoadingButton(true);
     Api.apiCalls.UPDATE_TEAM(teamData).then((response) => {
+      setLoadingButton(false);
       if (response.ok) {
-        Api.apiCalls.GET_TEAM(id!, true).then((response) => {
-          navigate("/teams/" + id!);
-        });
+        navigate("/teams/" + id!);
       } else {
         setErrorMessage(response.data?.message);
       }
@@ -85,18 +95,9 @@ function EditTeam() {
           onChange={(event) => setteamName(event.target.value)}
         />
 
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: 5,
-            maxWidth: "600px",
-            width: "100%",
-            borderRadius: 0,
-          }}
-          onClick={() => updateTeam()}
-        >
+        <LoadingButton onClick={() => updateTeam()} loading={loadingButton}>
           Modifier l'équipe
-        </Button>
+        </LoadingButton>
         {errorMessage && (
           <Alert
             variant="outlined"
@@ -110,6 +111,15 @@ function EditTeam() {
           </Alert>
         )}
       </Box>
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={!loaded}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

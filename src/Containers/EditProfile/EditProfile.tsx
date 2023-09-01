@@ -10,24 +10,29 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Alert
+  Alert,
 } from "@mui/material";
-import React, {useState} from "react";
-import {UserAvatar} from "../../Components/UserAvatar";
-import {IUserUpdateData, reduceUserData} from "../../Transforms/User";
-import {useDispatch, useSelector} from "react-redux";
-import {IState} from "../../Reducers";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPenToSquare, faPencil} from "@fortawesome/free-solid-svg-icons";
-import {TransitionProps} from "@mui/material/transitions";
+import React, { useState } from "react";
+import { UserAvatar } from "../../Components/UserAvatar";
+import { IUserUpdateData, reduceUserData } from "../../Transforms/User";
+import { useDispatch, useSelector } from "react-redux";
+import { IState } from "../../Reducers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faListSquares,
+  faPenToSquare,
+  faPencil,
+} from "@fortawesome/free-solid-svg-icons";
+import { TransitionProps } from "@mui/material/transitions";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Api from "../../Services/Api";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
-import type {Area} from "react-easy-crop";
+import type { Area } from "react-easy-crop";
 import getCroppedImg from "../../Utils/cropImage";
-import {BackButton} from "../../Components/BackButton";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
 
 function EditProfile() {
   const userData = useSelector((state: IState) => state.user);
@@ -45,8 +50,9 @@ function EditProfile() {
   );
   const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [open, setOpen] = useState<boolean>(false);
-  const [crop, setCrop] = useState({x: 0, y: 0});
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const theme = useTheme();
   const navigate = useNavigate();
@@ -80,7 +86,9 @@ function EditProfile() {
       editedUser.picture_id != undefined ||
       editedUser.show != undefined
     ) {
+      setLoadingButton(true);
       Api.apiCalls.EDIT_SELF(editedUser).then((response) => {
+        setLoadingButton(false);
         if (response.ok) {
           navigate(-1);
           setErrorMessage(undefined);
@@ -127,7 +135,7 @@ function EditProfile() {
       >
         <IconButton component="label">
           <Badge
-            badgeContent={<FontAwesomeIcon icon={faPencil}/>}
+            badgeContent={<FontAwesomeIcon icon={faPencil} />}
             color="primary"
             overlap="circular"
             sx={{
@@ -160,7 +168,7 @@ function EditProfile() {
           />
         </IconButton>
         <TextField
-          sx={{maxWidth: "300px", width: "100%", m: 1, marginTop: 4}}
+          sx={{ maxWidth: "300px", width: "100%", m: 1, marginTop: 4 }}
           InputProps={{
             sx: {
               borderRadius: 0,
@@ -177,24 +185,15 @@ function EditProfile() {
             marginTop: 5,
             maxWidth: "300px",
             width: "100%",
-            borderRadius: 0
+            borderRadius: 0,
           }}
           onClick={() => setShowUser(!showUser)}
         >
           Afficher sur le classement
         </Button>
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: 5,
-            maxWidth: "300px",
-            width: "100%",
-            borderRadius: 0,
-          }}
-          onClick={handleEditSelf}
-        >
+        <LoadingButton onClick={handleEditSelf} loading={loadingButton}>
           Appliquer
-        </Button>
+        </LoadingButton>
         {errorMessage && (
           <Alert
             variant="outlined"
@@ -207,7 +206,6 @@ function EditProfile() {
             {errorMessage}
           </Alert>
         )}
-
       </Box>
       <Dialog
         onClose={handleClose}
@@ -256,7 +254,7 @@ function EditProfile() {
             }}
             onClick={handleCreateCroppedImage}
           >
-            <CheckIcon sx={{color: "black"}}/>
+            <CheckIcon sx={{ color: "black" }} />
           </IconButton>
           <IconButton
             size="small"
@@ -268,7 +266,7 @@ function EditProfile() {
             }}
             onClick={handleClose}
           >
-            <CloseIcon sx={{color: "black"}}/>
+            <CloseIcon sx={{ color: "black" }} />
           </IconButton>
         </DialogActions>
       </Dialog>
