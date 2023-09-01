@@ -23,7 +23,8 @@ import { reduceUserData } from "../../Transforms/User";
 import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
-import {BackButton} from "../../Components/BackButton";
+import { BackButton } from "../../Components/BackButton";
+import { yaUnS } from "../../Utils/yaUnS";
 
 interface IUserListItem {
   user: IUserData;
@@ -71,9 +72,7 @@ const ChallengeListItem = (props: {
           <ListItemText
             primary={props.data?.name || ""}
             secondary={
-              props.data?.points +
-                " point" +
-                (props.data!.points > 1 ? "s" : "") || ""
+              props.data?.points + " point" + yaUnS(props.data?.points) || ""
             }
           />
         </ListItemButton>
