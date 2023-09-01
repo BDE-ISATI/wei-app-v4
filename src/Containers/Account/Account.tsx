@@ -91,7 +91,7 @@ const Account = () => {
           <IconButton size="large" onClick={() => navigate("edit")}>
             <EditIcon />
           </IconButton>
-          {userData.is_admin && (
+          {userData.is_admin ? (
             <>
               <Button
                 variant="contained"
@@ -121,6 +121,20 @@ const Account = () => {
                 Accepter dans l'équipe
               </Button>
             </>
+          ) : (
+            <Button
+              variant="contained"
+              sx={{
+                marginTop: 2,
+                marginBottom: 5,
+                maxWidth: "300px",
+                width: "100%",
+                borderRadius: 0,
+              }}
+              onClick={() => navigate("challenges")}
+            >
+              Mes challenges
+            </Button>
           )}
           <Button
             variant="outlined"
