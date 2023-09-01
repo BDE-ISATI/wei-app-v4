@@ -22,9 +22,10 @@ import { IUserSmallData } from "../../Transforms/User";
 import { UserAvatar } from "../../Components/UserAvatar";
 import { useNavigate } from "react-router-dom";
 
-import { unix } from "dayjs";
+import dayjs, { unix } from "dayjs";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
+import { useCountdown } from "../../Hooks/CountDown";
 
 const UserListItem = (props: { user: IUserSmallData; rank: number }) => {
   const theme = useTheme();
@@ -59,6 +60,44 @@ const generateUserList = (users: IUserSmallData[] | undefined) => {
       </div>
     ));
 };
+
+const distToChall = (start: number, end: number) => {
+  const now = dayjs().unix();
+  if (start > now) {
+    return now - start;
+  } else if (end < now) {
+    return now - end;
+  } else {
+    return 0;
+  }
+};
+
+const DateCountDown = (props: { challengeData: IChallengeData }) => {
+  const dist = distToChall(props.challengeData.start, props.challengeData.end);
+  const targetDate =
+    dist < 0
+      ? props.challengeData.start
+      : dist === 0
+      ? props.challengeData.end
+      : 0;
+
+  var [days, hours, minutes, seconds] = useCountdown(
+    unix(targetDate).valueOf()
+  );
+
+  if (targetDate === 0) {
+    return <></>;
+  }
+
+  return (
+    <Typography sx={{ mb: 1.5, textAlign: "center" }} color="text.primary">
+      {targetDate === props.challengeData.start ? "Commence " : "Se termine "}
+      dans {days} jours, {hours} heures, {minutes} minutes et {seconds}{" "}
+      secondes.
+    </Typography>
+  );
+};
+
 const Challenge = () => {
   const [challengeData, setChallengeData] = React.useState<
     IChallengeData | undefined
@@ -130,6 +169,12 @@ const Challenge = () => {
               {challengeData.points > 1 ? "s" : ""}
             </Typography>
           </Box>
+          <DateCountDown challengeData={challengeData} />
+          {distToChall(challengeData.start, challengeData.end) > 0 && (
+            <Typography sx={{ mb: 1.5 }} color="text.primary">
+              Ce challenge est terminé
+            </Typography>
+          )}
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             Du{" "}
             <b>{unix(challengeData.start).toDate().toLocaleDateString("fr")}</b>{" "}
@@ -148,7 +193,8 @@ const Challenge = () => {
               color="success"
               disabled={
                 userPendingChallenges.includes(id!) ||
-                userDoneChallenge.includes(id!)
+                userDoneChallenge.includes(id!) ||
+                distToChall(challengeData.start, challengeData.end) !== 0
               }
               onClick={requestChallengeValidation}
               loading={loadingButton}
