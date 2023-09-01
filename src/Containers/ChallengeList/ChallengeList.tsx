@@ -32,18 +32,17 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
       value.challenge.toLowerCase().includes(searchValue.toLowerCase()) ||
       value.users.filter((user) => user.username.toLowerCase().includes(searchValue.toLowerCase())).length > 0;
   }).filter((value) => {
-    if (dateFilter.length === 0) {
+    if (dateFilter.length === 0)
       return true;
-    }
-    if (dateFilter.includes("active")) {
-      return value.end > Date.now()/1000 && value.start < Date.now()/1000;
-    }
-    if (dateFilter.includes("upcoming")) {
-      return value.start > Date.now()/1000;
-    }
-    if (dateFilter.includes("finished")) {
-      return value.end < Date.now()/1000;
-    }
+
+    if (dateFilter.includes("active") && value.end > Date.now()/1000 && value.start < Date.now()/1000)
+      return true;
+    if (dateFilter.includes("upcoming") && value.start > Date.now()/1000)
+      return true;
+    if (dateFilter.includes("finished") && value.end < Date.now()/1000)
+      return true;
+
+    return false;
   }).sort((a, b) => {
     return a.end - b.end;
   }).map((data, index) => (
