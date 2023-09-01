@@ -1,21 +1,54 @@
 import React from "react";
 import Stack from "@mui/material/Stack";
-import { ChallengeCard } from "../../Components/Card";
-import { IChallengeData } from "../../Transforms";
+import {ChallengeCard} from "../../Components/Card";
+import {IChallengeData} from "../../Transforms";
 import Api from "../../Services/Api";
-import { Backdrop, Box, CircularProgress, Fab } from "@mui/material";
+import {
+  Backdrop,
+  Box,
+  CircularProgress,
+  Fab,
+  Card,
+  TextField,
+  useTheme,
+  ToggleButtonGroup,
+  ToggleButton
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { IState } from "../../Reducers";
+import {useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {IState} from "../../Reducers";
+import CardContent from "@mui/material/CardContent";
 
-const generateChallengeList = (challenges: IChallengeData[] | undefined) => {
+const generateChallengeList = (challenges: IChallengeData[] | undefined, searchValue: string, dateFilter: string[]) => {
   if (challenges === undefined) {
     return <></>;
   }
-  return challenges.map((data, index) => (
+
+  return challenges.filter((value) => {
+    return searchValue === "" ||
+      value.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      value.description.toLowerCase().includes(searchValue.toLowerCase()) ||
+      value.challenge.toLowerCase().includes(searchValue.toLowerCase()) ||
+      value.users.filter((user) => user.username.toLowerCase().includes(searchValue.toLowerCase())).length > 0;
+  }).filter((value) => {
+    if (dateFilter.length === 0) {
+      return true;
+    }
+    if (dateFilter.includes("active")) {
+      return value.end > Date.now()/1000 && value.start < Date.now()/1000;
+    }
+    if (dateFilter.includes("upcoming")) {
+      return value.start > Date.now()/1000;
+    }
+    if (dateFilter.includes("finished")) {
+      return value.end < Date.now()/1000;
+    }
+  }).sort((a, b) => {
+    return a.end - b.end;
+  }).map((data, index) => (
     <div key={index}>
-      <ChallengeCard challengeData={data} />
+      <ChallengeCard challengeData={data}/>
     </div>
   ));
 };
@@ -24,6 +57,8 @@ const ChallengeList = () => {
   const [challengeList, setChallengeList] = React.useState<
     IChallengeData[] | undefined
   >();
+  const [searchValue, setSearchValue] = React.useState<string>("");
+  const [dateFilter, setDateFilter] = React.useState<string[]>(["active"]);
   const isAdmin = useSelector((state: IState) => state.user.is_admin);
   const navigate = useNavigate();
 
@@ -34,6 +69,9 @@ const ChallengeList = () => {
       }
     });
   }, []);
+
+  const theme = useTheme();
+
   return (
     <Box flex={1} position={"relative"}>
       {isAdmin && (
@@ -51,7 +89,7 @@ const ChallengeList = () => {
           }}
           onClick={() => navigate("/create/challenge")}
         >
-          <AddIcon />
+          <AddIcon/>
         </Fab>
       )}
       <Stack
@@ -60,7 +98,45 @@ const ChallengeList = () => {
         alignItems="center"
         spacing={2}
       >
-        {generateChallengeList(challengeList)}
+        <Card
+          variant="outlined"
+          sx={{
+            boxShadow: `10px 10px 0px black`,
+            border: "solid black",
+            width: "500px",
+            maxWidth: "90vw",
+          }}
+          square
+        >
+          <CardContent>
+            <TextField id="outlined-basic" label="Rechercher" variant="outlined"
+                       sx={{
+                         width: "100%",
+                       }}
+                       InputProps={{
+                         sx: {
+                           borderRadius: 0,
+                         }
+                       }}
+                       onChange={(event) => setSearchValue(event.target.value)}/>
+            <ToggleButtonGroup value={dateFilter} onChange={(event, newFilter) => setDateFilter(newFilter)}
+                               sx={{
+                                 width: "100%",
+                                 marginTop: 2,
+                               }}>
+              <ToggleButton value="active" sx={{borderRadius: 0, width: "100%"}}>
+                Actifs
+              </ToggleButton>
+              <ToggleButton value="upcoming" sx={{borderRadius: 0, width: "100%"}}>
+                À venir
+              </ToggleButton>
+              <ToggleButton value="finished" sx={{borderRadius: 0, width: "100%"}}>
+                Terminés
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </CardContent>
+        </Card>
+        {generateChallengeList(challengeList, searchValue, dateFilter)}
       </Stack>
       <Backdrop
         sx={{
@@ -69,7 +145,7 @@ const ChallengeList = () => {
         }}
         open={challengeList === undefined}
       >
-        <CircularProgress color="inherit" />
+        <CircularProgress color="inherit"/>
       </Backdrop>
     </Box>
   );
