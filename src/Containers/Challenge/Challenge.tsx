@@ -26,7 +26,7 @@ import { unix } from "dayjs";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
 
-const UserListItem = (props: { user: IUserSmallData }) => {
+const UserListItem = (props: { user: IUserSmallData; rank: number }) => {
   const theme = useTheme();
   return (
     <ListItem
@@ -34,10 +34,14 @@ const UserListItem = (props: { user: IUserSmallData }) => {
         color: theme.palette.getContrastText(theme.palette.background.default),
       }}
     >
+      <Typography sx={{ marginRight: 2 }}>{props.rank + 1}</Typography>
       <ListItemAvatar>
         <UserAvatar user={props.user} />
       </ListItemAvatar>
-      <ListItemText primary={props.user.display_name} />
+      <ListItemText
+        primary={props.user.display_name}
+        secondary={unix(props.user.time!).format("[Le] DD/MM/YYYY à HH:mm:ss")}
+      />
     </ListItem>
   );
 };
@@ -46,12 +50,14 @@ const generateUserList = (users: IUserSmallData[] | undefined) => {
   if (users === undefined) {
     return <></>;
   }
-  return users.map((data, index) => (
-    <div key={index}>
-      <UserListItem user={data} />
-      <Divider component="li" />
-    </div>
-  ));
+  return users
+    .sort((a: IUserSmallData, b: IUserSmallData) => a.time! - b.time!)
+    .map((data, index) => (
+      <div key={index}>
+        <UserListItem user={data} rank={index} />
+        <Divider component="li" />
+      </div>
+    ));
 };
 const Challenge = () => {
   const [challengeData, setChallengeData] = React.useState<
@@ -61,6 +67,9 @@ const Challenge = () => {
   const isAdmin = useSelector((state: IState) => state.user.is_admin);
   const userPendingChallenges = useSelector(
     (state: IState) => state.user.challenges_pending
+  );
+  const userDoneChallenge = useSelector(
+    (state: IState) => state.user.challenges_done
   );
   const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
@@ -137,12 +146,17 @@ const Challenge = () => {
           {userLoggedIn && !isAdmin && (
             <LoadingButton
               color="success"
-              disabled={userPendingChallenges.includes(id!)}
+              disabled={
+                userPendingChallenges.includes(id!) ||
+                userDoneChallenge.includes(id!)
+              }
               onClick={requestChallengeValidation}
               loading={loadingButton}
             >
               {userPendingChallenges.includes(id!)
                 ? "En attente de validation"
+                : userDoneChallenge.includes(id!)
+                ? "Challenge validé"
                 : "Valider ce challenge"}
             </LoadingButton>
           )}

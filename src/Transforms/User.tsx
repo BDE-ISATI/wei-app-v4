@@ -28,6 +28,7 @@ export interface IUserSmallData {
   display_name: string;
   picture_id?: string;
   points?: number;
+  time?: number;
 }
 
 export interface IUserUpdateData {
