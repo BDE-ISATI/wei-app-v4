@@ -23,7 +23,6 @@ BASE_API.addAsyncResponseTransform(async (response) => {
   if (response.data?.message === "The incoming token has expired") {
     await authApiCalls(AUTH_API).REFRESH_TOKEN();
     const data = await BASE_API.any(response.config!);
-    // replace data
     response.data = data.data;
   }
 });

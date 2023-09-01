@@ -9,15 +9,22 @@ import { ICreateChallengeData } from "../../Transforms/Challenge";
 
 const getAll =
   (api: ApisauceInstance) =>
-  async (force_refresh: boolean = false): Promise<ApiResponse<IChallengeData[], IResult>> => {
-    const apiResponse = await api.get<IChallengeData[], IResult>("/challenges" + (force_refresh ? "?force_refresh" : ""));
+  async (
+    force_refresh: boolean = false
+  ): Promise<ApiResponse<IChallengeData[], IResult>> => {
+    const apiResponse = await api.get<IChallengeData[], IResult>(
+      "/challenges" + (force_refresh ? "?force_refresh" : "")
+    );
 
     return apiResponse;
   };
 
 const getChallenge =
   (api: ApisauceInstance) =>
-  async (challenge: string, force_refresh: boolean = false): Promise<ApiResponse<IChallengeData, IResult>> => {
+  async (
+    challenge: string,
+    force_refresh: boolean = false
+  ): Promise<ApiResponse<IChallengeData, IResult>> => {
     const apiResponse = await api.get<IChallengeData, IResult>(
       `/challenges/${challenge}` + (force_refresh ? "?force_refresh" : "")
     );
@@ -61,6 +68,8 @@ const updateChallenge =
         points: challengeData.points,
         start: challengeData.start,
         end: challengeData.end,
+        picture_id: challengeData.picture_id,
+        max_count: challengeData.max_count,
       }
     );
 
