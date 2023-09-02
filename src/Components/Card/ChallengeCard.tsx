@@ -71,7 +71,7 @@ function ChallengeCard(props: Props) {
             alignSelf: "center",
             textAlign: "center",
             fontWeight: 800,
-            marginBottom: 2,
+            marginBottom: 1,
           }}
         >
           {props.challengeData.name}
@@ -79,12 +79,18 @@ function ChallengeCard(props: Props) {
           {props.challengeData.points} point
           {props.challengeData.points > 1 ? "s" : ""}
         </Typography>
-        <Divider flexItem />
-        <Typography sx={{ mb: 1.5, mt: 1.5 }}>
-          {start.toLocaleDateString("fr")} - {end.toLocaleDateString("fr")}
-        </Typography>
-        <Typography variant="body2">
-          {props.challengeData.description}
+        <Typography
+          sx={{ mb: 1.5, alignSelf: "center", textAlign: "center" }}
+          color="text.secondary"
+        >
+          Du{" "}
+          <b>
+            {unix(props.challengeData.start).toDate().toLocaleDateString("fr")}
+          </b>{" "}
+          au{" "}
+          <b>
+            {unix(props.challengeData.end).toDate().toLocaleDateString("fr")}
+          </b>
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
