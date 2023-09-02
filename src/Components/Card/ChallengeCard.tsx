@@ -72,6 +72,7 @@ function ChallengeCard(props: Props) {
             textAlign: "center",
             fontWeight: 800,
             marginBottom: 1,
+            wordBreak: "break-word",
           }}
         >
           {props.challengeData.name}

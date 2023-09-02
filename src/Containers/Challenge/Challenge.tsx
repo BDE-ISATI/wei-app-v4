@@ -26,6 +26,7 @@ import dayjs, { unix } from "dayjs";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
 import { useCountdown } from "../../Hooks/CountDown";
+import { yaUnS } from "../../Utils/yaUnS";
 
 const UserListItem = (props: { user: IUserSmallData; rank: number }) => {
   const theme = useTheme();
@@ -190,12 +191,13 @@ const Challenge = () => {
               fontWeight: 800,
               marginBottom: 2,
               marginTop: 2,
+              wordBreak: "break-word",
             }}
           >
             {challengeData.name}
             <br />
             {challengeData.points} point
-            {challengeData.points > 1 ? "s" : ""}
+            {yaUnS(challengeData.points)}
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             Du{" "}
