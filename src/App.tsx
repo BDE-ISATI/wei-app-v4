@@ -33,6 +33,7 @@ import { EditTeam } from "./Containers/EditTeam";
 import { TeamRequests } from "./Containers/TeamRequests";
 import { NewsList } from "./Containers/NewsList";
 import { MyChallenges } from "./Containers/MyChallenges";
+import InstallPWA from "./Components/InstallPWA/InstallPWA";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -189,6 +190,7 @@ export default function App() {
               }}
             >
               <RouterProvider router={router} />
+              <InstallPWA />
             </Box>
           </Box>
         </React.Fragment>
