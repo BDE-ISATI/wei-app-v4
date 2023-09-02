@@ -177,6 +177,7 @@ function EditChallenge() {
           label="Nom du challenge"
           value={challengeName ? challengeName : ""}
           onChange={(event) => setChallengeName(event.target.value)}
+          required
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
@@ -192,6 +193,7 @@ function EditChallenge() {
           onChange={(event) => setChallengeDescription(event.target.value)}
           rows={4}
           multiline
+          required
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
@@ -206,6 +208,7 @@ function EditChallenge() {
           label="Points"
           value={challengePoints ? challengePoints : 0}
           onChange={(event) => setChallengePoints(Number(event.target.value))}
+          required
         />
         <Box
           sx={{
@@ -217,14 +220,14 @@ function EditChallenge() {
           }}
         >
           <DateTimePicker
-            label="Début"
+            label="Début *"
             ampm={false}
             sx={{ flex: 1, mr: 1 }}
             value={challengeStartDate}
             onChange={(newValue) => setChallengeStartDate(newValue)}
           />
           <DateTimePicker
-            label="Fin"
+            label="Fin *"
             ampm={false}
             sx={{ flex: 1, ml: 1 }}
             value={challengeEndDate}

@@ -116,6 +116,7 @@ function CreateTeam() {
           label="ID de l'équipe"
           value={teamId}
           onChange={(event) => setteamId(event.target.value)}
+          required
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
@@ -129,6 +130,7 @@ function CreateTeam() {
           label="Nom de l'équipe"
           value={teamName}
           onChange={(event) => setteamName(event.target.value)}
+          required
         />
         <Typography color="text.secondary" alignSelf={"flex-start"}>
           Image
