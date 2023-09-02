@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { unix } from "dayjs";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
+import { yaUnS } from "../../Utils/yaUnS";
 
 const UserListItem = (props: { user: IUserSmallData }) => {
   const theme = useTheme();
@@ -94,6 +95,10 @@ const Team = () => {
       }
     });
   };
+  var background: string | undefined = undefined;
+  if (teamData && teamData.picture_id && teamData.picture_id != "") {
+    background = Api.apiCalls.GET_PICTURE_URL(teamData.picture_id);
+  }
   return (
     <>
       <BackButton />
@@ -110,23 +115,41 @@ const Team = () => {
             flex: 1,
           }}
         >
-          <Box
-            style={{
-              backgroundColor: `${theme.palette.secondary.main}`,
-              width: "100%",
-              borderBottom: "solid black",
+          {background ? (
+            <img
+              src={background}
+              style={{
+                maxWidth: "100%",
+                width: "100%",
+                borderBottom: "solid black",
+              }}
+            />
+          ) : (
+            <Box
+              style={{
+                backgroundColor: `${theme.palette.secondary.main}`,
+                width: "100%",
+                borderBottom: "solid black",
+                height: "30px",
+              }}
+            />
+          )}
+          <Typography
+            color="text.primary"
+            sx={{
+              alignSelf: "center",
+              textAlign: "center",
+              fontWeight: 800,
+              marginBottom: 2,
+              marginTop: 2,
+              wordBreak: "break-word",
             }}
           >
-            <Typography
-              color={theme.palette.getContrastText(theme.palette.primary.main)}
-              sx={{ fontWeight: 800, textAlign: "center", margin: 2 }}
-            >
-              {teamData.display_name}
-              <br />
-              {teamData.points} point
-              {teamData.points > 1 ? "s" : ""}
-            </Typography>
-          </Box>
+            {teamData.display_name}
+            <br />
+            {teamData.points} point
+            {yaUnS(teamData.points)}
+          </Typography>
           {userLoggedIn && !isAdmin && (
             <LoadingButton
               color="success"

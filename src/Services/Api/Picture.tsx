@@ -15,13 +15,14 @@ interface IPicturePostedResponse {
 const postPicture =
   (api: ApisauceInstance) =>
   async (
-    image: File
+    image: File,
+    type?: string
   ): Promise<ApiResponse<IPicturePostedResponse, IRequestError>> => {
     const apiPictureRequest = await api.post<
       IPictureRequestResponse,
       IRequestError
     >(`/picture`, {
-      usage: "profile",
+      usage: type || "profile",
     });
 
     if (apiPictureRequest.ok) {
