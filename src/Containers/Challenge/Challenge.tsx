@@ -171,12 +171,13 @@ const Challenge = () => {
                 maxWidth: "100%",
                 width: "100%",
                 borderBottom: "solid black",
+                filter: `${Date.now()/1000 < challengeData.end && Date.now()/1000 > challengeData.start ? "" : "grayscale(1)"}`,
               }}
             />
           ) : (
             <Box
               style={{
-                backgroundColor: `${theme.palette.secondary.main}`,
+                backgroundColor: `${Date.now()/1000 < challengeData.end && Date.now()/1000 > challengeData.start ? theme.palette.secondary.main : "gray"}`,
                 width: "100%",
                 borderBottom: "solid black",
                 height: "30px",
