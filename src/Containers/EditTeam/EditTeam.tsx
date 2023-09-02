@@ -1,24 +1,26 @@
 import {
   Box,
-  Button,
   useTheme,
   TextField,
   Alert,
   Backdrop,
   CircularProgress,
+  IconButton,
+  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Dayjs } from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
-import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
-import { ITeamData, ITeamUpdateData } from "../../Transforms";
+import { ITeamUpdateData } from "../../Transforms";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
+import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
 
 function EditTeam() {
-  const [teamName, setteamName] = useState<string | null>(null);
+  const [teamName, setTeamName] = useState<string | null>(null);
+  const [teamPictureId, setTeamPictureId] = useState<string | undefined>(
+    undefined
+  );
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
@@ -27,23 +29,47 @@ function EditTeam() {
 
   const { id } = useParams();
 
-  const [dateError, setDateError] =
-    React.useState<DateTimeValidationError | null>(null);
-
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const [open, setOpen] = useState<boolean>(false);
+  const [preview, setPreview] = useState<string | undefined>(undefined);
+  const [newTeamPic, setNewTeamPic] = useState<File | null>(null);
+  const [newTeamPicPreview, setNewTeamPicPreview] = useState<
+    string | undefined
+  >(undefined);
+
+  const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file != null) {
+      setPreview(URL.createObjectURL(file));
+      setOpen(true);
+    }
+    event.target.value = "";
+  };
+
+  const handleImageCreate = (croppedImage: File | undefined) => {
+    setNewTeamPic(croppedImage!);
+    setNewTeamPicPreview(URL.createObjectURL(croppedImage!));
+    setOpen(false);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   React.useEffect(() => {
     Api.apiCalls.GET_TEAM(id!).then((response) => {
       if (response.ok) {
         const teamData = response.data!;
-        setteamName(teamData.display_name);
+        setTeamName(teamData.display_name);
+        setTeamPictureId(teamData.picture_id);
       }
       setLoaded(true);
     });
   }, []);
 
-  const updateTeam = () => {
+  const updateTeam = async () => {
     if (!teamName) {
       setErrorMessage("Faut remplir tous les champs en fait");
       return;
@@ -55,6 +81,12 @@ function EditTeam() {
       picture_id: "",
     };
     setLoadingButton(true);
+    if (newTeamPic) {
+      let response = await Api.apiCalls.POST_PICTURE(newTeamPic, "banner");
+      if (response.ok) {
+        teamData.picture_id = response.data?.id;
+      }
+    }
     Api.apiCalls.UPDATE_TEAM(teamData).then((response) => {
       setLoadingButton(false);
       if (response.ok) {
@@ -92,8 +124,39 @@ function EditTeam() {
           }}
           label="Nom de l'équipe"
           value={teamName ? teamName : ""}
-          onChange={(event) => setteamName(event.target.value)}
+          onChange={(event) => setTeamName(event.target.value)}
+          required
         />
+        <Typography color="text.secondary" alignSelf={"flex-start"}>
+          Image
+        </Typography>
+        <IconButton
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            aspectRatio: "3/1",
+            borderRadius: 0,
+            overflow: "hidden",
+            border: "solid 1px",
+            borderColor: theme.palette.text.disabled,
+          }}
+          component="label"
+        >
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleFileInput}
+          />
+          <img
+            src={
+              newTeamPicPreview ||
+              (teamPictureId && Api.apiCalls.GET_PICTURE_URL(teamPictureId))
+            }
+            width="100%"
+            height="100%"
+          />
+        </IconButton>
 
         <LoadingButton onClick={() => updateTeam()} loading={loadingButton}>
           Modifier l'équipe
@@ -111,6 +174,15 @@ function EditTeam() {
           </Alert>
         )}
       </Box>
+      <ImageCropPrompt
+        onClose={handleClose}
+        open={open}
+        image={preview}
+        onImageCreate={handleImageCreate}
+        title={""}
+        aspectRatio={3 / 1}
+        cropShape="rect"
+      />
       <Backdrop
         sx={{
           color: "#fff",

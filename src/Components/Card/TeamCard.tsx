@@ -14,6 +14,8 @@ import Badge from "@mui/material/Badge";
 import { IChallengeData, ITeamData } from "../../Transforms";
 import { UserAvatarGroup } from "../UserAvatarGroup";
 import { useNavigate } from "react-router-dom";
+import Api from "../../Services/Api";
+import { yaUnS } from "../../Utils/yaUnS";
 
 interface Props {
   teamData: ITeamData;
@@ -26,6 +28,10 @@ function TeamCard(props: Props) {
   const handleOpenButtonClick = () => {
     navigate(props.teamData.team);
   };
+  var background: string | undefined = undefined;
+  if (props.teamData.picture_id && props.teamData.picture_id != "") {
+    background = Api.apiCalls.GET_PICTURE_URL(props.teamData.picture_id);
+  }
   return (
     <Card
       variant="outlined"
@@ -37,22 +43,39 @@ function TeamCard(props: Props) {
       }}
       square
     >
-      <CardContent
-        style={{
-          backgroundColor: `${theme.palette.secondary.main}`,
-          borderBottom: "solid black",
-        }}
-      >
+      {background ? (
+        <img
+          src={background}
+          style={{
+            maxWidth: "100%",
+            width: "100%",
+            borderBottom: "solid black",
+          }}
+        />
+      ) : (
+        <CardContent
+          style={{
+            backgroundColor: `${theme.palette.secondary.main}`,
+            borderBottom: "solid black",
+          }}
+        />
+      )}
+
+      <CardContent sx={{ display: "flex", flexDirection: "column" }}>
         <Typography
-          color={theme.palette.getContrastText(theme.palette.primary.main)}
-          sx={{ fontWeight: 800, textAlign: "center" }}
+          color="text.primary"
+          sx={{
+            alignSelf: "center",
+            textAlign: "center",
+            fontWeight: 800,
+            marginBottom: 1,
+            wordBreak: "break-word",
+          }}
         >
           {props.teamData.display_name}
-        </Typography>
-      </CardContent>
-      <CardContent>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary" align="center">
-          {props.teamData.points} point{props.teamData.points > 1 ? "s" : ""}
+          <br />
+          {props.teamData.points} point
+          {yaUnS(props.teamData.points)}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
