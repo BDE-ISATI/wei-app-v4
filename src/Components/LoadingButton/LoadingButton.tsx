@@ -20,9 +20,9 @@ export const LoadingButton: React.FC<PropsWithChildren<Props>> = (props) => {
     <Button
       variant="contained"
       sx={{
-        marginTop: 5,
+        margin: 2,
         maxWidth: "600px",
-        width: "100%",
+        width: "90%",
         borderRadius: 0,
       }}
       color={props.color}
