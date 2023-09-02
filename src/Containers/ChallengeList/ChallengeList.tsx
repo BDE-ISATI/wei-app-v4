@@ -12,19 +12,31 @@ import {
   TextField,
   useTheme,
   ToggleButtonGroup,
-  ToggleButton, Select,
-  MenuItem, Accordion, AccordionSummary, AccordionDetails, Typography,
+  ToggleButton,
+  Select,
+  MenuItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import {useNavigate} from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {IState} from "../../Reducers";
 import CardContent from "@mui/material/CardContent";
 import {faArrowUpShortWide, faArrowDownWideShort, faFilter} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ArrowDownward} from "@mui/icons-material";
+import FilterListIcon from '@mui/icons-material/FilterList';
 
-const generateChallengeList = (challenges: IChallengeData[] | undefined, searchValue: string, dateFilter: string[]) => {
+const generateChallengeList = (challenges: IChallengeData[] | undefined, searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
   if (challenges === undefined) {
     return <></>;
   }
@@ -48,7 +60,18 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
 
     return false;
   }).sort((a, b) => {
-    return (dateFilter.includes("upcoming") && dateFilter.length === 1) ? a.start - b.start : a.end - b.end;
+    if (sortValue === "start") {
+      if (sortDir === "asc")
+        return a.start - b.start;
+      else
+        return b.start - a.start;
+    } else if (sortValue === "end") {
+      if (sortDir === "asc")
+        return a.end - b.end;
+      else
+        return b.end - a.end;
+    }
+    return 0;
   }).map((data, index) => (
     <div key={index}>
       <ChallengeCard challengeData={data}/>
@@ -57,14 +80,19 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
 };
 
 const ChallengeList = () => {
-  const [challengeList, setChallengeList] = React.useState<
-    IChallengeData[] | undefined
-  >();
-  const [searchValue, setSearchValue] = React.useState<string>("");
-  const [dateFilter, setDateFilter] = React.useState<string[]>(["active"]);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [challengeList, setChallengeList] = React.useState<IChallengeData[] | undefined>();
+
+  const [searchValue, setSearchValue] = React.useState<string>(searchParams.get("search")! || "");
+  const [dateFilter, setDateFilter] = React.useState<string[]>(searchParams.getAll("date_filter").length != 0 ? searchParams.getAll("date_filter") : ["active"]);
+  const [sortValue, setSortValue] = React.useState<string>(searchParams.get("sort_value")! || "start");
+  const [sortDirection, setSortDirection] = React.useState<string>(searchParams.get("sort")! || "asc");
 
   const isAdmin = useSelector((state: IState) => state.user.is_admin);
-  const navigate = useNavigate();
+
+  const [ expanded, setExpanded ] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     Api.apiCalls.GET_ALL_CHALLENGES().then((response) => {
@@ -96,12 +124,7 @@ const ChallengeList = () => {
           <AddIcon/>
         </Fab>
       )}
-      <Stack
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        spacing={2}
-      >
+      <Stack direction="column" justifyContent="center" alignItems="center" spacing={2}>
         <Card
           variant="outlined"
           sx={{
@@ -112,21 +135,40 @@ const ChallengeList = () => {
           }}
           square
         >
-          <CardContent>
-            <Accordion sx={{
+          <CardContent sx={{
+            ":last-child": {
+              paddingBottom: "16px"
+            },
+          }}>
+            <Accordion
+              expanded={expanded}
+              onChange={() => {}}
+              onClick={() => {}}
+              sx={{
               borderRadius: 0,
               border: "none",
-              boxShadow: "none"
+              boxShadow: "none",
+              "& .MuiAccordionSummary-root.Mui-expanded": {
+                minHeight: "60px",
+              },
             }}>
               <AccordionSummary
-                expandIcon={<ArrowDownward sx={{margin: theme.spacing(2)}}/>}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
+                expandIcon={<FilterListIcon sx={{margin: theme.spacing(2)}} onClick={() => setExpanded(!expanded)}/>}
+                disableTouchRipple={true}
                 sx={{
                   borderRadius: 0,
                   backgroundColor: theme.palette.background.default,
                   padding: 0,
-                  margin: 0,
+                  minHeight: "60px",
+                  "& .MuiAccordionSummary-content": {
+                    margin: 0,
+                  },
+                  "& .MuiAccordionSummary-content.Mui-expanded": {
+                    margin: 0,
+                  },
+                  "&.MuiAccordionSummary-gutters": {
+                    backgroundColor: theme.palette.background.default,
+                  },
                 }}>
                 <TextField id="outlined-basic" label="Rechercher" variant="outlined"
                            sx={{
@@ -137,7 +179,16 @@ const ChallengeList = () => {
                                borderRadius: 0,
                              }
                            }}
-                           onChange={(event) => setSearchValue(event.target.value)}/>
+                           value={searchValue}
+                           onChange={(event) => {
+                             setSearchValue(event.target.value);
+                             let sp = searchParams;
+                             if (event.target.value === "")
+                               sp.delete("search");
+                             else
+                               sp.set("search", event.target.value);
+                             setSearchParams(sp);
+                           }}/>
               </AccordionSummary>
               <AccordionDetails sx={{
                 borderRadius: 0,
@@ -145,7 +196,15 @@ const ChallengeList = () => {
                 borderBottom: "none",
                 padding: 0
               }}>
-                <ToggleButtonGroup value={dateFilter} onChange={(event, newFilter) => setDateFilter(newFilter)}
+                <ToggleButtonGroup value={dateFilter} onChange={(event, newFilter) => {
+                  setDateFilter(newFilter);
+                  let sp = searchParams;
+                  sp.delete("date_filter");
+                  newFilter.forEach((value: string) => {
+                    sp.append("date_filter", value);
+                  });
+                  setSearchParams(sp);
+                }}
                                    sx={{
                                      marginTop: theme.spacing(2),
                                      width: "100%",
@@ -173,26 +232,42 @@ const ChallengeList = () => {
                 >
                   <Select sx={{
                     borderRadius: 0,
-                    width: "100px",
+                    width: "80px",
                     height: "60px"
+                  }} value={sortDirection} onChange={(event) => {
+                    setSortDirection(event.target.value)
+                    let sp = searchParams;
+                    sp.set("sort", event.target.value);
+                    setSearchParams(sp);
                   }}>
                     <MenuItem value={"asc"}><FontAwesomeIcon icon={faArrowUpShortWide} size="2x"/></MenuItem>
                     <MenuItem value={"desc"}><FontAwesomeIcon icon={faArrowDownWideShort} size="2x"/></MenuItem>
                   </Select>
-                  <Select sx={{
-                    borderRadius: 0,
-                    width: "100%",
-                    height: "60px"
-                  }}>
-                    <MenuItem value={"start"}>Début</MenuItem>
-                    <MenuItem value={"end"}>Fin</MenuItem>
-                  </Select>
+                  <FormControl fullWidth>
+                    <InputLabel id="tri-label">Trier par</InputLabel>
+                    <Select label="Trier par"
+                            labelId={"tri-label"}
+                            defaultValue={""}
+                            sx={{
+                              borderRadius: 0,
+                              width: "100%",
+                              height: "60px"
+                            }} value={sortValue} onChange={(event) => {
+                      setSortValue(event.target.value)
+                      let sp = searchParams;
+                      sp.set("sort_value", event.target.value);
+                      setSearchParams(sp);
+                    }}>
+                      <MenuItem value={"start"}>Date de début</MenuItem>
+                      <MenuItem value={"end"}>Date de fin</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Stack>
               </AccordionDetails>
             </Accordion>
           </CardContent>
         </Card>
-        {generateChallengeList(challengeList, searchValue, dateFilter)}
+        {generateChallengeList(challengeList, searchValue, dateFilter, sortDirection, sortValue)}
       </Stack>
       <Backdrop
         sx={{
