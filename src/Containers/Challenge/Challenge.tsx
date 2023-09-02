@@ -90,10 +90,13 @@ const DateCountDown = (props: { challengeData: IChallengeData }) => {
   }
 
   return (
-    <Typography sx={{ mb: 1.5, textAlign: "center" }} color="text.primary">
+    <Typography
+      sx={{ ml: 1.5, mr: 1.5, textAlign: "center" }}
+      color="text.primary"
+    >
       {targetDate === props.challengeData.start ? "Commence " : "Se termine "}
-      dans {days} jours, {hours} heures, {minutes} minutes et {seconds}{" "}
-      secondes.
+      dans {days} jours, {hours} heures, <br />
+      {minutes} minutes et {seconds} secondes.
     </Typography>
   );
 };
@@ -136,6 +139,14 @@ const Challenge = () => {
       }
     });
   };
+  var background: string | undefined = undefined;
+  if (
+    challengeData &&
+    challengeData.picture_id &&
+    challengeData.picture_id != ""
+  ) {
+    background = Api.apiCalls.GET_PICTURE_URL(challengeData.picture_id);
+  }
   return (
     <>
       <BackButton />
@@ -152,42 +163,62 @@ const Challenge = () => {
             flex: 1,
           }}
         >
-          <Box
-            style={{
-              backgroundColor: `${theme.palette.secondary.main}`,
-              width: "100%",
-              borderBottom: "solid black",
+          {background ? (
+            <img
+              src={background}
+              style={{
+                maxWidth: "100%",
+                width: "100%",
+                borderBottom: "solid black",
+              }}
+            />
+          ) : (
+            <Box
+              style={{
+                backgroundColor: `${theme.palette.secondary.main}`,
+                width: "100%",
+                borderBottom: "solid black",
+                height: "30px",
+              }}
+            />
+          )}
+          <Typography
+            color="text.primary"
+            sx={{
+              alignSelf: "center",
+              textAlign: "center",
+              fontWeight: 800,
+              marginBottom: 2,
+              marginTop: 2,
             }}
           >
-            <Typography
-              color={theme.palette.getContrastText(theme.palette.primary.main)}
-              sx={{ fontWeight: 800, textAlign: "center", margin: 2 }}
-            >
-              {challengeData.name}
-              <br />
-              {challengeData.points} point
-              {challengeData.points > 1 ? "s" : ""}
-            </Typography>
-          </Box>
-          <DateCountDown challengeData={challengeData} />
-          {distToChall(challengeData.start, challengeData.end) > 0 && (
-            <Typography sx={{ mb: 1.5 }} color="text.primary">
-              Ce challenge est terminé
-            </Typography>
-          )}
+            {challengeData.name}
+            <br />
+            {challengeData.points} point
+            {challengeData.points > 1 ? "s" : ""}
+          </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             Du{" "}
             <b>{unix(challengeData.start).toDate().toLocaleDateString("fr")}</b>{" "}
             au{" "}
             <b>{unix(challengeData.end).toDate().toLocaleDateString("fr")}</b>
           </Typography>
+          <Divider flexItem />
+          {distToChall(challengeData.start, challengeData.end) > 0 && (
+            <Typography sx={{ mb: 1.5 }} color="text.primary">
+              Ce challenge est terminé
+            </Typography>
+          )}
+
           <Typography
-            sx={{ mb: 1.5, ml: 1.5, mr: 1.5 }}
+            sx={{ m: 1.5 }}
             color="text.primary"
             alignSelf={"flex-start"}
           >
             {challengeData.description}
           </Typography>
+          <Divider sx={{ mb: 1.5 }} flexItem />
+          <DateCountDown challengeData={challengeData} />
           {userLoggedIn && !isAdmin && (
             <LoadingButton
               color="success"

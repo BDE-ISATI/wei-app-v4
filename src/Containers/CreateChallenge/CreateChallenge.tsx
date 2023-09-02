@@ -1,4 +1,11 @@
-import { Box, Button, useTheme, TextField, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  useTheme,
+  TextField,
+  Alert,
+  IconButton,
+} from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Dayjs } from "dayjs";
@@ -9,6 +16,7 @@ import { ICreateChallengeData } from "../../Transforms/Challenge";
 import { validIDRegex } from "../../Config/AppConfig";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
+import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
 
 function CreateChallenge() {
   const [challengeId, setChallengeId] = useState<string | null>(null);
@@ -27,8 +35,36 @@ function CreateChallenge() {
   );
   const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
+  const [open, setOpen] = useState<boolean>(false);
+  const [preview, setPreview] = useState<string | undefined>(undefined);
+  const [challengePic, setChallengePic] = useState<File | null>(null);
+  const [newChallengePic, setNewChallengePic] = useState<File | null>(null);
+  const [newChallengePicPreview, setNewChallengePicPreview] = useState<
+    string | undefined
+  >(undefined);
+
   const [dateError, setDateError] =
     React.useState<DateTimeValidationError | null>(null);
+
+  const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file != null) {
+      setPreview(URL.createObjectURL(file));
+      setChallengePic(file);
+      setOpen(true);
+    }
+    event.target.value = "";
+  };
+
+  const handleImageCreate = (croppedImage: File | undefined) => {
+    setNewChallengePic(croppedImage!);
+    setNewChallengePicPreview(URL.createObjectURL(croppedImage!));
+    setOpen(false);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const dateErrorMessage = React.useMemo(() => {
     switch (dateError) {
@@ -51,7 +87,7 @@ function CreateChallenge() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const createChallenge = () => {
+  const createChallenge = async () => {
     setErrorMessage("");
     if (
       !challengeId ||
@@ -88,6 +124,12 @@ function CreateChallenge() {
       start: challengeStartDate.unix(),
     };
     setLoadingButton(true);
+    if (newChallengePic) {
+      let response = await Api.apiCalls.POST_PICTURE(newChallengePic, "banner");
+      if (response.ok) {
+        challengeData.picture_id = response.data?.id;
+      }
+    }
     Api.apiCalls.CREATE_CHALLENGE(challengeData).then((response) => {
       if (response.ok) {
         navigate("/challenges/" + challengeId);
@@ -200,6 +242,26 @@ function CreateChallenge() {
             }}
           />
         </Box>
+        <IconButton
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            aspectRatio: "3/1",
+            borderRadius: 0,
+            overflow: "hidden",
+            border: "solid 1px",
+            borderColor: theme.palette.text.disabled,
+          }}
+          component="label"
+        >
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleFileInput}
+          />
+          <img src={newChallengePicPreview} width="100%" height="100%" />
+        </IconButton>
 
         <LoadingButton
           onClick={() => createChallenge()}
@@ -220,6 +282,15 @@ function CreateChallenge() {
           </Alert>
         )}
       </Box>
+      <ImageCropPrompt
+        onClose={handleClose}
+        open={open}
+        image={preview}
+        onImageCreate={handleImageCreate}
+        title={""}
+        aspectRatio={3 / 1}
+        cropShape="rect"
+      />
     </>
   );
 }
