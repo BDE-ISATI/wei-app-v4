@@ -3,6 +3,9 @@ import {
   Badge,
   Box,
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Typography,
   useTheme,
@@ -20,8 +23,11 @@ import { UserActions } from "../../Reducers/User";
 import RegisterScreen from "../RegisterScreen/RegisterScreen";
 import { useNavigate } from "react-router-dom";
 import { reduceUserData } from "../../Transforms/User";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import IosShareIcon from "@mui/icons-material/IosShare";
 import EditIcon from "@mui/icons-material/Edit";
+import { useIosInstallPrompt } from "../../Hooks/IosInstallPrompt";
+import { useWebInstallPrompt } from "../../Hooks/WebInstallPrompt";
+import InstallPWADialog from "../../Components/InstallPWA/InstallPWADialog";
 const Account = () => {
   const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
   const userData = useSelector((state: IState) => state.user);
@@ -29,6 +35,10 @@ const Account = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userTokens = useSelector((state: IState) => state.auth);
+  const [iosInstallPrompt, handleIOSInstallDeclined] = useIosInstallPrompt(-1);
+  const [webInstallPrompt, handleWebInstallDeclined, handleWebInstallAccepted] =
+    useWebInstallPrompt(-1);
+  const [showInstallPrompt, setShowInstallPrompt] = useState<boolean>(false);
 
   React.useEffect(() => {
     console.log(userData);
@@ -150,6 +160,22 @@ const Account = () => {
           >
             Déconnexion
           </Button>
+          {iosInstallPrompt ||
+            (webInstallPrompt && (
+              <Button
+                variant="outlined"
+                color="primary"
+                sx={{
+                  marginBottom: theme.spacing(2),
+                  maxWidth: "300px",
+                  width: "100%",
+                  borderRadius: 0,
+                }}
+                onClick={() => setShowInstallPrompt(true)}
+              >
+                Installer l'application
+              </Button>
+            ))}
           <ColorModeToggle />
         </Box>
       ) : (
@@ -166,6 +192,22 @@ const Account = () => {
         >
           Me connecter
         </Button>
+      )}
+      {showInstallPrompt && (
+        <InstallPWADialog
+          iosInstallPrompt={iosInstallPrompt}
+          handleIOSInstallDeclined={() => {
+            setShowInstallPrompt(false);
+          }}
+          webInstallPrompt={webInstallPrompt}
+          handleWebInstallAccepted={() => {
+            handleWebInstallAccepted();
+            setShowInstallPrompt(false);
+          }}
+          handleWebInstallDeclined={() => {
+            setShowInstallPrompt(false);
+          }}
+        />
       )}
     </>
   );

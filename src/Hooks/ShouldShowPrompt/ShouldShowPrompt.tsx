@@ -29,7 +29,7 @@ function getUserShouldBePromptedToInstall(
 
 const useShouldShowPrompt = (
   promptName: string,
-  daysToWaitBeforePromptingAgain = -1
+  daysToWaitBeforePromptingAgain = 5
 ): [boolean, () => void] => {
   const [userShouldBePromptedToInstall, setUserShouldBePromptedToInstall] =
     useState(

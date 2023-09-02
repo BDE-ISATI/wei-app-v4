@@ -14,9 +14,11 @@ const isIOS = (): boolean => {
   return isIPad || isIPhone;
 };
 
-const useIosInstallPrompt = (): [boolean, () => void] => {
+const useIosInstallPrompt = (
+  daysToWaitBeforePromptingAgain = 5
+): [boolean, () => void] => {
   const [userShouldBePromptedToInstall, handleUserSeeingInstallPrompt] =
-    useShouldShowPrompt(iosInstallPromptedAt);
+    useShouldShowPrompt(iosInstallPromptedAt, daysToWaitBeforePromptingAgain);
 
   return [
     isIOS() && userShouldBePromptedToInstall,

@@ -3,10 +3,12 @@ import { useShouldShowPrompt } from "../ShouldShowPrompt";
 
 const webInstallPromptedAt = "webInstallPromptedAt";
 
-const useWebInstallPrompt = (): [any, () => void, () => void] => {
+const useWebInstallPrompt = (
+  daysToWaitBeforePromptingAgain = 5
+): [any, () => void, () => void] => {
   const [installPromptEvent, setInstallPromptEvent] = useState<any>();
   const [userShouldBePromptedToInstall, handleUserSeeingInstallPrompt] =
-    useShouldShowPrompt(webInstallPromptedAt);
+    useShouldShowPrompt(webInstallPromptedAt, daysToWaitBeforePromptingAgain);
 
   useEffect(() => {
     const beforeInstallPromptHandler = (event: any) => {
