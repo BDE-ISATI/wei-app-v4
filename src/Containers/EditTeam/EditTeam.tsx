@@ -125,6 +125,7 @@ function EditTeam() {
           label="Nom de l'équipe"
           value={teamName ? teamName : ""}
           onChange={(event) => setTeamName(event.target.value)}
+          required
         />
         <Typography color="text.secondary" alignSelf={"flex-start"}>
           Image
