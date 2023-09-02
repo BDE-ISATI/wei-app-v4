@@ -5,6 +5,7 @@ import {
   TextField,
   Alert,
   IconButton,
+  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -37,7 +38,6 @@ function CreateChallenge() {
 
   const [open, setOpen] = useState<boolean>(false);
   const [preview, setPreview] = useState<string | undefined>(undefined);
-  const [challengePic, setChallengePic] = useState<File | null>(null);
   const [newChallengePic, setNewChallengePic] = useState<File | null>(null);
   const [newChallengePicPreview, setNewChallengePicPreview] = useState<
     string | undefined
@@ -50,7 +50,6 @@ function CreateChallenge() {
     const file = event.target.files ? event.target.files[0] : null;
     if (file != null) {
       setPreview(URL.createObjectURL(file));
-      setChallengePic(file);
       setOpen(true);
     }
     event.target.value = "";
@@ -85,7 +84,6 @@ function CreateChallenge() {
 
   const theme = useTheme();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const createChallenge = async () => {
     setErrorMessage("");
@@ -168,6 +166,7 @@ function CreateChallenge() {
           label="ID du challenge"
           value={challengeId}
           onChange={(event) => setChallengeId(event.target.value)}
+          required
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
@@ -181,6 +180,7 @@ function CreateChallenge() {
           label="Nom du challenge"
           value={challengeName}
           onChange={(event) => setChallengeName(event.target.value)}
+          required
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
@@ -195,6 +195,7 @@ function CreateChallenge() {
           value={challengeDescription}
           onChange={(event) => setChallengeDescription(event.target.value)}
           rows={4}
+          required
           multiline
         />
         <TextField
@@ -209,6 +210,7 @@ function CreateChallenge() {
           type="number"
           label="Points"
           value={challengePoints}
+          required
           onChange={(event) => setChallengePoints(Number(event.target.value))}
         />
         <Box
@@ -221,14 +223,14 @@ function CreateChallenge() {
           }}
         >
           <DateTimePicker
-            label="Début"
+            label="Début *"
             ampm={false}
             sx={{ flex: 1, mr: 1 }}
             value={challengeStartDate}
             onChange={(newValue) => setChallengeStartDate(newValue)}
           />
           <DateTimePicker
-            label="Fin"
+            label="Fin *"
             ampm={false}
             sx={{ flex: 1, ml: 1 }}
             value={challengeEndDate}
@@ -242,6 +244,9 @@ function CreateChallenge() {
             }}
           />
         </Box>
+        <Typography color="text.secondary" alignSelf={"flex-start"}>
+          Image
+        </Typography>
         <IconButton
           sx={{
             width: "100%",

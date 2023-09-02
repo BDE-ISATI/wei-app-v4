@@ -1,16 +1,15 @@
 import {
   Box,
-  Button,
   useTheme,
   TextField,
   Alert,
   Backdrop,
   CircularProgress,
   IconButton,
+  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import dayjs, { Dayjs, unix } from "dayjs";
+import { Dayjs, unix } from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
@@ -46,7 +45,6 @@ function EditChallenge() {
 
   const [open, setOpen] = useState<boolean>(false);
   const [preview, setPreview] = useState<string | undefined>(undefined);
-  const [challengePic, setChallengePic] = useState<File | null>(null);
   const [newChallengePic, setNewChallengePic] = useState<File | null>(null);
   const [newChallengePicPreview, setNewChallengePicPreview] = useState<
     string | undefined
@@ -56,7 +54,6 @@ function EditChallenge() {
     const file = event.target.files ? event.target.files[0] : null;
     if (file != null) {
       setPreview(URL.createObjectURL(file));
-      setChallengePic(file);
       setOpen(true);
     }
     event.target.value = "";
@@ -241,6 +238,9 @@ function EditChallenge() {
             }}
           />
         </Box>
+        <Typography color="text.secondary" alignSelf={"flex-start"}>
+          Image
+        </Typography>
         <IconButton
           sx={{
             width: "100%",
