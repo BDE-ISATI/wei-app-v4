@@ -53,12 +53,13 @@ function ChallengeCard(props: Props) {
             maxWidth: "100%",
             width: "100%",
             borderBottom: "solid black",
+            filter: `${unix(Date.now()/1000).toDate() < end && unix(Date.now()/1000).toDate() > start ? "" : "grayscale(1)"}`,
           }}
         />
       ) : (
         <CardContent
           style={{
-            backgroundColor: `${theme.palette.secondary.main}`,
+            backgroundColor: `${unix(Date.now()/1000).toDate() < end && unix(Date.now()/1000).toDate() > start ? theme.palette.secondary.main : "gray"}`,
             borderBottom: "solid black",
           }}
         />
