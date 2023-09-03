@@ -1,11 +1,21 @@
 import React, {useState} from "react";
-import {Box, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography, useTheme} from "@mui/material";
+import {
+  Backdrop,
+  Box, CircularProgress,
+  Divider,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
+  useTheme
+} from "@mui/material";
 import {IUserData, IChallengeData} from "../../Transforms";
 import {IUserSmallData, reduceUserData} from "../../Transforms/User";
 import {useParams} from "react-router";
 import Api from "../../Services/Api";
 import {UserAvatar} from "../../Components/UserAvatar";
-import { BackButton} from "../../Components/BackButton";
+import {BackButton} from "../../Components/BackButton";
 
 interface IChallengeDataListItem {
   challenge: IChallengeData;
@@ -42,7 +52,7 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined) => {
     .map((data, index) => (
       <div key={index}>
         <ChallengeListItem challenge={data}/>
-        <Divider component="li" />
+        <Divider component="li"/>
       </div>
     ));
 }
@@ -108,9 +118,26 @@ const UserDetails = () => {
           {generateChallengeList(challenges?.filter((challenge) => {
             return userData.challenges_done.includes(challenge.challenge)
           }))}
+          {(userData.challenges_done.length === 0 &&
+              <Typography
+                  color={theme.palette.text.secondary}
+                  sx={{fontWeight: 300, textAlign: "center"}}>
+                  Cette personne n'a pas encore réalisé de défis.
+              </Typography>
+          )}
         </List>
       </Box>)
-    }</>;
+    }
+    <Backdrop
+      sx={{
+        color: "#fff",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+      open={userData === undefined && challenges === undefined}
+    >
+      <CircularProgress color="inherit"/>
+    </Backdrop>
+  </>;
 };
 
 export default UserDetails;
