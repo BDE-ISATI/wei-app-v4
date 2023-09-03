@@ -6,6 +6,7 @@ import { teamApiCalls } from "./Teams";
 import { challengeApiCalls } from "./Challenges";
 import { pictureApiCalls } from "./Picture";
 import store from "../../Reducers";
+import { loggedIn } from "../../Reducers/Auth";
 
 export const AUTH_API = create({
   baseURL: AppConfig.apiUrls.cognito,
@@ -19,11 +20,17 @@ export const BASE_API = create({
 });
 
 BASE_API.addAsyncResponseTransform(async (response) => {
-  if (response.status === 401 || response.status === 403) {
-    await authApiCalls(AUTH_API).REFRESH_TOKEN();
-    const data = await BASE_API.any(response.config!);
-    // replace data
-    response.data = data.data;
+  if (response.data?.message === "The incoming token has expired") {
+    const authData = await authApiCalls(AUTH_API).REFRESH_TOKEN();
+    if (authData.ok) {
+      var config = response.config!;
+      config.headers!["Authorization"] =
+        authData.data!.AuthenticationResult.TokenType +
+        " " +
+        authData.data!.AuthenticationResult.IdToken;
+      const data = await BASE_API.any(response.config!);
+      response.data = data.data;
+    }
   }
 });
 

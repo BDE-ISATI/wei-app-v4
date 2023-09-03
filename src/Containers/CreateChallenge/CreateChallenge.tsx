@@ -1,4 +1,12 @@
-import { Box, Button, useTheme, TextField, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  useTheme,
+  TextField,
+  Alert,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Dayjs } from "dayjs";
@@ -7,6 +15,9 @@ import { DateTimePicker, DateTimeValidationError } from "@mui/x-date-pickers";
 import Api from "../../Services/Api";
 import { ICreateChallengeData } from "../../Transforms/Challenge";
 import { validIDRegex } from "../../Config/AppConfig";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
+import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
 
 function CreateChallenge() {
   const [challengeId, setChallengeId] = useState<string | null>(null);
@@ -23,9 +34,36 @@ function CreateChallenge() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
+
+  const [open, setOpen] = useState<boolean>(false);
+  const [preview, setPreview] = useState<string | undefined>(undefined);
+  const [newChallengePic, setNewChallengePic] = useState<File | null>(null);
+  const [newChallengePicPreview, setNewChallengePicPreview] = useState<
+    string | undefined
+  >(undefined);
 
   const [dateError, setDateError] =
     React.useState<DateTimeValidationError | null>(null);
+
+  const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file != null) {
+      setPreview(URL.createObjectURL(file));
+      setOpen(true);
+    }
+    event.target.value = "";
+  };
+
+  const handleImageCreate = (croppedImage: File | undefined) => {
+    setNewChallengePic(croppedImage!);
+    setNewChallengePicPreview(URL.createObjectURL(croppedImage!));
+    setOpen(false);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const dateErrorMessage = React.useMemo(() => {
     switch (dateError) {
@@ -46,9 +84,8 @@ function CreateChallenge() {
 
   const theme = useTheme();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const createChallenge = () => {
+  const createChallenge = async () => {
     setErrorMessage("");
     if (
       !challengeId ||
@@ -60,7 +97,9 @@ function CreateChallenge() {
       return;
     }
     if (!validIDRegex.test(challengeId)) {
-      setErrorMessage("L'ID du challenge ne peux pas contenir de caractères spéciaux");
+      setErrorMessage(
+        "L'ID du challenge ne peux pas contenir de caractères spéciaux"
+      );
       return;
     }
     if (!challengeStartDate) {
@@ -82,17 +121,26 @@ function CreateChallenge() {
       name: challengeName,
       start: challengeStartDate.unix(),
     };
+    setLoadingButton(true);
+    if (newChallengePic) {
+      let response = await Api.apiCalls.POST_PICTURE(newChallengePic, "banner");
+      if (response.ok) {
+        challengeData.picture_id = response.data?.id;
+      }
+    }
     Api.apiCalls.CREATE_CHALLENGE(challengeData).then((response) => {
       if (response.ok) {
         navigate("/challenges/" + challengeId);
       } else {
         setErrorMessage(response.data?.message);
       }
+      setLoadingButton(false);
     });
   };
 
   return (
     <>
+      <BackButton />
       <Box
         sx={{
           bgcolor: "background.paper",
@@ -118,6 +166,7 @@ function CreateChallenge() {
           label="ID du challenge"
           value={challengeId}
           onChange={(event) => setChallengeId(event.target.value)}
+          required
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
@@ -131,6 +180,7 @@ function CreateChallenge() {
           label="Nom du challenge"
           value={challengeName}
           onChange={(event) => setChallengeName(event.target.value)}
+          required
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
@@ -145,6 +195,7 @@ function CreateChallenge() {
           value={challengeDescription}
           onChange={(event) => setChallengeDescription(event.target.value)}
           rows={4}
+          required
           multiline
         />
         <TextField
@@ -159,6 +210,7 @@ function CreateChallenge() {
           type="number"
           label="Points"
           value={challengePoints}
+          required
           onChange={(event) => setChallengePoints(Number(event.target.value))}
         />
         <Box
@@ -171,14 +223,14 @@ function CreateChallenge() {
           }}
         >
           <DateTimePicker
-            label="Début"
+            label="Début *"
             ampm={false}
             sx={{ flex: 1, mr: 1 }}
             value={challengeStartDate}
             onChange={(newValue) => setChallengeStartDate(newValue)}
           />
           <DateTimePicker
-            label="Fin"
+            label="Fin *"
             ampm={false}
             sx={{ flex: 1, ml: 1 }}
             value={challengeEndDate}
@@ -192,19 +244,36 @@ function CreateChallenge() {
             }}
           />
         </Box>
-
-        <Button
-          variant="contained"
+        <Typography color="text.secondary" alignSelf={"flex-start"}>
+          Image
+        </Typography>
+        <IconButton
           sx={{
-            marginTop: 5,
-            maxWidth: "600px",
             width: "100%",
+            maxWidth: "100%",
+            aspectRatio: "3/1",
             borderRadius: 0,
+            overflow: "hidden",
+            border: "solid 1px",
+            borderColor: theme.palette.text.disabled,
           }}
+          component="label"
+        >
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleFileInput}
+          />
+          <img src={newChallengePicPreview} width="100%" height="100%" />
+        </IconButton>
+
+        <LoadingButton
           onClick={() => createChallenge()}
+          loading={loadingButton}
         >
           Créer le challenge
-        </Button>
+        </LoadingButton>
         {errorMessage && (
           <Alert
             variant="outlined"
@@ -218,6 +287,15 @@ function CreateChallenge() {
           </Alert>
         )}
       </Box>
+      <ImageCropPrompt
+        onClose={handleClose}
+        open={open}
+        image={preview}
+        onImageCreate={handleImageCreate}
+        title={""}
+        aspectRatio={3 / 1}
+        cropShape="rect"
+      />
     </>
   );
 }

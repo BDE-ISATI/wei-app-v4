@@ -10,23 +10,29 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Alert
+  Alert,
 } from "@mui/material";
-import React, {useState} from "react";
-import {UserAvatar} from "../../Components/UserAvatar";
-import {IUserUpdateData, reduceUserData} from "../../Transforms/User";
-import {useDispatch, useSelector} from "react-redux";
-import {IState} from "../../Reducers";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPenToSquare, faPencil} from "@fortawesome/free-solid-svg-icons";
-import {TransitionProps} from "@mui/material/transitions";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
+import React, { useState } from "react";
+import { UserAvatar } from "../../Components/UserAvatar";
+import { IUserUpdateData, reduceUserData } from "../../Transforms/User";
+import { useDispatch, useSelector } from "react-redux";
+import { IState } from "../../Reducers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faListSquares,
+  faPenToSquare,
+  faPencil,
+} from "@fortawesome/free-solid-svg-icons";
+import { TransitionProps } from "@mui/material/transitions";
+
 import Api from "../../Services/Api";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
-import type {Area} from "react-easy-crop";
+import type { Area } from "react-easy-crop";
 import getCroppedImg from "../../Utils/cropImage";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
+import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
 
 function EditProfile() {
   const userData = useSelector((state: IState) => state.user);
@@ -42,10 +48,8 @@ function EditProfile() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
-  const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [open, setOpen] = useState<boolean>(false);
-  const [crop, setCrop] = useState({x: 0, y: 0});
-  const [zoom, setZoom] = useState(1);
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const theme = useTheme();
   const navigate = useNavigate();
@@ -62,6 +66,7 @@ function EditProfile() {
 
   const handleEditSelf = async () => {
     var editedUser: IUserUpdateData = {};
+    setLoadingButton(true);
     if (newProfilePic) {
       let response = await Api.apiCalls.POST_PICTURE(newProfilePic);
       if (response.ok) {
@@ -80,6 +85,7 @@ function EditProfile() {
       editedUser.show != undefined
     ) {
       Api.apiCalls.EDIT_SELF(editedUser).then((response) => {
+        setLoadingButton(false);
         if (response.ok) {
           navigate(-1);
           setErrorMessage(undefined);
@@ -88,18 +94,12 @@ function EditProfile() {
           setErrorMessage(response.data?.message);
         }
       });
+    } else {
+      setLoadingButton(false);
     }
   };
 
-  const onCropComplete = (
-    croppedAreaPercentage: Area,
-    croppedAreaPixels: Area
-  ) => {
-    setCroppedArea(croppedAreaPixels);
-  };
-
-  const handleCreateCroppedImage = async () => {
-    const croppedImage = await getCroppedImg(preview!, croppedArea!);
+  const handleImageCreate = (croppedImage: File | undefined) => {
     setNewProfilePic(croppedImage!);
     setNewProfilePicPreview(URL.createObjectURL(croppedImage!));
     setOpen(false);
@@ -111,6 +111,7 @@ function EditProfile() {
 
   return (
     <>
+      <BackButton />
       <Box
         sx={{
           bgcolor: "background.paper",
@@ -125,7 +126,7 @@ function EditProfile() {
       >
         <IconButton component="label">
           <Badge
-            badgeContent={<FontAwesomeIcon icon={faPencil}/>}
+            badgeContent={<FontAwesomeIcon icon={faPencil} />}
             color="primary"
             overlap="circular"
             sx={{
@@ -158,7 +159,7 @@ function EditProfile() {
           />
         </IconButton>
         <TextField
-          sx={{maxWidth: "300px", width: "100%", m: 1, marginTop: 4}}
+          sx={{ maxWidth: "300px", width: "100%", m: 1, marginTop: 4 }}
           InputProps={{
             sx: {
               borderRadius: 0,
@@ -175,24 +176,15 @@ function EditProfile() {
             marginTop: 5,
             maxWidth: "300px",
             width: "100%",
-            borderRadius: 0
+            borderRadius: 0,
           }}
           onClick={() => setShowUser(!showUser)}
         >
           Afficher sur le classement
         </Button>
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: 5,
-            maxWidth: "300px",
-            width: "100%",
-            borderRadius: 0,
-          }}
-          onClick={handleEditSelf}
-        >
+        <LoadingButton onClick={handleEditSelf} loading={loadingButton}>
           Appliquer
-        </Button>
+        </LoadingButton>
         {errorMessage && (
           <Alert
             variant="outlined"
@@ -205,71 +197,14 @@ function EditProfile() {
             {errorMessage}
           </Alert>
         )}
-
       </Box>
-      <Dialog
+      <ImageCropPrompt
         onClose={handleClose}
         open={open}
-        sx={{
-          "& .MuiDialog-paper": {
-            boxShadow: `10px 10px 0px black`,
-            border: "solid black",
-            borderRadius: 0,
-          },
-        }}
-      >
-        <DialogTitle>C'est bien ça ta tête?</DialogTitle>
-        <DialogContent>
-          <Box
-            style={{
-              width: "50vh",
-              height: "50vh",
-              maxWidth: "75vw",
-              maxHeight: "75vw",
-              position: "relative",
-            }}
-          >
-            <Cropper
-              image={preview}
-              crop={crop}
-              zoom={zoom}
-              aspect={1}
-              maxZoom={5}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
-              objectFit="cover"
-              cropShape="round"
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <IconButton
-            size="small"
-            sx={{
-              marginLeft: "auto",
-              borderRadius: 0,
-              backgroundColor: theme.palette.success.light,
-              border: "solid black",
-            }}
-            onClick={handleCreateCroppedImage}
-          >
-            <CheckIcon sx={{color: "black"}}/>
-          </IconButton>
-          <IconButton
-            size="small"
-            sx={{
-              marginLeft: "auto",
-              borderRadius: 0,
-              backgroundColor: theme.palette.error.light,
-              border: "solid black",
-            }}
-            onClick={handleClose}
-          >
-            <CloseIcon sx={{color: "black"}}/>
-          </IconButton>
-        </DialogActions>
-      </Dialog>
+        image={preview}
+        onImageCreate={handleImageCreate}
+        title={"C'est bien ta tête ça?"}
+      />
     </>
   );
 }

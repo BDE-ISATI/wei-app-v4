@@ -11,7 +11,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { IChallengeData } from "../../Transforms";
 import Api from "../../Services/Api";
 import { useParams } from "react-router";
@@ -22,20 +22,30 @@ import { IUserSmallData } from "../../Transforms/User";
 import { UserAvatar } from "../../Components/UserAvatar";
 import { useNavigate } from "react-router-dom";
 
-import { unix } from "dayjs";
+import dayjs, { unix } from "dayjs";
+import { BackButton } from "../../Components/BackButton";
+import { LoadingButton } from "../../Components/LoadingButton";
+import { useCountdown } from "../../Hooks/CountDown";
+import { yaUnS } from "../../Utils/yaUnS";
 
-const UserListItem = (props: { user: IUserSmallData }) => {
+const UserListItem = (props: { user: IUserSmallData; rank: number }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   return (
     <ListItem
       sx={{
         color: theme.palette.getContrastText(theme.palette.background.default),
       }}
+      onClick={() => {navigate("/users/" + props.user.username)}}
     >
+      <Typography sx={{ marginRight: 2 }}>{props.rank + 1}</Typography>
       <ListItemAvatar>
         <UserAvatar user={props.user} />
       </ListItemAvatar>
-      <ListItemText primary={props.user.display_name} />
+      <ListItemText
+        primary={props.user.display_name}
+        secondary={unix(props.user.time!).format("[Le] DD/MM/YYYY à HH:mm:ss")}
+      />
     </ListItem>
   );
 };
@@ -44,13 +54,56 @@ const generateUserList = (users: IUserSmallData[] | undefined) => {
   if (users === undefined) {
     return <></>;
   }
-  return users.map((data, index) => (
-    <div key={index}>
-      <UserListItem user={data} />
-      <Divider component="li" />
-    </div>
-  ));
+  return users
+    .sort((a: IUserSmallData, b: IUserSmallData) => a.time! - b.time!)
+    .map((data, index) => (
+      <div key={index}>
+        <UserListItem user={data} rank={index} />
+        <Divider component="li" />
+      </div>
+    ));
 };
+
+const distToChall = (start: number, end: number) => {
+  const now = dayjs().unix();
+  if (start > now) {
+    return now - start;
+  } else if (end < now) {
+    return now - end;
+  } else {
+    return 0;
+  }
+};
+
+const DateCountDown = (props: { challengeData: IChallengeData }) => {
+  const dist = distToChall(props.challengeData.start, props.challengeData.end);
+  const targetDate =
+    dist < 0
+      ? props.challengeData.start
+      : dist === 0
+      ? props.challengeData.end
+      : 0;
+
+  var [days, hours, minutes, seconds] = useCountdown(
+    unix(targetDate).valueOf()
+  );
+
+  if (targetDate === 0) {
+    return <></>;
+  }
+
+  return (
+    <Typography
+      sx={{ ml: 1.5, mr: 1.5, textAlign: "center" }}
+      color="text.primary"
+    >
+      {targetDate === props.challengeData.start ? "Commence " : "Se termine "}
+      dans {days} jours, {hours} heures, <br />
+      {minutes} minutes et {seconds} secondes.
+    </Typography>
+  );
+};
+
 const Challenge = () => {
   const [challengeData, setChallengeData] = React.useState<
     IChallengeData | undefined
@@ -60,6 +113,10 @@ const Challenge = () => {
   const userPendingChallenges = useSelector(
     (state: IState) => state.user.challenges_pending
   );
+  const userDoneChallenge = useSelector(
+    (state: IState) => state.user.challenges_done
+  );
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const theme = useTheme();
   const { id } = useParams();
@@ -74,14 +131,28 @@ const Challenge = () => {
   }, []);
 
   const requestChallengeValidation = () => {
+    setLoadingButton(true);
     Api.apiCalls.REQUEST_CHALLENGE(id!).then((response) => {
       if (response.ok) {
-        Api.apiCalls.GET_SELF();
+        Api.apiCalls.GET_SELF().then(() => {
+          setLoadingButton(false);
+        });
+      } else {
+        setLoadingButton(false);
       }
     });
   };
+  var background: string | undefined = undefined;
+  if (
+    challengeData &&
+    challengeData.picture_id &&
+    challengeData.picture_id != ""
+  ) {
+    background = Api.apiCalls.GET_PICTURE_URL(challengeData.picture_id);
+  }
   return (
     <>
+      <BackButton />
       {challengeData && (
         <Box
           sx={{
@@ -95,54 +166,81 @@ const Challenge = () => {
             flex: 1,
           }}
         >
-          <Box
-            style={{
-              backgroundColor: `${theme.palette.secondary.main}`,
-              width: "100%",
-              borderBottom: "solid black",
+          {background ? (
+            <img
+              src={background}
+              style={{
+                maxWidth: "100%",
+                width: "100%",
+                borderBottom: "solid black",
+                filter: `${Date.now()/1000 < challengeData.end && Date.now()/1000 > challengeData.start ? "" : "grayscale(1)"}`,
+              }}
+            />
+          ) : (
+            <Box
+              style={{
+                backgroundColor: `${Date.now()/1000 < challengeData.end && Date.now()/1000 > challengeData.start ? theme.palette.secondary.main : "gray"}`,
+                width: "100%",
+                borderBottom: "solid black",
+                height: "30px",
+              }}
+            />
+          )}
+          <Typography
+            color="text.primary"
+            sx={{
+              alignSelf: "center",
+              textAlign: "center",
+              fontWeight: 800,
+              marginBottom: 2,
+              marginTop: 2,
+              wordBreak: "break-word",
             }}
           >
-            <Typography
-              color={theme.palette.getContrastText(theme.palette.primary.main)}
-              sx={{ fontWeight: 800, textAlign: "center", margin: 2 }}
-            >
-              {challengeData.name}
-              <br />
-              {challengeData.points} point
-              {challengeData.points > 1 ? "s" : ""}
-            </Typography>
-          </Box>
+            {challengeData.name}
+            <br />
+            {challengeData.points} point
+            {yaUnS(challengeData.points)}
+          </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             Du{" "}
             <b>{unix(challengeData.start).toDate().toLocaleDateString("fr")}</b>{" "}
             au{" "}
             <b>{unix(challengeData.end).toDate().toLocaleDateString("fr")}</b>
           </Typography>
+          <Divider flexItem />
+          {distToChall(challengeData.start, challengeData.end) > 0 && (
+            <Typography sx={{ mb: 1.5 }} color="text.primary">
+              Ce challenge est terminé
+            </Typography>
+          )}
+
           <Typography
-            sx={{ mb: 1.5, ml: 1.5, mr: 1.5 }}
+            sx={{ m: 1.5 }}
             color="text.primary"
             alignSelf={"flex-start"}
           >
             {challengeData.description}
           </Typography>
+          <Divider sx={{ mb: 1.5 }} flexItem />
+          <DateCountDown challengeData={challengeData} />
           {userLoggedIn && !isAdmin && (
-            <Button
-              variant="contained"
+            <LoadingButton
               color="success"
-              disabled={userPendingChallenges.includes(id!)}
-              sx={{
-                marginTop: 5,
-                marginBottom: 5,
-                maxWidth: "300px",
-                width: "100%",
-                borderRadius: 0,
-              }}
+              disabled={
+                userPendingChallenges.includes(id!) ||
+                userDoneChallenge.includes(id!) ||
+                distToChall(challengeData.start, challengeData.end) !== 0
+              }
               onClick={requestChallengeValidation}
+              loading={loadingButton}
             >
               {userPendingChallenges.includes(id!)
                 ? "En attente de validation"
+                : userDoneChallenge.includes(id!)
+                ? "Challenge validé"
                 : "Valider ce challenge"}
-            </Button>
+            </LoadingButton>
           )}
           {userLoggedIn && isAdmin && (
             <Button
