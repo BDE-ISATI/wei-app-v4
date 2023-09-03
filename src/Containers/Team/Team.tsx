@@ -29,11 +29,13 @@ import {yaUnS} from "../../Utils/yaUnS";
 
 const UserListItem = (props: { user: IUserSmallData }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   return (
     <ListItem
       sx={{
         color: theme.palette.getContrastText(theme.palette.background.default),
       }}
+      onClick={() => {navigate("/users/" + props.user.username)}}
     >
       <ListItemAvatar>
         <UserAvatar user={props.user}/>

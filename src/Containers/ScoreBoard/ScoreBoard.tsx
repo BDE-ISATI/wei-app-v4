@@ -14,6 +14,7 @@ import { useTheme } from "@mui/material/styles";
 import Api from "../../Services/Api";
 import { IUserData } from "../../Transforms";
 import { reduceUserData } from "../../Transforms/User";
+import {useNavigate} from "react-router-dom";
 
 interface IUserListItem {
   user: IUserData;
@@ -22,11 +23,14 @@ interface IUserListItem {
 
 const UserListItem = (props: IUserListItem) => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
   return (
     <ListItem
       sx={{
         color: theme.palette.getContrastText(theme.palette.background.default),
       }}
+      onClick={() => {navigate("/users/" + props.user.username)}}
     >
       <Typography sx={{ marginRight: 2 }}>{props.rank + 1}</Typography>
       <ListItemAvatar>
