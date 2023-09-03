@@ -1,5 +1,15 @@
 import React, {useState} from "react";
-import {Box, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography, useTheme} from "@mui/material";
+import {
+  Backdrop,
+  Box, CircularProgress,
+  Divider,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
+  useTheme
+} from "@mui/material";
 import {IUserData, IChallengeData} from "../../Transforms";
 import {IUserSmallData, reduceUserData} from "../../Transforms/User";
 import {useParams} from "react-router";
@@ -110,7 +120,17 @@ const UserDetails = () => {
           }))}
         </List>
       </Box>)
-    }</>;
+    }
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={userData === undefined && challenges === undefined}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+  </>;
 };
 
 export default UserDetails;
