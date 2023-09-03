@@ -34,6 +34,7 @@ import { TeamRequests } from "./Containers/TeamRequests";
 import { NewsList } from "./Containers/NewsList";
 import { MyChallenges } from "./Containers/MyChallenges";
 import InstallPWA from "./Components/InstallPWA/InstallPWA";
+import {UserDetails} from "./Containers/UserDetails";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -125,6 +126,10 @@ export default function App() {
         {
           path: "/account/challenges",
           element: <MyChallenges />,
+        },
+        {
+          path: "/users/:username",
+          element:  <UserDetails />,
         },
       ],
     },
