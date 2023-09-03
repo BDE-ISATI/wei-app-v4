@@ -57,8 +57,8 @@ const updateTeam =
 
 const acceptJoinTeam =
   (api: ApisauceInstance) =>
-  async (username: string, team: string): Promise<ApiResponse<IResult>> => {
-    const apiResponse = await api.post<IResult>(`/teams/${team}/accept`, {
+  async (username: string, team: string, deny: boolean = false): Promise<ApiResponse<IResult>> => {
+    const apiResponse = await api.post<IResult>(`/teams/${team}/accept${deny ? "?deny" : ""}`, {
       username: username,
     });
 

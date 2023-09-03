@@ -11,13 +11,14 @@ import {
   TextField,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import Api from "../../Services/Api";
 import { useDispatch, useSelector } from "react-redux";
 import { AuthActions, loggedIn } from "../../Reducers/Auth";
 import { UserActions } from "../../Reducers/User";
 import { useNavigate } from "react-router-dom";
 import { IState } from "../../Reducers";
+import { LoadingButton } from "../../Components/LoadingButton";
 
 function LoginScreen() {
   const theme = useTheme();
@@ -30,6 +31,7 @@ function LoginScreen() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   React.useEffect(() => {
     if (userLoggedIn) {
@@ -46,7 +48,9 @@ function LoginScreen() {
   };
 
   const handleLogin = async () => {
+    setLoadingButton(true);
     const response = await Api.apiCalls.USER_LOGIN({ username, password });
+    setLoadingButton(false);
     if (!response.ok) {
       setErrorMessage(response.data?.message);
     }
@@ -110,13 +114,9 @@ function LoginScreen() {
           {errorMessage}
         </Alert>
       )}
-      <Button
-        variant="contained"
-        sx={{ marginTop: 5, maxWidth: "300px", width: "100%", borderRadius: 0 }}
-        onClick={handleLogin}
-      >
+      <LoadingButton onClick={handleLogin} loading={loadingButton}>
         Se connecter
-      </Button>
+      </LoadingButton>
       <Link sx={{ m: 1 }} href="/register">
         Je n'ai pas de compte
       </Link>
