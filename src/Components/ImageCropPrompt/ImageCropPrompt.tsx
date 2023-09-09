@@ -59,7 +59,7 @@ const ImageCropPrompt: React.FC<Props> = (props) => {
           style={{
             width: "50vh",
             maxWidth: "100%",
-            aspectRatio: "1",
+            aspectRatio: props.aspectRatio || 1,
             position: "relative",
           }}
         >
@@ -72,7 +72,7 @@ const ImageCropPrompt: React.FC<Props> = (props) => {
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
-            objectFit="cover"
+            objectFit={"cover"}
             cropShape={props.cropShape || "round"}
           />
         </Box>
