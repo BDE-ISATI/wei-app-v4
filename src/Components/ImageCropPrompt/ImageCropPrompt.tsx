@@ -21,6 +21,12 @@ interface Props {
   title: string;
   aspectRatio?: number;
   cropShape?: "rect" | "round";
+  objectFit?:
+    | "contain"
+    | "cover"
+    | "horizontal-cover"
+    | "vertical-cover"
+    | undefined;
 }
 
 const ImageCropPrompt: React.FC<Props> = (props) => {
@@ -72,7 +78,7 @@ const ImageCropPrompt: React.FC<Props> = (props) => {
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
-            objectFit="cover"
+            objectFit={props.objectFit}
             cropShape={props.cropShape || "round"}
           />
         </Box>
