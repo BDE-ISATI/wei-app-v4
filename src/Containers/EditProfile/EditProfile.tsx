@@ -204,7 +204,6 @@ function EditProfile() {
         image={preview}
         onImageCreate={handleImageCreate}
         title={"C'est bien ta tête ça?"}
-        objectFit="cover"
       />
     </>
   );
