@@ -57,7 +57,14 @@ function LoginScreen() {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "90vw",
+      }}
+    >
       <TextField
         sx={{ maxWidth: "300px", width: "100%", m: 1 }}
         InputProps={{
