@@ -8,12 +8,13 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { IChallengeData } from "../../Transforms";
+import { IChallengeData, IUserData } from "../../Transforms";
 import { useNavigate } from "react-router-dom";
 import { UserAvatarGroup } from "../UserAvatarGroup";
 import { unix } from "dayjs";
 import Api from "../../Services/Api";
 import { Divider } from "@mui/material";
+import { IUserSmallData } from "../../Transforms/User";
 
 interface Props {
   challengeData: IChallengeData;
@@ -50,13 +51,23 @@ function ChallengeCard(props: Props) {
             maxWidth: "100%",
             width: "100%",
             borderBottom: "solid black",
-            filter: `${unix(Date.now()/1000).toDate() < end && unix(Date.now()/1000).toDate() > start ? "" : "grayscale(1)"}`,
+            filter: `${
+              unix(Date.now() / 1000).toDate() < end &&
+              unix(Date.now() / 1000).toDate() > start
+                ? ""
+                : "grayscale(1)"
+            }`,
           }}
         />
       ) : (
         <CardContent
           style={{
-            backgroundColor: `${unix(Date.now()/1000).toDate() < end && unix(Date.now()/1000).toDate() > start ? theme.palette.secondary.main : "gray"}`,
+            backgroundColor: `${
+              unix(Date.now() / 1000).toDate() < end &&
+              unix(Date.now() / 1000).toDate() > start
+                ? theme.palette.secondary.main
+                : "gray"
+            }`,
             borderBottom: "solid black",
           }}
         />
@@ -94,7 +105,15 @@ function ChallengeCard(props: Props) {
       </CardContent>
       <CardActions disableSpacing>
         <Box marginLeft={1}>
-          <UserAvatarGroup userData={props.challengeData.users} max={5} />
+          <UserAvatarGroup
+            userData={props.challengeData.users.sort(
+              (a: IUserSmallData, b: IUserSmallData) => {
+                return a.time! - b.time!;
+              }
+            )}
+            max={5}
+            showCrown
+          />
         </Box>
         <IconButton
           size="small"
