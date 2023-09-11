@@ -14,16 +14,16 @@ import {
   Collapse,
   IconButton,
 } from "@mui/material";
-import React, {ReactNode, useState, useEffect} from "react";
-import {UserAvatar} from "../../Components/UserAvatar";
-import {useTheme} from "@mui/material/styles";
+import React, { ReactNode, useState, useEffect } from "react";
+import { UserAvatar } from "../../Components/UserAvatar";
+import { useTheme } from "@mui/material/styles";
 import Api from "../../Services/Api";
-import {IChallengeData, ITeamData, IUserData} from "../../Transforms";
-import {reduceUserData} from "../../Transforms/User";
-import {ExpandLess, ExpandMore, StarBorder} from "@mui/icons-material";
+import { IChallengeData, ITeamData, IUserData } from "../../Transforms";
+import { reduceUserData } from "../../Transforms/User";
+import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
-import {useNavigate} from "react-router-dom";
-import {BackButton} from "../../Components/BackButton";
+import { useNavigate } from "react-router-dom";
+import { BackButton } from "../../Components/BackButton";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface ITeamListItem {
@@ -56,8 +56,8 @@ const UserListItem = (props: {
 
   return (
     <>
-      <BackButton/>
-      <Divider component="li"/>
+      <BackButton />
+      <Divider component="li" />
       <ListItem
         secondaryAction={
           <>
@@ -71,7 +71,7 @@ const UserListItem = (props: {
               }}
               onClick={validateTeam}
             >
-              <CheckIcon sx={{color: "black"}}/>
+              <CheckIcon sx={{ color: "black" }} />
             </IconButton>
             <IconButton
               size="small"
@@ -83,12 +83,14 @@ const UserListItem = (props: {
               }}
               onClick={denyTeam}
             >
-              <CloseIcon sx={{color: "black"}}/>
+              <CloseIcon sx={{ color: "black" }} />
             </IconButton>
           </>
         }
       >
-        <ListItemButton sx={{pl: 4, color: theme.palette.text.primary, marginRight: 8,}}>
+        <ListItemButton
+          sx={{ pl: 4, color: theme.palette.text.primary, marginRight: 8 }}
+        >
           <ListItemText
             primary={props.user?.display_name || ""}
             secondary={props.user?.mail}
@@ -113,7 +115,7 @@ const generateUserList = (team: ITeamData, users: IUserData[]) => {
 };
 
 const TeamListItem = (props: ITeamListItem) => {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   const handleClick = () => {
     setOpen(!open);
@@ -137,13 +139,12 @@ const TeamListItem = (props: ITeamListItem) => {
             max={9}
             overlap="circular"
           >
-            <Avatar
-              sx={{border: "solid black",}}
-            /></Badge>
+            <Avatar sx={{ border: "solid black" }} />
+          </Badge>
         </ListItemAvatar>
 
-        <ListItemText primary={props.team.display_name}/>
-        {open ? <ExpandLess/> : <ExpandMore/>}
+        <ListItemText primary={props.team.display_name} />
+        {open ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
@@ -158,7 +159,7 @@ const NoPendingValidation = () => {
   const theme = useTheme();
   return (
     <ListItem>
-      <ListItemText sx={{pl: 4, color: theme.palette.text.primary}}>
+      <ListItemText sx={{ pl: 4, color: theme.palette.text.primary }}>
         Personne n'attend pour rejoindre une équipe!
       </ListItemText>
     </ListItem>
@@ -175,7 +176,7 @@ const generateTeamList = (
 
   let teamsWithPendingUsers = teams.filter((team) => team.pending.length > 0);
   if (teamsWithPendingUsers.length === 0) {
-    return <NoPendingValidation/>;
+    return <NoPendingValidation />;
   }
   return teamsWithPendingUsers
     .sort((a: ITeamData, b: ITeamData) => {
@@ -183,8 +184,8 @@ const generateTeamList = (
     })
     .map((data, index) => (
       <div key={index}>
-        <TeamListItem team={data} users={users!}/>
-        <Divider component="li"/>
+        <TeamListItem team={data} users={users!} />
+        <Divider component="li" />
       </div>
     ));
 };
@@ -207,7 +208,7 @@ const TeamRequests = () => {
   }, []);
   return (
     <div>
-      <BackButton/>
+      <BackButton />
       <List
         sx={{
           bgcolor: "background.paper",
@@ -220,10 +221,10 @@ const TeamRequests = () => {
         {generateTeamList(teamList, userList)}
       </List>
       <Backdrop
-        sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={teamList === undefined}
       >
-        <CircularProgress color="inherit"/>
+        <CircularProgress color="inherit" />
       </Backdrop>
     </div>
   );
