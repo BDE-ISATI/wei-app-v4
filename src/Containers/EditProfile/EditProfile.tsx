@@ -5,12 +5,10 @@ import {
   useTheme,
   TextField,
   Badge,
-  Slide,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Alert,
+  FormGroup,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import React, { useState } from "react";
 import { UserAvatar } from "../../Components/UserAvatar";
@@ -18,18 +16,10 @@ import { IUserUpdateData, reduceUserData } from "../../Transforms/User";
 import { useDispatch, useSelector } from "react-redux";
 import { IState } from "../../Reducers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faListSquares,
-  faPenToSquare,
-  faPencil,
-} from "@fortawesome/free-solid-svg-icons";
-import { TransitionProps } from "@mui/material/transitions";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
 import Api from "../../Services/Api";
 import { useNavigate } from "react-router-dom";
-import Cropper from "react-easy-crop";
-import type { Area } from "react-easy-crop";
-import getCroppedImg from "../../Utils/cropImage";
 import { BackButton } from "../../Components/BackButton";
 import { LoadingButton } from "../../Components/LoadingButton";
 import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
@@ -112,7 +102,7 @@ function EditProfile() {
   return (
     <>
       <BackButton />
-      <Box
+      <FormGroup
         sx={{
           bgcolor: "background.paper",
           boxShadow: `10px 10px 0px black`,
@@ -170,18 +160,20 @@ function EditProfile() {
           value={username}
           onChange={(event) => setUsername(event.target.value)}
         />
-        <Button
-          variant={showUser ? "contained" : "outlined"}
-          sx={{
-            marginTop: 5,
-            maxWidth: "300px",
-            width: "100%",
-            borderRadius: 0,
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showUser}
+              onChange={(event) => setShowUser(event.target.checked)}
+            />
+          }
+          style={{
+            color: showUser
+              ? theme.palette.text.primary
+              : theme.palette.text.disabled,
           }}
-          onClick={() => setShowUser(!showUser)}
-        >
-          Afficher sur le classement
-        </Button>
+          label="Afficher sur le classement"
+        />
         <LoadingButton onClick={handleEditSelf} loading={loadingButton}>
           Appliquer
         </LoadingButton>
@@ -197,7 +189,7 @@ function EditProfile() {
             {errorMessage}
           </Alert>
         )}
-      </Box>
+      </FormGroup>
       <ImageCropPrompt
         onClose={handleClose}
         open={open}
