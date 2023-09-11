@@ -60,9 +60,10 @@ function RegisterScreen() {
 
   const handleLogin = () => {
     setErrorMessage("");
-    if (!validIDRegex.test(username))
-    {
-      setErrorMessage("Le nom d'utilisateur ne peut pas contenir de caractères spéciaux");
+    if (!validIDRegex.test(username)) {
+      setErrorMessage(
+        "Le nom d'utilisateur ne peut pas contenir de caractères spéciaux"
+      );
       return;
     }
 
@@ -121,16 +122,18 @@ function RegisterScreen() {
         label={"Confirmer le mot de passe"}
       />
       {errorMessage && (
-        <Alert
-          variant="outlined"
-          severity="error"
-          sx={{
-            marginTop: 1,
-            borderRadius: 0,
-          }}
-        >
-          {errorMessage}
-        </Alert>
+        <div>
+          <Alert
+            variant="outlined"
+            severity="error"
+            sx={{
+              marginTop: 1,
+              borderRadius: 0,
+            }}
+          >
+            {errorMessage}
+          </Alert>
+        </div>
       )}
       <Button
         variant="contained"
