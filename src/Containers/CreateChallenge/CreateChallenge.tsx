@@ -275,16 +275,18 @@ function CreateChallenge() {
           Créer le challenge
         </LoadingButton>
         {errorMessage && (
-          <Alert
-            variant="outlined"
-            severity="error"
-            sx={{
-              marginTop: 1,
-              borderRadius: 0,
-            }}
-          >
-            {errorMessage}
-          </Alert>
+          <div>
+            <Alert
+              variant="outlined"
+              severity="error"
+              sx={{
+                marginTop: 1,
+                borderRadius: 0,
+              }}
+            >
+              {errorMessage}
+            </Alert>
+          </div>
         )}
       </Box>
       <ImageCropPrompt

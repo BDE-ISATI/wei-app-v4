@@ -57,7 +57,7 @@ function LoginScreen() {
   };
 
   return (
-    <>
+    <div>
       <TextField
         sx={{ maxWidth: "300px", width: "100%", m: 1 }}
         InputProps={{
@@ -103,16 +103,18 @@ function LoginScreen() {
         />
       </FormControl>
       {errorMessage && (
-        <Alert
-          variant="outlined"
-          severity="error"
-          sx={{
-            marginTop: 1,
-            borderRadius: 0,
-          }}
-        >
-          {errorMessage}
-        </Alert>
+        <div>
+          <Alert
+            variant="outlined"
+            severity="error"
+            sx={{
+              marginTop: 1,
+              borderRadius: 0,
+            }}
+          >
+            {errorMessage}
+          </Alert>
+        </div>
       )}
       <LoadingButton onClick={handleLogin} loading={loadingButton}>
         Se connecter
@@ -120,7 +122,7 @@ function LoginScreen() {
       <Link sx={{ m: 1 }} href="/register">
         Je n'ai pas de compte
       </Link>
-    </>
+    </div>
   );
 }
 
