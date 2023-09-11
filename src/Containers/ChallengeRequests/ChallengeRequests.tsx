@@ -1,30 +1,27 @@
 import {
-  Avatar,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Divider,
-  Typography,
   Backdrop,
   CircularProgress,
   Badge,
   ListItemButton,
-  ListItemIcon,
   Collapse,
   IconButton,
 } from "@mui/material";
-import React, {ReactNode, useState, useEffect} from "react";
-import {UserAvatar} from "../../Components/UserAvatar";
-import {useTheme} from "@mui/material/styles";
+import React, { useState } from "react";
+import { UserAvatar } from "../../Components/UserAvatar";
+import { useTheme } from "@mui/material/styles";
 import Api from "../../Services/Api";
-import {IChallengeData, IUserData} from "../../Transforms";
-import {reduceUserData} from "../../Transforms/User";
-import {ExpandLess, ExpandMore, StarBorder} from "@mui/icons-material";
+import { IChallengeData, IUserData } from "../../Transforms";
+import { reduceUserData } from "../../Transforms/User";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
-import {useNavigate} from "react-router-dom";
-import {BackButton} from "../../Components/BackButton";
-import {yaUnS} from "../../Utils/yaUnS";
+import { useNavigate } from "react-router-dom";
+import { BackButton } from "../../Components/BackButton";
+import { yaUnS } from "../../Utils/yaUnS";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface IUserListItem {
@@ -49,47 +46,51 @@ const ChallengeListItem = (props: {
 
   const denyChallenge = () => {
     Api.apiCalls
-      .ACCEPT_CHALLENGE_REQUEST(props.user.username, props.data!.challenge, true)
+      .ACCEPT_CHALLENGE_REQUEST(
+        props.user.username,
+        props.data!.challenge,
+        true
+      )
       .then((response) => {
         navigate(0);
       });
-  }
+  };
 
   return (
     <>
-      <Divider component="li"/>
+      <Divider component="li" />
       <ListItem
         secondaryAction={
-        <>
-          <IconButton
-            size="small"
-            sx={{
-              marginLeft: "auto",
-              borderRadius: 0,
-              backgroundColor: theme.palette.success.light,
-              border: "solid black",
-            }}
-            onClick={validateChallenge}
-          >
-            <CheckIcon sx={{color: "black"}}/>
-          </IconButton>
-          <IconButton
-            size="small"
-            sx={{
-              marginLeft: 1,
-              borderRadius: 0,
-              backgroundColor: theme.palette.error.light,
-              border: "solid black",
-            }}
-            onClick={denyChallenge}
-          >
-            <CloseIcon sx={{color: "black"}}/>
-          </IconButton>
-        </>
+          <>
+            <IconButton
+              size="small"
+              sx={{
+                marginLeft: "auto",
+                borderRadius: 0,
+                backgroundColor: theme.palette.success.light,
+                border: "solid black",
+              }}
+              onClick={validateChallenge}
+            >
+              <CheckIcon sx={{ color: "black" }} />
+            </IconButton>
+            <IconButton
+              size="small"
+              sx={{
+                marginLeft: 1,
+                borderRadius: 0,
+                backgroundColor: theme.palette.error.light,
+                border: "solid black",
+              }}
+              onClick={denyChallenge}
+            >
+              <CloseIcon sx={{ color: "black" }} />
+            </IconButton>
+          </>
         }
       >
         <ListItemButton
-          sx={{pl: 4, color: theme.palette.text.primary, marginRight: 8,}}
+          sx={{ pl: 4, color: theme.palette.text.primary, marginRight: 8 }}
           onClick={() => navigate("/challenges/" + props.data?.challenge)}
         >
           <ListItemText
@@ -124,7 +125,7 @@ const generateChallengeList = (
 };
 
 const UserListItem = (props: IUserListItem) => {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   const handleClick = () => {
     setOpen(!open);
@@ -148,7 +149,7 @@ const UserListItem = (props: IUserListItem) => {
             max={9}
             overlap="circular"
           >
-            <UserAvatar user={reduceUserData(props.user)}/>
+            <UserAvatar user={reduceUserData(props.user)} />
           </Badge>
         </ListItemAvatar>
 
@@ -156,7 +157,7 @@ const UserListItem = (props: IUserListItem) => {
           primary={props.user.display_name}
           secondary={props.user.mail}
         />
-        {open ? <ExpandLess/> : <ExpandMore/>}
+        {open ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
@@ -175,7 +176,7 @@ const NoPendingValidation = () => {
   const theme = useTheme();
   return (
     <ListItem>
-      <ListItemText sx={{pl: 4, color: theme.palette.text.primary}}>
+      <ListItemText sx={{ pl: 4, color: theme.palette.text.primary }}>
         Aucune demande de validation.
       </ListItemText>
     </ListItem>
@@ -194,7 +195,7 @@ const generateUserList = (
     (user) => user.challenges_pending.length > 0
   );
   if (userWithPendingChallenges.length === 0) {
-    return <NoPendingValidation/>;
+    return <NoPendingValidation />;
   }
   return userWithPendingChallenges
     .sort((a: IUserData, b: IUserData) => {
@@ -202,8 +203,8 @@ const generateUserList = (
     })
     .map((data, index) => (
       <div key={index}>
-        <UserListItem user={data} challenges={challenges!}/>
-        <Divider component="li"/>
+        <UserListItem user={data} challenges={challenges!} />
+        <Divider component="li" />
       </div>
     ));
 };
@@ -228,7 +229,7 @@ const ChallengeRequest = () => {
   }, []);
   return (
     <div>
-      <BackButton/>
+      <BackButton />
       <List
         sx={{
           bgcolor: "background.paper",
@@ -241,10 +242,10 @@ const ChallengeRequest = () => {
         {generateUserList(userList, challengesList)}
       </List>
       <Backdrop
-        sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={userList === undefined}
       >
-        <CircularProgress color="inherit"/>
+        <CircularProgress color="inherit" />
       </Backdrop>
     </div>
   );
