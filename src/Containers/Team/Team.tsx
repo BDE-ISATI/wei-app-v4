@@ -12,7 +12,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React, {useState} from "react";
-import {IChallengeData, ITeamData} from "../../Transforms";
+import {ITeamData} from "../../Transforms";
 import Api from "../../Services/Api";
 import {useParams} from "react-router";
 import {useSelector} from "react-redux";
@@ -22,7 +22,6 @@ import {IUserSmallData} from "../../Transforms/User";
 import {UserAvatar} from "../../Components/UserAvatar";
 import {useNavigate} from "react-router-dom";
 
-import {unix} from "dayjs";
 import {BackButton} from "../../Components/BackButton";
 import {LoadingButton} from "../../Components/LoadingButton";
 import {yaUnS} from "../../Utils/yaUnS";
@@ -104,7 +103,7 @@ const Team = () => {
     });
   };
   var background: string | undefined = undefined;
-  if (teamData && teamData.picture_id && teamData.picture_id != "") {
+  if (teamData && teamData.picture_id && teamData.picture_id !== "") {
     background = Api.apiCalls.GET_PICTURE_URL(teamData.picture_id);
   }
   return (

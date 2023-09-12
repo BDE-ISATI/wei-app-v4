@@ -18,22 +18,19 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Typography,
   InputLabel,
   FormControl,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {
-  useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
 import {useSelector} from "react-redux";
 import {IState} from "../../Reducers";
 import CardContent from "@mui/material/CardContent";
-import {faArrowUpShortWide, faArrowDownWideShort, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {faArrowUpShortWide, faArrowDownWideShort} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {ArrowDownward} from "@mui/icons-material";
 import FilterListIcon from '@mui/icons-material/FilterList';
 
 const generateChallengeList = (challenges: IChallengeData[] | undefined, searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
@@ -86,7 +83,7 @@ const ChallengeList = () => {
   const [challengeList, setChallengeList] = React.useState<IChallengeData[] | undefined>();
 
   const [searchValue, setSearchValue] = React.useState<string>(searchParams.get("search")! || "");
-  const [dateFilter, setDateFilter] = React.useState<string[]>(searchParams.getAll("date_filter").length != 0 ? searchParams.getAll("date_filter") : ["active"]);
+  const [dateFilter, setDateFilter] = React.useState<string[]>(searchParams.getAll("date_filter").length !== 0 ? searchParams.getAll("date_filter") : ["active"]);
   const [sortValue, setSortValue] = React.useState<string>(searchParams.get("sort_value")! || "start");
   const [sortDirection, setSortDirection] = React.useState<string>(searchParams.get("sort")! || "asc");
 

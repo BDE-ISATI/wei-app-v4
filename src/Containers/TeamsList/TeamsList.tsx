@@ -26,7 +26,7 @@ const generateTeamsList = (teams: ITeamData[] | undefined) => {
 
 const TeamsList = () => {
   const [teamsList, setTeamsList] = React.useState<ITeamData[] | undefined>();
-  const theme = useTheme();
+  // const theme = useTheme();
   const isAdmin = useSelector((state: IState) => state.user.is_admin);
   const navigate = useNavigate();
 
