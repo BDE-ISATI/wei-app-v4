@@ -6,7 +6,6 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 import store from "./Reducers";
 import { Provider } from "react-redux";
-import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

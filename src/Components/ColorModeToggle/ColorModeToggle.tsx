@@ -1,8 +1,7 @@
 import React from "react";
 import { ColorModeContext } from "../../App";
 import { IconButton, useTheme } from "@mui/material";
-import { Brightness1, Brightness3, Brightness7 } from "@mui/icons-material";
-import { useDispatch } from "react-redux";
+import { Brightness3, Brightness7 } from "@mui/icons-material";
 
 const ColorModeToggle = () => {
   const colorMode = React.useContext(ColorModeContext);
