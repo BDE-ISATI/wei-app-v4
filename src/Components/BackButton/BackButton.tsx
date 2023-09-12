@@ -1,6 +1,5 @@
 import React from "react";
 import {Fab} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import {useNavigate} from "react-router-dom";
 import {ArrowBack} from "@mui/icons-material";
 

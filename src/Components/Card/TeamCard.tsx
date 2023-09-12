@@ -3,15 +3,11 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
-import Badge from "@mui/material/Badge";
-import { IChallengeData, ITeamData } from "../../Transforms";
+import { ITeamData } from "../../Transforms";
 import { UserAvatarGroup } from "../UserAvatarGroup";
 import { useNavigate } from "react-router-dom";
 import Api from "../../Services/Api";
@@ -29,7 +25,7 @@ function TeamCard(props: Props) {
     navigate(props.teamData.team);
   };
   var background: string | undefined = undefined;
-  if (props.teamData.picture_id && props.teamData.picture_id != "") {
+  if (props.teamData.picture_id && props.teamData.picture_id !== "") {
     background = Api.apiCalls.GET_PICTURE_URL(props.teamData.picture_id);
   }
   return (
@@ -45,6 +41,7 @@ function TeamCard(props: Props) {
     >
       {background ? (
         <img
+          alt={props.teamData.display_name}
           src={background}
           style={{
             maxWidth: "100%",
