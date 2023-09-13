@@ -67,6 +67,11 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
         return a.end - b.end;
       else
         return b.end - a.end;
+    } else if (sortValue === "points") {
+      if (sortDir === "asc")
+        return a.points - b.points;
+      else
+        return b.points - a.points;
     }
     return 0;
   }).map((data, index) => (
@@ -257,6 +262,7 @@ const ChallengeList = () => {
                     }}>
                       <MenuItem value={"start"}>Date de début</MenuItem>
                       <MenuItem value={"end"}>Date de fin</MenuItem>
+                      <MenuItem value={"points"}>Points</MenuItem>
                     </Select>
                   </FormControl>
                 </Stack>
