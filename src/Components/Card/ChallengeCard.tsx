@@ -3,17 +3,15 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { IChallengeData, IUserData } from "../../Transforms";
 import { useNavigate } from "react-router-dom";
 import { UserAvatarGroup } from "../UserAvatarGroup";
 import { unix } from "dayjs";
 import Api from "../../Services/Api";
-import { Divider } from "@mui/material";
 import { IUserSmallData } from "../../Transforms/User";
 
 interface Props {
@@ -30,7 +28,7 @@ function ChallengeCard(props: Props) {
     navigate(props.challengeData.challenge);
   };
   var background: string | undefined = undefined;
-  if (props.challengeData.picture_id && props.challengeData.picture_id != "") {
+  if (props.challengeData.picture_id && props.challengeData.picture_id !== "") {
     background = Api.apiCalls.GET_PICTURE_URL(props.challengeData.picture_id);
   }
   return (
@@ -46,6 +44,7 @@ function ChallengeCard(props: Props) {
     >
       {background ? (
         <img
+          alt={props.challengeData.name}
           src={background}
           style={{
             maxWidth: "100%",

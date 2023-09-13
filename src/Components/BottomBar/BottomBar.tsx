@@ -1,15 +1,12 @@
 import React from "react";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import Avatar from "@mui/material/Avatar";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
   faRankingStar,
   faStar,
-  faUser,
   faUserCircle,
   faUserGroup,
-  faUserShield,
   faNewspaper
 } from "@fortawesome/free-solid-svg-icons";
 import Paper from "@mui/material/Paper";
