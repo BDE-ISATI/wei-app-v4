@@ -4,11 +4,9 @@ import {
   Box,
   CircularProgress,
   Divider,
-  Fab,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Typography
 } from "@mui/material";
 import {IUserData, IChallengeData} from "../../Transforms";
 import Api from "../../Services/Api";
@@ -16,7 +14,7 @@ import {useTheme} from "@mui/material/styles";
 import {UserAvatar} from "../../Components/UserAvatar";
 import {reduceUserData, IUserSmallData} from "../../Transforms/User";
 import {List, Link} from "@mui/material";
-import {useNavigate} from "react-router-dom";
+// import {useNavigate} from "react-router-dom";
 
 interface INewsInfo {
   user: IUserSmallData;
@@ -40,7 +38,7 @@ interface INewsListItem {
 const NewsListItem = (props: INewsListItem) => {
   const theme = useTheme();
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   return (
     <ListItem
@@ -85,7 +83,7 @@ const generateAggregatedNews = (users: IUserData[] | undefined, challenges: ICha
   let aggregatedNews: IAggregatedNewsInfo[] = [];
 
   for (let i = 0; i < challengesChrono.length && aggregatedNews.length < 20; i++) {
-    if (aggregatedNews.length > 1 && aggregatedNews[aggregatedNews.length - 1].user.username == challengesChrono[i].user.username) {
+    if (aggregatedNews.length > 1 && aggregatedNews[aggregatedNews.length - 1].user.username=== challengesChrono[i].user.username) {
       aggregatedNews[aggregatedNews.length - 1].challenges_display_name.push(challengesChrono[i].challenge.name);
       aggregatedNews[aggregatedNews.length - 1].challenges_id.push(challengesChrono[i].challenge.challenge);
       aggregatedNews[aggregatedNews.length - 1].points += challengesChrono[i].challenge.points;

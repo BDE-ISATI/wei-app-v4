@@ -1,6 +1,6 @@
 import React from "react";
 import { IUserSmallData } from "../../Transforms/User";
-import { AvatarGroup, Badge, Avatar } from "@mui/material";
+import { AvatarGroup } from "@mui/material";
 import UserAvatar from "../UserAvatar/UserAvatar";
 
 interface Props {

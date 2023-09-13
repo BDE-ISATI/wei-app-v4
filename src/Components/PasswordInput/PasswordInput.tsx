@@ -7,7 +7,7 @@ import {
   IconButton,
   useTheme,
 } from "@mui/material";
-import React, { SetStateAction } from "react";
+import React from "react";
 
 interface Props {
   password: String;
