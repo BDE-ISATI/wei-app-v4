@@ -1,7 +1,6 @@
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import {
   Alert,
-  Button,
   FormControl,
   IconButton,
   InputAdornment,
@@ -14,8 +13,7 @@ import {
 import React, { useState } from "react";
 import Api from "../../Services/Api";
 import { useDispatch, useSelector } from "react-redux";
-import { AuthActions, loggedIn } from "../../Reducers/Auth";
-import { UserActions } from "../../Reducers/User";
+import { loggedIn } from "../../Reducers/Auth";
 import { useNavigate } from "react-router-dom";
 import { IState } from "../../Reducers";
 import { LoadingButton } from "../../Components/LoadingButton";
@@ -28,7 +26,7 @@ function LoginScreen() {
   const [errorMessage, setErrorMessage] = React.useState<String | undefined>(
     undefined
   );
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
   const userLoggedIn = useSelector((state: IState) => loggedIn(state.auth));
   const [loadingButton, setLoadingButton] = useState<boolean>(false);

@@ -1,11 +1,6 @@
 import {
-  Avatar,
-  Badge,
   Box,
   Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   IconButton,
   Typography,
   useTheme,
@@ -16,14 +11,10 @@ import { ColorModeToggle } from "../../Components/ColorModeToggle";
 import { useDispatch, useSelector } from "react-redux";
 import { IState } from "../../Reducers";
 import { AuthActions, loggedIn } from "../../Reducers/Auth";
-import { isUserDataSet } from "../../Reducers/User";
 import Api from "../../Services/Api";
-import { LoginScreen } from "../LoginScreen";
 import { UserActions } from "../../Reducers/User";
-import RegisterScreen from "../RegisterScreen/RegisterScreen";
 import { useNavigate } from "react-router-dom";
 import { reduceUserData } from "../../Transforms/User";
-import IosShareIcon from "@mui/icons-material/IosShare";
 import EditIcon from "@mui/icons-material/Edit";
 import { useIosInstallPrompt } from "../../Hooks/IosInstallPrompt";
 import { useWebInstallPrompt } from "../../Hooks/WebInstallPrompt";
@@ -34,9 +25,9 @@ const Account = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userTokens = useSelector((state: IState) => state.auth);
-  const [iosInstallPrompt, handleIOSInstallDeclined] = useIosInstallPrompt(-1);
-  const [webInstallPrompt, handleWebInstallDeclined, handleWebInstallAccepted] =
+  // const userTokens = useSelector((state: IState) => state.auth);
+  const [iosInstallPrompt, _handleIOSInstallDeclined] = useIosInstallPrompt(-1);
+  const [webInstallPrompt, _handleWebInstallDeclined, handleWebInstallAccepted] =
     useWebInstallPrompt(-1);
   const [showInstallPrompt, setShowInstallPrompt] = useState<boolean>(false);
 

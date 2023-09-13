@@ -1,7 +1,5 @@
 import {
-  Box,
   IconButton,
-  Button,
   useTheme,
   TextField,
   Badge,
@@ -13,7 +11,7 @@ import {
 import React, { useState } from "react";
 import { UserAvatar } from "../../Components/UserAvatar";
 import { IUserUpdateData, reduceUserData } from "../../Transforms/User";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { IState } from "../../Reducers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -46,7 +44,7 @@ function EditProfile() {
 
   const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
-    if (file != null) {
+    if (file !== null) {
       setPreview(URL.createObjectURL(file));
       setProfilePic(file);
       setOpen(true);
@@ -63,16 +61,16 @@ function EditProfile() {
         editedUser.picture_id = response.data?.id;
       }
     }
-    if (username != userData.display_name) {
+    if (username !== userData.display_name) {
       editedUser.display_name = username;
     }
-    if (showUser != userData.show) {
+    if (showUser !== userData.show) {
       editedUser.show = showUser;
     }
     if (
-      editedUser.display_name != undefined ||
-      editedUser.picture_id != undefined ||
-      editedUser.show != undefined
+      editedUser.display_name !== undefined ||
+      editedUser.picture_id !== undefined ||
+      editedUser.show !== undefined
     ) {
       Api.apiCalls.EDIT_SELF(editedUser).then((response) => {
         setLoadingButton(false);
