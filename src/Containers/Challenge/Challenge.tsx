@@ -146,7 +146,7 @@ const Challenge = () => {
   if (
     challengeData &&
     challengeData.picture_id &&
-    challengeData.picture_id != ""
+    challengeData.picture_id !== ""
   ) {
     background = Api.apiCalls.GET_PICTURE_URL(challengeData.picture_id);
   }

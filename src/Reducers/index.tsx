@@ -1,4 +1,4 @@
-import { combineReducers, Store } from "redux";
+import { combineReducers } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { PERSIST_CONFIG } from "../Config/PersistConfig";
 import {

@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Typography, Card } from "@mui/material";
-import { faLeaf } from "@fortawesome/free-solid-svg-icons";
 
 interface Props {
   title: string;

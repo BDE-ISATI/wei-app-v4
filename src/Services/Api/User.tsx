@@ -1,5 +1,4 @@
 import { ApiResponse, ApisauceInstance } from "apisauce";
-import AppConfig from "../../Config/AppConfig";
 import {
   IRequestError,
   IUserData,

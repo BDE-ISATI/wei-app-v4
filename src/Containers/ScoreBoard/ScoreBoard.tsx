@@ -8,7 +8,7 @@ import {
   Backdrop,
   CircularProgress,
 } from "@mui/material";
-import React, { ReactNode, useState, useEffect } from "react";
+import React, { useState } from "react";
 import { UserAvatar } from "../../Components/UserAvatar";
 import { useTheme } from "@mui/material/styles";
 import Api from "../../Services/Api";
@@ -29,6 +29,7 @@ const UserListItem = (props: IUserListItem) => {
     <ListItem
       sx={{
         color: theme.palette.getContrastText(theme.palette.background.default),
+        cursor: "pointer"
       }}
       onClick={() => {navigate("/users/" + props.user.username)}}
     >

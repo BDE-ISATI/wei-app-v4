@@ -5,22 +5,18 @@ import {
   ListItemAvatar,
   ListItemText,
   Divider,
-  Typography,
   Backdrop,
   CircularProgress,
   Badge,
   ListItemButton,
-  ListItemIcon,
   Collapse,
   IconButton,
 } from "@mui/material";
-import React, {ReactNode, useState, useEffect} from "react";
-import {UserAvatar} from "../../Components/UserAvatar";
+import React, {useState} from "react";
 import {useTheme} from "@mui/material/styles";
 import Api from "../../Services/Api";
-import {IChallengeData, ITeamData, IUserData} from "../../Transforms";
-import {reduceUserData} from "../../Transforms/User";
-import {ExpandLess, ExpandMore, StarBorder} from "@mui/icons-material";
+import { ITeamData, IUserData} from "../../Transforms";
+import {ExpandLess, ExpandMore} from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
 import {useNavigate} from "react-router-dom";
 import {BackButton} from "../../Components/BackButton";

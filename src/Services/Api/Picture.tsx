@@ -1,7 +1,6 @@
 import { ApiResponse, ApisauceInstance, create } from "apisauce";
 import { IRequestError } from "../../Transforms";
 import AppConfig from "../../Config/AppConfig";
-import axios from "axios";
 
 interface IPictureRequestResponse {
   url: string;
