@@ -3,17 +3,16 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { IChallengeData } from "../../Transforms";
+import { IChallengeData, IUserData } from "../../Transforms";
 import { useNavigate } from "react-router-dom";
 import { UserAvatarGroup } from "../UserAvatarGroup";
 import { unix } from "dayjs";
 import Api from "../../Services/Api";
-import { Divider } from "@mui/material";
+import { IUserSmallData } from "../../Transforms/User";
 
 interface Props {
   challengeData: IChallengeData;
@@ -29,7 +28,7 @@ function ChallengeCard(props: Props) {
     navigate(props.challengeData.challenge);
   };
   var background: string | undefined = undefined;
-  if (props.challengeData.picture_id && props.challengeData.picture_id != "") {
+  if (props.challengeData.picture_id && props.challengeData.picture_id !== "") {
     background = Api.apiCalls.GET_PICTURE_URL(props.challengeData.picture_id);
   }
   return (
@@ -45,18 +44,29 @@ function ChallengeCard(props: Props) {
     >
       {background ? (
         <img
+          alt={props.challengeData.name}
           src={background}
           style={{
             maxWidth: "100%",
             width: "100%",
             borderBottom: "solid black",
-            filter: `${unix(Date.now()/1000).toDate() < end && unix(Date.now()/1000).toDate() > start ? "" : "grayscale(1)"}`,
+            filter: `${
+              unix(Date.now() / 1000).toDate() < end &&
+              unix(Date.now() / 1000).toDate() > start
+                ? ""
+                : "grayscale(1)"
+            }`,
           }}
         />
       ) : (
         <CardContent
           style={{
-            backgroundColor: `${unix(Date.now()/1000).toDate() < end && unix(Date.now()/1000).toDate() > start ? theme.palette.secondary.main : "gray"}`,
+            backgroundColor: `${
+              unix(Date.now() / 1000).toDate() < end &&
+              unix(Date.now() / 1000).toDate() > start
+                ? theme.palette.secondary.main
+                : "gray"
+            }`,
             borderBottom: "solid black",
           }}
         />
@@ -94,7 +104,15 @@ function ChallengeCard(props: Props) {
       </CardContent>
       <CardActions disableSpacing>
         <Box marginLeft={1}>
-          <UserAvatarGroup userData={props.challengeData.users} max={5} />
+          <UserAvatarGroup
+            userData={props.challengeData.users.sort(
+              (a: IUserSmallData, b: IUserSmallData) => {
+                return a.time! - b.time!;
+              }
+            )}
+            max={5}
+            showCrown
+          />
         </Box>
         <IconButton
           size="small"

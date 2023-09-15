@@ -11,13 +11,13 @@ import {
   Collapse,
   IconButton,
 } from "@mui/material";
-import React, { useState } from "react";
-import { UserAvatar } from "../../Components/UserAvatar";
-import { useTheme } from "@mui/material/styles";
+import React, {useState} from "react";
+import {UserAvatar} from "../../Components/UserAvatar";
+import {useTheme} from "@mui/material/styles";
 import Api from "../../Services/Api";
-import { IChallengeData, IUserData } from "../../Transforms";
-import { reduceUserData } from "../../Transforms/User";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import {IChallengeData, IUserData} from "../../Transforms";
+import {reduceUserData} from "../../Transforms/User";
+import {ExpandLess, ExpandMore} from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
 import { BackButton } from "../../Components/BackButton";

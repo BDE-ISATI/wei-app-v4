@@ -5,8 +5,6 @@ import { userApiCalls } from "./User";
 import { teamApiCalls } from "./Teams";
 import { challengeApiCalls } from "./Challenges";
 import { pictureApiCalls } from "./Picture";
-import store from "../../Reducers";
-import { loggedIn } from "../../Reducers/Auth";
 
 export const AUTH_API = create({
   baseURL: AppConfig.apiUrls.cognito,
