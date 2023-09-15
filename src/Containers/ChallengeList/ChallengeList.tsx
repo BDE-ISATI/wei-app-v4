@@ -33,10 +33,14 @@ import {faArrowUpShortWide, faArrowDownWideShort} from "@fortawesome/free-solid-
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import FilterListIcon from '@mui/icons-material/FilterList';
 
-const generateChallengeList = (challenges: IChallengeData[] | undefined, searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
+var showFinished = true
+
+const generateChallengeList = (challenges: IChallengeData[] | undefined,finishedChallenges:ImmutableArray<string>, searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
   if (challenges === undefined) {
     return <></>;
   }
+
+
 
   return challenges.filter((value) => {
     return searchValue === "" ||
@@ -56,7 +60,13 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
       return true;
 
     return false;
-  }).sort((a, b) => {
+  }).filter((value) => {
+    if (!finishedChallenges.includes(value.challenge) || showFinished )
+      return true
+
+    return false;
+  })
+  .sort((a, b) => {
     if (sortValue === "start") {
       if (sortDir === "asc")
         return a.start - b.start;
@@ -74,7 +84,8 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
         return b.points - a.points;
     }
     return 0;
-  }).map((data, index) => (
+  })
+  .map((data, index) => (
     <div key={index}>
       <ChallengeCard challengeData={data}/>
     </div>
@@ -82,6 +93,9 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
 };
 
 const ChallengeList = () => {
+  const userDoneChallenge = useSelector(
+    (state: IState) => state.user.challenges_done
+  );
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -91,6 +105,8 @@ const ChallengeList = () => {
   const [dateFilter, setDateFilter] = React.useState<string[]>(searchParams.getAll("date_filter").length !== 0 ? searchParams.getAll("date_filter") : ["active"]);
   const [sortValue, setSortValue] = React.useState<string>(searchParams.get("sort_value")! || "start");
   const [sortDirection, setSortDirection] = React.useState<string>(searchParams.get("sort")! || "asc");
+
+console.log(searchParams)
 
   const isAdmin = useSelector((state: IState) => state.user.is_admin);
 
@@ -222,6 +238,20 @@ const ChallengeList = () => {
                     Terminés
                   </ToggleButton>
                 </ToggleButtonGroup>
+                <ToggleButtonGroup value={dateFilter} onChange={(event) => {
+                  let sp = searchParams;
+                  showFinished = !showFinished
+                  setSearchParams(sp);
+                }}
+                                   sx={{
+                                     marginTop: theme.spacing(2),
+                                     width: "100%",
+                                     height: "60px"
+                                   }}>
+                    <ToggleButton value="finished" sx={{borderRadius: 0, width: "100%"}}>
+                    Afficher les défis terminés
+                    </ToggleButton>
+                </ToggleButtonGroup>
                 <Stack
                   direction="row"
                   justifyContent="center"
@@ -270,7 +300,7 @@ const ChallengeList = () => {
             </Accordion>
           </CardContent>
         </Card>
-        {generateChallengeList(challengeList, searchValue, dateFilter, sortDirection, sortValue)}
+        {generateChallengeList(challengeList,userDoneChallenge, searchValue, dateFilter, sortDirection, sortValue)}
       </Stack>
       <Backdrop
         sx={{
