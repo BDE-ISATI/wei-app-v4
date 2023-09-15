@@ -32,11 +32,14 @@ import CardContent from "@mui/material/CardContent";
 import {faArrowUpShortWide, faArrowDownWideShort} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import FilterListIcon from '@mui/icons-material/FilterList';
+import { ImmutableArray } from "seamless-immutable";
 
-const generateChallengeList = (challenges: IChallengeData[] | undefined, searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
+const generateChallengeList = (challenges: IChallengeData[] | undefined, finishedChallenges:ImmutableArray<string>, searchValue: string, dateFilter: string[], sortDir: string, sortValue: string, showFinished :boolean) => {
   if (challenges === undefined) {
     return <></>;
   }
+
+
 
   return challenges.filter((value) => {
     return searchValue === "" ||
@@ -56,7 +59,13 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
       return true;
 
     return false;
-  }).sort((a, b) => {
+  }).filter((value) => {
+    if (!finishedChallenges.includes(value.challenge) || showFinished )
+      return true
+
+    return false;
+  })
+  .sort((a, b) => {
     if (sortValue === "start") {
       if (sortDir === "asc")
         return a.start - b.start;
@@ -74,7 +83,8 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
         return b.points - a.points;
     }
     return 0;
-  }).map((data, index) => (
+  })
+  .map((data, index) => (
     <div key={index}>
       <ChallengeCard challengeData={data}/>
     </div>
@@ -82,6 +92,9 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined, searchV
 };
 
 const ChallengeList = () => {
+  var userDoneChallenge = useSelector(
+    (state: IState) => state.user.challenges_done
+  );
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -89,6 +102,7 @@ const ChallengeList = () => {
 
   const [searchValue, setSearchValue] = React.useState<string>(searchParams.get("search")! || "");
   const [dateFilter, setDateFilter] = React.useState<string[]>(searchParams.getAll("date_filter").length !== 0 ? searchParams.getAll("date_filter") : ["active"]);
+  const [showFinished, setShowFinished] = React.useState<boolean>(searchParams.get("show_finished")! === "true" || false);
   const [sortValue, setSortValue] = React.useState<string>(searchParams.get("sort_value")! || "start");
   const [sortDirection, setSortDirection] = React.useState<string>(searchParams.get("sort")! || "asc");
 
@@ -222,6 +236,27 @@ const ChallengeList = () => {
                     Terminés
                   </ToggleButton>
                 </ToggleButtonGroup>
+                <ToggleButtonGroup value={showFinished ? ["show"] : []} onChange={(event, newFilter) => {
+                  let sp = searchParams;
+                  sp.delete("show_finished");
+                  if (newFilter.length !== 0) {
+                    sp.set("show_finished", "true");
+                    setShowFinished(true);
+                  } else {
+                    sp.set("show_finished", "false");
+                    setShowFinished(false);
+                  }
+                  setSearchParams(sp);
+                }}
+                                   sx={{
+                                     marginTop: theme.spacing(2),
+                                     width: "100%",
+                                     height: "60px"
+                                   }}>
+                    <ToggleButton value="show" sx={{borderRadius: 0, width: "100%"}}>
+                    Afficher les défis terminés
+                    </ToggleButton>
+                </ToggleButtonGroup>
                 <Stack
                   direction="row"
                   justifyContent="center"
@@ -270,7 +305,7 @@ const ChallengeList = () => {
             </Accordion>
           </CardContent>
         </Card>
-        {generateChallengeList(challengeList, searchValue, dateFilter, sortDirection, sortValue)}
+        {generateChallengeList(challengeList,userDoneChallenge, searchValue, dateFilter, sortDirection, sortValue, showFinished)}
       </Stack>
       <Backdrop
         sx={{
