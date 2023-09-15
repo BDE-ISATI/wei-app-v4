@@ -48,7 +48,7 @@ function CreateChallenge() {
 
   const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
-    if (file != null) {
+    if (file !== null) {
       setPreview(URL.createObjectURL(file));
       setOpen(true);
     }
@@ -156,7 +156,7 @@ function CreateChallenge() {
       >
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 4 }}
-          error={challengeId == null && errorMessage != undefined}
+          error={challengeId=== null && errorMessage !== undefined}
           InputProps={{
             sx: {
               borderRadius: 0,
@@ -170,7 +170,7 @@ function CreateChallenge() {
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
-          error={challengeName == null && errorMessage != undefined}
+          error={challengeName=== null && errorMessage !== undefined}
           InputProps={{
             sx: {
               borderRadius: 0,
@@ -184,7 +184,7 @@ function CreateChallenge() {
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
-          error={challengeDescription == null && errorMessage != undefined}
+          error={challengeDescription=== null && errorMessage !== undefined}
           InputProps={{
             sx: {
               borderRadius: 0,
@@ -200,7 +200,7 @@ function CreateChallenge() {
         />
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
-          error={challengePoints == null && errorMessage != undefined}
+          error={challengePoints=== null && errorMessage !== undefined}
           InputProps={{
             sx: {
               borderRadius: 0,

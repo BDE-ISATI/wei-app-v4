@@ -1,6 +1,5 @@
 import { Handlers, createActions, createReducer } from "reduxsauce";
 import Immutable from "seamless-immutable";
-import { BASE_API } from "../Services/Api";
 import { IUserData } from "../Transforms";
 
 export type IUserStateImmutable = Immutable.ImmutableObject<IUserData>;

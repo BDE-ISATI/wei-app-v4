@@ -5,13 +5,12 @@ import {
   Divider,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemText,
   Typography,
   useTheme
 } from "@mui/material";
 import {IUserData, IChallengeData} from "../../Transforms";
-import {IUserSmallData, reduceUserData} from "../../Transforms/User";
+import {reduceUserData} from "../../Transforms/User";
 import {useParams} from "react-router";
 import Api from "../../Services/Api";
 import {UserAvatar} from "../../Components/UserAvatar";

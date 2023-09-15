@@ -41,7 +41,7 @@ function EditTeam() {
 
   const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
-    if (file != null) {
+    if (file !== null) {
       setPreview(URL.createObjectURL(file));
       setOpen(true);
     }
@@ -115,7 +115,7 @@ function EditTeam() {
       >
         <TextField
           sx={{ maxWidth: "600px", width: "100%", m: 1, marginTop: 2 }}
-          error={teamName == null && errorMessage != undefined}
+          error={teamName=== null && errorMessage !== undefined}
           InputProps={{
             sx: {
               borderRadius: 0,
