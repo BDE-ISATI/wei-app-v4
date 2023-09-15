@@ -28,6 +28,7 @@ import {
 } from "react-router-dom";
 import {useSelector} from "react-redux";
 import {IState} from "../../Reducers";
+import {IUserData} from "../../Transforms/User";
 import CardContent from "@mui/material/CardContent";
 import {faArrowUpShortWide, faArrowDownWideShort} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -35,7 +36,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 
 var showFinished = true
 
-const generateChallengeList = (challenges: IChallengeData[] | undefined,finishedChallenges:ImmutableArray<string>, searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
+const generateChallengeList = (challenges: IChallengeData[] | undefined,finishedChallenges:IUserData["challenges_done"], searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
   if (challenges === undefined) {
     return <></>;
   }
