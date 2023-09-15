@@ -28,15 +28,15 @@ import {
 } from "react-router-dom";
 import {useSelector} from "react-redux";
 import {IState} from "../../Reducers";
-import {IUserData} from "../../Transforms/User";
 import CardContent from "@mui/material/CardContent";
 import {faArrowUpShortWide, faArrowDownWideShort} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import FilterListIcon from '@mui/icons-material/FilterList';
+import { ImmutableArray } from "seamless-immutable";
 
 var showFinished = true
 
-const generateChallengeList = (challenges: IChallengeData[] | undefined,finishedChallenges:IUserData["challenges_done"], searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
+const generateChallengeList = (challenges: IChallengeData[] | undefined,finishedChallenges:ImmutableArray<string>, searchValue: string, dateFilter: string[], sortDir: string, sortValue: string) => {
   if (challenges === undefined) {
     return <></>;
   }
@@ -94,7 +94,7 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined,finished
 };
 
 const ChallengeList = () => {
-  const userDoneChallenge = useSelector(
+  var userDoneChallenge = useSelector(
     (state: IState) => state.user.challenges_done
   );
   const navigate = useNavigate();
@@ -104,10 +104,9 @@ const ChallengeList = () => {
 
   const [searchValue, setSearchValue] = React.useState<string>(searchParams.get("search")! || "");
   const [dateFilter, setDateFilter] = React.useState<string[]>(searchParams.getAll("date_filter").length !== 0 ? searchParams.getAll("date_filter") : ["active"]);
+  const [defiFilter, setDefiFilter] = React.useState<string[]>(searchParams.getAll("defi_filter").length !== 0 ? searchParams.getAll("defi_filter") : ["active"]);
   const [sortValue, setSortValue] = React.useState<string>(searchParams.get("sort_value")! || "start");
   const [sortDirection, setSortDirection] = React.useState<string>(searchParams.get("sort")! || "asc");
-
-console.log(searchParams)
 
   const isAdmin = useSelector((state: IState) => state.user.is_admin);
 
@@ -239,9 +238,14 @@ console.log(searchParams)
                     Terminés
                   </ToggleButton>
                 </ToggleButtonGroup>
-                <ToggleButtonGroup value={dateFilter} onChange={(event) => {
+                <ToggleButtonGroup value={defiFilter} onChange={(event,newFilter) => {
+                  setDefiFilter(newFilter);
                   let sp = searchParams;
                   showFinished = !showFinished
+                  sp.delete("defi_filter");
+                  newFilter.forEach((value: string) => {
+                    sp.append("defi_filter", value);
+                  });
                   setSearchParams(sp);
                 }}
                                    sx={{
@@ -249,7 +253,7 @@ console.log(searchParams)
                                      width: "100%",
                                      height: "60px"
                                    }}>
-                    <ToggleButton value="finished" sx={{borderRadius: 0, width: "100%"}}>
+                    <ToggleButton value="active" sx={{borderRadius: 0, width: "100%"}}>
                     Afficher les défis terminés
                     </ToggleButton>
                 </ToggleButtonGroup>
