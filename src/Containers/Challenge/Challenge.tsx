@@ -229,16 +229,16 @@ const Challenge = () => {
               color="success"
               disabled={
                 userPendingChallenges.includes(id!) ||
-                userDoneChallenge.includes(id!) ||
+                userDoneChallenge.filter(x => x === id!).length >= challengeData.max_count ||
                 distToChall(challengeData.start, challengeData.end) !== 0
               }
               onClick={requestChallengeValidation}
               loading={loadingButton}
             >
-              {userPendingChallenges.includes(id!)
-                ? "En attente de validation"
-                : userDoneChallenge.includes(id!)
+              {userDoneChallenge.filter(x => x === id!).length >= challengeData.max_count
                 ? "Challenge validé"
+                : userPendingChallenges.includes(id!)
+                ? "En attente de validation"
                 : "Valider ce challenge"}
             </LoadingButton>
           )}
