@@ -1,8 +1,8 @@
-const URL = "https://xrprowiv1i.execute-api.eu-west-1.amazonaws.com";
-const cognitoURL = "https://cognito-idp.eu-west-1.amazonaws.com/";
-const cognitoUserPoolClientId = "600c0salfhpv788iis2g61d69n";
+const URL = "https://awo7wf06bg.execute-api.eu-west-3.amazonaws.com";
+const cognitoURL = "https://cognito-idp.eu-west-3.amazonaws.com/";
+const cognitoUserPoolClientId = "6b2qoi7siljqa47u59lmand95q";
 const pictureStorageUrl =
-  "https://wei-app-picture-storage.s3.eu-west-1.amazonaws.com";
+  "https://wei-app-picture-storage.s3.eu-west-3.amazonaws.com";
 
 const apiUrls = {
   dev: URL + "/dev/",
