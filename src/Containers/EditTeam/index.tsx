@@ -1,1 +1,1 @@
-export { default as EditTeam } from "./EditTeam";
+export {default as EditTeam} from "./EditTeam";

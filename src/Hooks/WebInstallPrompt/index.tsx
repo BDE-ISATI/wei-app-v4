@@ -1,1 +1,1 @@
-export { default as useWebInstallPrompt } from "./WebInstallPrompt";
+export {default as useWebInstallPrompt} from "./WebInstallPrompt";

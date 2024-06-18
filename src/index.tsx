@@ -5,44 +5,44 @@ import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 import store from "./Reducers";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { persistStore } from "redux-persist";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { BASE_API } from "./Services/Api";
-import { loggedIn } from "./Reducers/Auth";
+import {Provider} from "react-redux";
+import {PersistGate} from "redux-persist/integration/react";
+import {persistStore} from "redux-persist";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {BASE_API} from "./Services/Api";
+import {loggedIn} from "./Reducers/Auth";
 
 let persistor = persistStore(store);
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+    document.getElementById("root") as HTMLElement
 );
 
 const onBeforeLift = () => {
-  if (loggedIn(store.getState().auth)) {
-    const authData = store.getState().auth;
-    BASE_API.setHeader(
-      "Authorization",
-      authData.tokenType + " " + authData.idToken
-    );
-  }
+    if (loggedIn(store.getState().auth)) {
+        const authData = store.getState().auth;
+        BASE_API.setHeader(
+            "Authorization",
+            authData.tokenType + " " + authData.idToken
+        );
+    }
 };
 
 root.render(
-  //<React.StrictMode>
-  <Provider store={store}>
-    <PersistGate
-      loading={null}
-      persistor={persistor}
-      onBeforeLift={onBeforeLift}
-    >
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
-        <App />
-      </LocalizationProvider>
-    </PersistGate>
-  </Provider>
-  //</React.StrictMode>
+    //<React.StrictMode>
+    <Provider store={store}>
+        <PersistGate
+            loading={null}
+            persistor={persistor}
+            onBeforeLift={onBeforeLift}
+        >
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+                <App/>
+            </LocalizationProvider>
+        </PersistGate>
+    </Provider>
+    //</React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change
