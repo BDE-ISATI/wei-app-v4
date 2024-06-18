@@ -1,56 +1,56 @@
-import { Handlers, createActions, createReducer } from "reduxsauce";
+import {createActions, createReducer, Handlers} from "reduxsauce";
 import Immutable from "seamless-immutable";
-import { BASE_API } from "../Services/Api";
+import {BASE_API} from "../Services/Api";
 
 interface IAuthState {
-  accessToken: string;
-  expiresAt: string;
-  idToken: string;
-  refreshToken: string;
-  tokenType: string;
+    accessToken: string;
+    expiresAt: string;
+    idToken: string;
+    refreshToken: string;
+    tokenType: string;
 }
 
 export type IAuthStateImmutable = Immutable.ImmutableObject<IAuthState>;
 
 const INITIAL_STATE = Immutable<IAuthState>({
-  accessToken: "",
-  expiresAt: "",
-  idToken: "",
-  refreshToken: "",
-  tokenType: "",
+    accessToken: "",
+    expiresAt: "",
+    idToken: "",
+    refreshToken: "",
+    tokenType: "",
 });
 
-const { Types, Creators } = createActions({
-  loginSuccess: ["data"],
-  logout: null,
+const {Types, Creators} = createActions({
+    loginSuccess: ["data"],
+    logout: null,
 });
-export { Types as AuthActionsTypes, Creators as AuthActions };
+export {Types as AuthActionsTypes, Creators as AuthActions};
 
 const login = (
-  state: IAuthStateImmutable,
-  { data }: { data: IAuthStateImmutable }
+    state: IAuthStateImmutable,
+    {data}: { data: IAuthStateImmutable }
 ) => {
-  if (!Immutable.isImmutable(state)) {
-    state = Immutable.from(state);
-  }
-  return state.merge(data);
+    if (!Immutable.isImmutable(state)) {
+        state = Immutable.from(state);
+    }
+    return state.merge(data);
 };
 
 const logout = (state: IAuthStateImmutable = INITIAL_STATE) => {
-  if (!Immutable.isImmutable(state)) {
-    state = Immutable.from(state);
-  }
-  BASE_API.deleteHeader("Authorization");
-  return state.merge(INITIAL_STATE);
+    if (!Immutable.isImmutable(state)) {
+        state = Immutable.from(state);
+    }
+    BASE_API.deleteHeader("Authorization");
+    return state.merge(INITIAL_STATE);
 };
 
 const HANDLERS: Handlers<IAuthStateImmutable> = {
-  [Types.LOGIN_SUCCESS]: login,
-  [Types.LOGOUT]: logout,
+    [Types.LOGIN_SUCCESS]: login,
+    [Types.LOGOUT]: logout,
 };
 
 export const authReducer = createReducer(INITIAL_STATE, HANDLERS);
 
 export const loggedIn = (state: IAuthStateImmutable) => {
-  return state.accessToken !== INITIAL_STATE.accessToken;
+    return state.accessToken !== INITIAL_STATE.accessToken;
 };

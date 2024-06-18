@@ -1,4 +1,4 @@
 export interface IRequestError {
-  __type: string;
-  message: string;
+    __type: string;
+    message: string;
 }

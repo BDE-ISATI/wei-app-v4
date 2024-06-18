@@ -1,1 +1,1 @@
-export { default as useIosInstallPrompt } from "./IosInstallPrompt";
+export {default as useIosInstallPrompt} from "./IosInstallPrompt";

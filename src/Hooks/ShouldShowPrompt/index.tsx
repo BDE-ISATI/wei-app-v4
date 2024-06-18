@@ -1,1 +1,1 @@
-export { default as useShouldShowPrompt } from "./ShouldShowPrompt";
+export {default as useShouldShowPrompt} from "./ShouldShowPrompt";

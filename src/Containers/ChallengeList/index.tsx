@@ -1,1 +1,1 @@
-export { default as ChallengeList } from "./ChallengeList";
+export {default as ChallengeList} from "./ChallengeList";
