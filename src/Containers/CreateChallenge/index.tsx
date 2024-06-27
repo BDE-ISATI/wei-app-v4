@@ -1,1 +1,1 @@
-export { default as CreateChallenge } from "./CreateChallenge";
+export {default as CreateChallenge} from "./CreateChallenge";
