@@ -12,16 +12,13 @@ export interface IState {
     app: IAppStateImmutable;
 }
 
-const reducers = combineReducers<IState>({
-    auth: authReducer,
-    user: userReducer,
-    app: appReducer,
-});
-
-const persistedReducer = persistReducer(PERSIST_CONFIG.storeConfig, reducers);
 
 export default configureStore({
-    reducer: persistedReducer,
+    reducer: persistReducer(PERSIST_CONFIG.storeConfig, combineReducers({
+        auth: authReducer,
+        user: userReducer,
+        app: appReducer,
+    })),
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
