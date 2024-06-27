@@ -1,1 +1,1 @@
-export { default as TeamRequests } from "./TeamRequests";
+export {default as TeamRequests} from "./TeamRequests";

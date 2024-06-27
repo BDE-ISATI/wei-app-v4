@@ -1,1 +1,1 @@
-export { default as EditChallenge } from "./EditChallenge";
+export {default as EditChallenge} from "./EditChallenge";

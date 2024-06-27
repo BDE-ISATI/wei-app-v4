@@ -8,20 +8,20 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Node.js installation
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20.x'
-    - name: Build
-      run: |
-        npm install
-        CI=false && npm run build
-    - name: Upload
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server:  ${{ secrets.cluster_url }}
-        username: ${{ secrets.username }}
-        password: ${{ secrets.password }}
-        local-dir: ./build/
-        server-dir: ./www_wei/
+      - uses: actions/checkout@v3
+      - name: Node.js installation
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - name: Build
+        run: |
+          npm install
+          CI=false && npm run build
+      - name: Upload
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.cluster_url }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+          local-dir: ./build/
+          server-dir: ./www_wei/
