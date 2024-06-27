@@ -1,5 +1,4 @@
 import {Box, Button, IconButton, Typography, useTheme,} from "@mui/material";
-import QRCode from "react-qr-code"
 import React, {useState} from "react";
 import {UserAvatar} from "../../Components/UserAvatar";
 import {ColorModeToggle} from "../../Components/ColorModeToggle";
@@ -135,9 +134,6 @@ const Account = () => {
                             Mes challenges
                         </Button>
                     )}
-
-                    <QRCode value={userData.username}/>
-
                     <Button
                         variant="outlined"
                         color="error"
