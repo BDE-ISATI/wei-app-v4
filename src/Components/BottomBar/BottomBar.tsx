@@ -6,9 +6,7 @@ import {Link} from "react-router-dom";
 const BottomBar = () => {
     const pathname = window.location.pathname;
     const [value, setValue] = React.useState(pathname);
-    if (value === "/") {
-        setValue("/challenges");
-    }
+
     const onChange = (
         event: React.SyntheticEvent<Element, Event>,
         newValue: any
@@ -52,14 +50,14 @@ const BottomBar = () => {
                 >
                     <BottomNavigationAction
                         component={Link}
-                        to="/news"
-                        value={"/news" || "/"}
+                        to="/"
+                        value={"/"}
                         icon={<Newspaper fontSize="medium" htmlColor={theme.palette.text.primary}/>}
                     />
                     <BottomNavigationAction
                         component={Link}
                         to="/challenges"
-                        value={"/challenges" || "/"}
+                        value={"/challenges"}
 
                         icon={<Star fontSize="medium" htmlColor={theme.palette.text.primary}/>}
                     />
