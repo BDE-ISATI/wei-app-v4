@@ -68,15 +68,11 @@ export default function App() {
             element: <BottomBarLayout/>,
             children: [
                 {
-                    path: "/",
-                    element: <RedirectTo path="/challenges"/>,
-                },
-                {
                     path: "/challenges",
                     element: <ChallengeList/>,
                 },
                 {
-                    path: "/news",
+                    path: "/",
                     element: <NewsList/>,
                 },
                 {
