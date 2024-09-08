@@ -28,6 +28,7 @@ import {NewsList} from "./Containers/NewsList";
 import {MyChallenges} from "./Containers/MyChallenges";
 import InstallPWA from "./Components/InstallPWA/InstallPWA";
 import {UserDetails} from "./Containers/UserDetails";
+import { Anecdotes } from "./Containers/Anecdotes";
 
 const ColorModeContext = React.createContext({
     toggleColorMode: () => {
@@ -122,6 +123,10 @@ export default function App() {
                 {
                     path: "/users/:username",
                     element: <UserDetails/>,
+                },
+                {
+                    path: "/anecdotes",
+                    element: <Anecdotes/>,
                 },
             ],
         },
