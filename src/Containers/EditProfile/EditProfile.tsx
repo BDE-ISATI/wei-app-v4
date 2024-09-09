@@ -16,6 +16,7 @@ import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
 function EditProfile() {
     const userData = useSelector((state: IState) => state.user);
     const [username, setUsername] = useState(userData.display_name);
+    const [anecdote, setAnecdote] = useState(userData.anecdote);
     const [_profilePic, setProfilePic] = useState<File | null>(null);
     const [showUser, setShowUser] = useState<boolean>(userData.show);
     const [preview, setPreview] = useState<string | undefined>(undefined);
@@ -55,13 +56,17 @@ function EditProfile() {
         if (username !== userData.display_name) {
             editedUser.display_name = username;
         }
+        if (anecdote !== userData.anecdote) {
+            editedUser.anecdote = anecdote;
+        }
         if (showUser !== userData.show) {
             editedUser.show = showUser;
         }
         if (
             editedUser.display_name !== undefined ||
             editedUser.picture_id !== undefined ||
-            editedUser.show !== undefined
+            editedUser.show !== undefined ||
+            editedUser.anecdote !== undefined
         ) {
             Api.apiCalls.EDIT_SELF(editedUser).then((response) => {
                 setLoadingButton(false);
@@ -145,9 +150,22 @@ function EditProfile() {
                             backgroundColor: theme.palette.background.paper,
                         },
                     }}
-                    label="Nom d'utilisateur"
+                    label="Nom affiché"
                     value={username}
                     onChange={(event) => setUsername(event.target.value)}
+                />
+                <TextField
+                    sx={{maxWidth: "300px", width: "100%", m: 1, marginTop: 4}}
+                    InputProps={{
+                        sx: {
+                            borderRadius: 0,
+                            backgroundColor: theme.palette.background.paper,
+                        },
+                    }}
+                    label="Anecdote"
+                    rows={4}
+                    value={anecdote}
+                    onChange={(event) => setAnecdote(event.target.value)}
                 />
                 <FormControlLabel
                     control={

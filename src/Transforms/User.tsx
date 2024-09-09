@@ -12,6 +12,9 @@ export interface IUserData {
     challenges_times: { [key: string]: number };
     points: number;
     is_admin?: boolean;
+    anecdote: string;
+    anecdoteSelected?: string;
+    scoreAnecdote?:number;
 }
 
 export const reduceUserData = (data: IUserData | IUserStateImmutable) => {
@@ -35,4 +38,6 @@ export interface IUserUpdateData {
     show?: boolean;
     display_name?: string;
     picture_id?: string;
+    anecdote?:string;
+    scoreAnecdote?:number
 }
