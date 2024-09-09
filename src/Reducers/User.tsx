@@ -16,6 +16,7 @@ const INITIAL_STATE = Immutable<IUserData>({
     picture_id: "",
     points: 0,
     is_admin: false,
+    anecdote:""
 });
 
 const {Types, Creators} = createActions({
