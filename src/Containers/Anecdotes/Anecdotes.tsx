@@ -1,12 +1,19 @@
 import {
     Backdrop,
+    Box,
     Button,
     Card,
     CardHeader,
     CircularProgress,
     Container,
+    Divider,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
     MenuItem,
     Select,
+    Typography,
     useTheme
 } from "@mui/material";
 import React, {useState} from "react";
@@ -17,8 +24,6 @@ import {reduceUserData} from "../../Transforms/User";
 import {useNavigate} from "react-router-dom";
 import { useSelector, useStore } from "react-redux";
 import { IState } from "../../Reducers";
-
-
 
 interface IUserListItem {
     user: IUserData;
@@ -43,7 +48,7 @@ const AnecdoteListItem = (props: IUserListItem) => {
                 border: "solid black",
             }}
         >
-            <CardHeader avatar={<UserAvatar user={reduceUserData(props.user)}/>} title={props.user.display_name}></CardHeader>
+            <CardHeader title={props.user.anecdote}></CardHeader>
 
             <Select
                 sx={{width:"100%"}}
@@ -52,7 +57,7 @@ const AnecdoteListItem = (props: IUserListItem) => {
                 onChange={(event)=>{setSelected(event.target.value as string);props.user.anecdoteSelected = (event.target.value as string)}}
             >
                     {anecdotes.map((data, index) => {
-                        return <MenuItem value={data.anecdote}>{data.anecdote}</MenuItem>
+                        return <MenuItem value={data.username}>{data.display_name}</MenuItem>
                     })}
             </Select>
             
@@ -84,41 +89,116 @@ async function sendResult(){
 
 
     for (let anecdote of anecdotes){
-        score += anecdote.anecdote===anecdote.anecdoteSelected ? 1 : 0
+        score += anecdote.username===anecdote.username ? 1 : 0
     }
     
     editedUser.scoreAnecdote = score
 
-    Api.apiCalls.EDIT_SELF(editedUser).then((response) => {
-
-    });
+    await Api.apiCalls.EDIT_SELF(editedUser)
 }
+
+const UserListItem = (props: IUserListItem) => {
+    const theme = useTheme();
+    const navigate = useNavigate();
+
+    return (
+        <ListItem
+            sx={{
+                color: theme.palette.getContrastText(theme.palette.background.default),
+                cursor: "pointer"
+            }}
+            onClick={() => {
+                navigate("/users/" + props.user.username)
+            }}
+        >
+            <Typography sx={{marginRight: 2}}>{props.rank + 1}</Typography>
+            <ListItemAvatar>
+                <UserAvatar user={reduceUserData(props.user)}/>
+            </ListItemAvatar>
+            <ListItemText
+                primary={props.user.display_name}
+                secondary={
+                    props.user.scoreAnecdote||0 + " point" + (props.user.scoreAnecdote||0 > 1 ? "s" : "")
+                }
+            />
+        </ListItem>
+    );
+};
+
+const generateUserList2 = (users: IUserData[] | undefined) => {
+    if (users === undefined) {
+        return <></>;
+    }
+    return users
+        .sort((a: IUserData, b: IUserData) => {
+            return (b.scoreAnecdote||0) - (a.scoreAnecdote||0);
+        })
+        .filter((data, index) => {
+            return data.show;
+        })
+        .map((data, index) => (
+            <div key={index}>
+                <UserListItem user={data} rank={index}/>
+                <Divider component="li"/>
+            </div>
+        ));
+};
 
 const ScoreBoard = () => {
     const [userList, setUserList] = useState<IUserData[] | undefined>();
     const navigate = useNavigate();
-    const userData = useSelector((state: IState) => state.user);
+    const userDataStored = useSelector((state: IState) => state.user);
+
+
+    const [userData, setUserData] = useState<IUserData | undefined>(undefined);
+
+
 
     //const theme = useTheme();
     React.useEffect(() => {
         Api.apiCalls.GET_ALL_USERS().then((response) => {
             if (response.ok) {
                 setUserList(response.data);
+                for (let item of response.data!){
+                    if (item.username === userDataStored.username){
+                        setUserData(item)
+                    }
+                }
             }
         });
     }, []);
-    if (userData.scoreAnecdote !== undefined) {
+
+    if (userData && userData.scoreAnecdote !== undefined) {
         return <div>
-            <h1>score : {userData.scoreAnecdote}</h1>
+            <List
+                sx={{
+                    bgcolor: "background.paper",
+                    boxShadow: `10px 10px 0px black`,
+                    border: "solid black",
+                    width: "500px",
+                    maxWidth: "90vw",
+                }}
+            >
+                {generateUserList2(userList)}
+            </List>
         </div>
     }
     return (
-        
-        <div>
+        <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems:'center',
+          gap:"2em"
+        }}
+      >
             <Container 
                 sx={{
                     width: "500px",
                     maxWidth: "90vw",
+                    gap:"2em",
+                    display: 'flex',
+                    flexDirection: 'column'
                 }}
             >
                 {generateUserList(userList)}
@@ -129,9 +209,10 @@ const ScoreBoard = () => {
             >
                 <CircularProgress color="inherit"/>
             </Backdrop>
-            <Button onClick={() => sendResult().then(()=>{navigate("/scoreboard")})}>Soumettre</Button>
+            <Button variant="contained" onClick={() => sendResult().then(()=>{navigate("/")})}>Soumettre</Button>
 
-        </div>
+
+      </Box>
     );
 };
 
