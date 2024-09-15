@@ -58,6 +58,18 @@ function ResetPasswordScreen() {
         navigate("/login");
     };
 
+    const sendCode = () => {
+        Api.apiCalls
+            .USER_RESET_PASSWORD_SEND_CODE({username})
+            .then((response) => {
+                if (response.ok) {
+                    setErrorMessage(response.data!.message);
+                } else {
+                    setErrorMessage(response.data!.message);
+                }
+            });
+    }
+
     const handleLogin = () => {
         setErrorMessage("");
         if (!validIDRegex.test(username)) {
@@ -135,6 +147,15 @@ function ResetPasswordScreen() {
                     </Alert>
                 </div>
             )}
+
+            <Button
+                variant="contained"
+                sx={{marginTop: 5, maxWidth: "300px", width: "100%", borderRadius: 0}}
+                onClick={sendCode}
+            >
+                Envoyer Reset Code
+            </Button>
+
             <Button
                 variant="contained"
                 sx={{marginTop: 5, maxWidth: "300px", width: "100%", borderRadius: 0}}
