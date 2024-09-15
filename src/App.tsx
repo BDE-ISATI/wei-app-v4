@@ -29,6 +29,7 @@ import {MyChallenges} from "./Containers/MyChallenges";
 import InstallPWA from "./Components/InstallPWA/InstallPWA";
 import {UserDetails} from "./Containers/UserDetails";
 import { Anecdotes } from "./Containers/Anecdotes";
+import { ResetPasswordScreen } from "./Containers/ResetPasswordScreen";
 
 const ColorModeContext = React.createContext({
     toggleColorMode: () => {
@@ -145,6 +146,10 @@ export default function App() {
         {
             path: "/register",
             element: <RegisterScreen/>,
+        },
+        {
+            path: "/resetpassword",
+            element: <ResetPasswordScreen/>,
         },
     ]);
 

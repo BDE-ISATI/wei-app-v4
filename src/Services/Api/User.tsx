@@ -2,6 +2,7 @@ import {ApiResponse, ApisauceInstance} from "apisauce";
 import {IRequestError, IResult, IUserData, IUserUpdateData,} from "../../Transforms";
 import state from "../../Reducers";
 import {UserActions} from "../../Reducers/User";
+import AppConfig from "../../Config/AppConfig";
 
 const getSelf =
     (api: ApisauceInstance) =>
@@ -39,9 +40,29 @@ const editSelf =
             return apiResponse;
         };
 
+
+interface IResetPasswordData {
+    username: string;
+    password: string;
+    code: string;
+}
+
+const reset_password =
+(api: ApisauceInstance) =>
+    async ( data: IResetPasswordData ): Promise<ApiResponse<IResult>> => {
+        const apiResponse = await api.post<IResult>("/reset_password", {
+            ...data,
+            ClientId: AppConfig.cognitoUserPoolClientId
+        });
+
+        return apiResponse;
+    };
+        
+
 export const userApiCalls = (api: ApisauceInstance) => ({
     GET_SELF: getSelf(api),
     GET_ALL_USERS: getAll(api),
     GET_USER: getUser(api),
     EDIT_SELF: editSelf(api),
+    USER_RESET_PASSWORD: reset_password(api),
 });
