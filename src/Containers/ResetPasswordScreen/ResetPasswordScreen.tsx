@@ -140,11 +140,8 @@ function ResetPasswordScreen() {
                 sx={{marginTop: 5, maxWidth: "300px", width: "100%", borderRadius: 0}}
                 onClick={handleLogin}
             >
-                S'inscrire
+                Envoyer
             </Button>
-            <Link sx={{m: 1}} href="/login">
-                J'ai déjà un compte
-            </Link>
 
             <Dialog
                 open={openDialogue}
