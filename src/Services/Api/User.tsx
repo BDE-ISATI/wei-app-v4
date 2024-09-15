@@ -47,6 +47,10 @@ interface IResetPasswordData {
     code: string;
 }
 
+interface IResetPasswordSendCodeData {
+    username: string;
+}
+
 const reset_password =
 (api: ApisauceInstance) =>
     async ( data: IResetPasswordData ): Promise<ApiResponse<IResult>> => {
@@ -58,6 +62,16 @@ const reset_password =
         return apiResponse;
     };
         
+const reset_password_send_code =
+(api: ApisauceInstance) =>
+    async ( data: IResetPasswordSendCodeData ): Promise<ApiResponse<IResult>> => {
+        const apiResponse = await api.post<IResult>("/reset_password_code_send", {
+            ...data,
+            ClientId: AppConfig.cognitoUserPoolClientId
+        });
+
+        return apiResponse;
+    };
 
 export const userApiCalls = (api: ApisauceInstance) => ({
     GET_SELF: getSelf(api),
@@ -65,4 +79,5 @@ export const userApiCalls = (api: ApisauceInstance) => ({
     GET_USER: getUser(api),
     EDIT_SELF: editSelf(api),
     USER_RESET_PASSWORD: reset_password(api),
+    USER_RESET_PASSWORD_SEND_CODE: reset_password_send_code(api),
 });
