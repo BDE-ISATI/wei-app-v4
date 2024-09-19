@@ -62,12 +62,12 @@ const BottomBar = () => {
                         icon={<Star fontSize="medium" htmlColor={theme.palette.text.primary}/>}
                     />
 
-                    <BottomNavigationAction
+                    /*<BottomNavigationAction
                         component={Link}
                         to="/scoreboard"
                         value={"/scoreboard"}
                         icon={<EmojiEvents fontSize="medium" htmlColor={theme.palette.text.primary}/>}
-                    />
+                    />*/
                     <BottomNavigationAction
                         component={Link}
                         to="/teams"
