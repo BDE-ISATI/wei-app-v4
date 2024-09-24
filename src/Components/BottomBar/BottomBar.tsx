@@ -75,18 +75,6 @@ const BottomBar = () => {
                     />
                     <BottomNavigationAction
                         component={Link}
-                        to="/scoreboard"
-                        value={"/scoreboard"}
-                        icon={<EmojiEvents fontSize="medium" htmlColor={theme.palette.text.primary}/>}
-                    />
-                    <BottomNavigationAction
-                        component={Link}
-                        to="/teams"
-                        value={"/teams"}
-                        icon={<Group fontSize="medium" htmlColor={theme.palette.text.primary}/>}
-                    />
-                    <BottomNavigationAction
-                        component={Link}
                         to="/account"
                         value={"/account"}
                         icon={<AccountCircle fontSize="medium" htmlColor={theme.palette.text.primary}/>}
