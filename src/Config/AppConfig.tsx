@@ -1,4 +1,4 @@
-const URL = "https://0z2oym2l23.execute-api.eu-west-3.amazonaws.com";
+const URL = "https://t6xp04vgyi.execute-api.eu-west-3.amazonaws.com";
 const cognitoURL = "https://cognito-idp.eu-west-3.amazonaws.com/";
 const cognitoUserPoolClientId = "6b2qoi7siljqa47u59lmand95q";
 const pictureStorageUrl =
