@@ -65,6 +65,7 @@ const ChallengeListItem = (props: {
             });
     };
 
+    // If data is undefined, don't render anything
     if (!props.data) {
         return null;
     }
@@ -104,7 +105,12 @@ const ChallengeListItem = (props: {
             >
                 <ListItemButton
                     sx={{pl: 4, color: theme.palette.text.primary, marginRight: 8}}
-                    onClick={() => navigate("/challenges/" + props.data.challenge)}
+                    onClick={() => {
+                        // Extra null check for TypeScript
+                        if (props.data && props.data.challenge) {
+                            navigate("/challenges/" + props.data.challenge);
+                        }
+                    }}
                 >
                     <ListItemText
                         primary={props.data.name || ""}
