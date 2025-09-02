@@ -12,16 +12,16 @@ import {
     ListItemText,
     useTheme
 } from "@mui/material";
-import React, {useState} from "react";
-import {UserAvatar} from "../../Components/UserAvatar";
+import React, { useState, useEffect } from "react";
+import { UserAvatar } from "../../Components/UserAvatar";
 import Api from "../../Services/Api";
-import {IChallengeData, IUserData} from "../../Transforms";
-import {reduceUserData} from "../../Transforms/User";
-import {useNavigate} from "react-router-dom";
-import {BackButton} from "../../Components/BackButton";
-import {yaUnS} from "../../Utils/yaUnS";
+import { IChallengeData, IUserData } from "../../Transforms";
+import { reduceUserData } from "../../Transforms/User";
+import { useNavigate } from "react-router-dom";
+import { BackButton } from "../../Components/BackButton";
+import { yaUnS } from "../../Utils/yaUnS";
 
-import {Check as CheckIcon, Close as CloseIcon, ExpandLess, ExpandMore} from "@mui/icons-material";
+import { Check as CheckIcon, Close as CloseIcon, ExpandLess, ExpandMore } from "@mui/icons-material";
 
 interface IUserListItem {
     user: IUserData;
@@ -36,24 +36,38 @@ const ChallengeListItem = (props: {
     const navigate = useNavigate();
 
     const validateChallenge = () => {
+        if (!props.data) return;
+        
         Api.apiCalls
-            .ACCEPT_CHALLENGE_REQUEST(props.user.username, props.data!.challenge)
-            .then((response) => {
+            .ACCEPT_CHALLENGE_REQUEST(props.user.username, props.data.challenge)
+            .then(() => {
                 navigate(0);
+            })
+            .catch(error => {
+                console.error("Error validating challenge:", error);
             });
     };
 
     const denyChallenge = () => {
+        if (!props.data) return;
+        
         Api.apiCalls
             .ACCEPT_CHALLENGE_REQUEST(
                 props.user.username,
-                props.data!.challenge,
+                props.data.challenge,
                 true
             )
-            .then((response) => {
+            .then(() => {
                 navigate(0);
+            })
+            .catch(error => {
+                console.error("Error denying challenge:", error);
             });
     };
+
+    if (!props.data) {
+        return null;
+    }
 
     return (
         <>
@@ -90,12 +104,12 @@ const ChallengeListItem = (props: {
             >
                 <ListItemButton
                     sx={{pl: 4, color: theme.palette.text.primary, marginRight: 8}}
-                    onClick={() => navigate("/challenges/" + props.data?.challenge)}
+                    onClick={() => navigate("/challenges/" + props.data.challenge)}
                 >
                     <ListItemText
-                        primary={props.data?.name || ""}
+                        primary={props.data.name || ""}
                         secondary={
-                            props.data?.points + " point" + yaUnS(props.data?.points) || ""
+                            (props.data.points || 0) + " point" + yaUnS(props.data.points || 0)
                         }
                     />
                 </ListItemButton>
@@ -105,32 +119,34 @@ const ChallengeListItem = (props: {
 };
 
 const generateChallengeList = (
-    challenges: string[],
+    challenges: string[] | undefined,
     challengesData: IChallengeData[],
     user: IUserData
 ) => {
-    return challenges.map((data: string, index: number) => {
-        return (
-            <div>
-                <ChallengeListItem
-                    data={challengesData.find(
-                        (challenge) => challenge.challenge === data
-                    )}
-                    user={user}
-                />
-            </div>
-        );
-    });
+    if (!challenges || !challenges.length) {
+        return null;
+    }
+
+    return challenges.map((data: string, index: number) => (
+        <React.Fragment key={`challenge-${data}-${index}`}>
+            <ChallengeListItem
+                data={challengesData.find(
+                    (challenge) => challenge.challenge === data
+                )}
+                user={user}
+            />
+        </React.Fragment>
+    ));
 };
 
 const UserListItem = (props: IUserListItem) => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+    const theme = useTheme();
 
     const handleClick = () => {
         setOpen(!open);
     };
 
-    const theme = useTheme();
     return (
         <>
             <ListItemButton
@@ -143,7 +159,7 @@ const UserListItem = (props: IUserListItem) => {
             >
                 <ListItemAvatar>
                     <Badge
-                        badgeContent={props.user.challenges_pending.length}
+                        badgeContent={props.user.challenges_pending?.length || 0}
                         color="primary"
                         max={9}
                         overlap="circular"
@@ -153,8 +169,8 @@ const UserListItem = (props: IUserListItem) => {
                 </ListItemAvatar>
 
                 <ListItemText
-                    primary={props.user.display_name}
-                    secondary={props.user.mail}
+                    primary={props.user.display_name || props.user.username || "User"}
+                    secondary={props.user.mail || ""}
                 />
                 {open ? <ExpandLess/> : <ExpandMore/>}
             </ListItemButton>
@@ -186,46 +202,64 @@ const generateUserList = (
     users: IUserData[] | undefined,
     challenges: IChallengeData[] | undefined
 ) => {
-    if (users === undefined || challenges === undefined) {
-        return <></>;
+    if (!users || !challenges) {
+        return null;
     }
 
-    let userWithPendingChallenges = users.filter(
-        (user) => user.challenges_pending.length > 0
+    // Add null check for challenges_pending
+    const userWithPendingChallenges = users.filter(
+        (user) => user.challenges_pending && user.challenges_pending.length > 0
     );
+    
     if (userWithPendingChallenges.length === 0) {
         return <NoPendingValidation/>;
     }
+    
     return userWithPendingChallenges
         .sort((a: IUserData, b: IUserData) => {
-            return b.challenges_pending.length - a.challenges_pending.length;
+            // Add null checks for sort
+            const aLength = a.challenges_pending?.length || 0;
+            const bLength = b.challenges_pending?.length || 0;
+            return bLength - aLength;
         })
         .map((data, index) => (
-            <div key={index}>
-                <UserListItem user={data} challenges={challenges!}/>
+            <React.Fragment key={`user-${data.username || index}`}>
+                <UserListItem user={data} challenges={challenges}/>
                 <Divider component="li"/>
-            </div>
+            </React.Fragment>
         ));
 };
 
 const ChallengeRequest = () => {
-    const [userList, setUserList] = useState<IUserData[] | undefined>();
-    const [challengesList, setChallengesList] = useState<
-        IChallengeData[] | undefined
-    >();
-    //const theme = useTheme();
-    React.useEffect(() => {
-        Api.apiCalls.GET_ALL_USERS(true).then((response) => {
-            if (response.ok) {
-                setUserList(response.data);
+    // Initialize with empty arrays to prevent undefined errors
+    const [userList, setUserList] = useState<IUserData[]>([]);
+    const [challengesList, setChallengesList] = useState<IChallengeData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch users
+                const usersResponse = await Api.apiCalls.GET_ALL_USERS(true);
+                if (usersResponse.ok) {
+                    setUserList(usersResponse.data || []);
+                }
+                
+                // Fetch challenges
+                const challengesResponse = await Api.apiCalls.GET_ALL_CHALLENGES();
+                if (challengesResponse.ok) {
+                    setChallengesList(challengesResponse.data || []);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setIsLoading(false);
             }
-        });
-        Api.apiCalls.GET_ALL_CHALLENGES().then((response) => {
-            if (response.ok) {
-                setChallengesList(response.data);
-            }
-        });
+        };
+        
+        fetchData();
     }, []);
+    
     return (
         <div>
             <BackButton/>
@@ -242,7 +276,7 @@ const ChallengeRequest = () => {
             </List>
             <Backdrop
                 sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
-                open={userList === undefined}
+                open={isLoading}
             >
                 <CircularProgress color="inherit"/>
             </Backdrop>
