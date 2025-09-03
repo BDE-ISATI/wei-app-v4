@@ -4,9 +4,7 @@ import {UserAvatar} from "../../Components/UserAvatar";
 import {IUserUpdateData, reduceUserData} from "../../Transforms/User";
 import {useSelector} from "react-redux";
 import {IState} from "../../Reducers";
-
 import {Edit} from "@mui/icons-material";
-
 import Api from "../../Services/Api";
 import {useNavigate} from "react-router-dom";
 import {BackButton} from "../../Components/BackButton";
@@ -21,18 +19,36 @@ function EditProfile() {
     const [showUser, setShowUser] = useState<boolean>(userData.show);
     const [preview, setPreview] = useState<string | undefined>(undefined);
     const [newProfilePic, setNewProfilePic] = useState<File | null>(null);
-    const [newProfilePicPreview, setNewProfilePicPreview] = useState<
-        string | undefined
-    >(undefined);
-
-    const [errorMessage, setErrorMessage] = useState<string | undefined>(
-        undefined
-    );
+    const [newProfilePicPreview, setNewProfilePicPreview] = useState<string | undefined>(undefined);
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [open, setOpen] = useState<boolean>(false);
     const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
     const theme = useTheme();
     const navigate = useNavigate();
+
+    // ✅ Resize function (in the same file)
+    const resizeImage = async (file: File, width: number, height: number): Promise<File> => {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        await new Promise((resolve) => { img.onload = resolve; });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Canvas not supported");
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                if (!blob) throw new Error("Image resize failed");
+                resolve(new File([blob], "profile.png", { type: "image/png" }));
+            }, "image/png");
+        });
+    };
 
     const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
@@ -47,12 +63,14 @@ function EditProfile() {
     const handleEditSelf = async () => {
         var editedUser: IUserUpdateData = {};
         setLoadingButton(true);
+
         if (newProfilePic) {
             let response = await Api.apiCalls.POST_PICTURE(newProfilePic);
             if (response.ok) {
                 editedUser.picture_id = response.data?.id;
             }
         }
+
         if (username !== userData.display_name) {
             editedUser.display_name = username;
         }
@@ -62,6 +80,7 @@ function EditProfile() {
         if (showUser !== userData.show) {
             editedUser.show = showUser;
         }
+
         if (
             editedUser.display_name !== undefined ||
             editedUser.picture_id !== undefined ||
@@ -83,9 +102,13 @@ function EditProfile() {
         }
     };
 
-    const handleImageCreate = (croppedImage: File | undefined) => {
-        setNewProfilePic(croppedImage!);
-        setNewProfilePicPreview(URL.createObjectURL(croppedImage!));
+    // ✅ Use resizeImage here before uploading
+    const handleImageCreate = async (croppedImage: File | undefined) => {
+        if (!croppedImage) return;
+
+        const resized = await resizeImage(croppedImage, 128, 128); // Only for profile picture
+        setNewProfilePic(resized);
+        setNewProfilePicPreview(URL.createObjectURL(resized));
         setOpen(false);
     };
 
@@ -123,10 +146,7 @@ function EditProfile() {
                                 borderColor: theme.palette.background.paper,
                             },
                         }}
-                        anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "right",
-                        }}
+                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                     >
                         <UserAvatar
                             imageURL={newProfilePicPreview}
@@ -142,6 +162,7 @@ function EditProfile() {
                         onChange={handleFileInput}
                     />
                 </IconButton>
+
                 <TextField
                     sx={{maxWidth: "300px", width: "100%", m: 1, marginTop: 4}}
                     InputProps={{
@@ -154,6 +175,7 @@ function EditProfile() {
                     value={username}
                     onChange={(event) => setUsername(event.target.value)}
                 />
+
                 <TextField
                     sx={{maxWidth: "300px", width: "100%", m: 1, marginTop: 4}}
                     InputProps={{
@@ -167,6 +189,7 @@ function EditProfile() {
                     value={anecdote}
                     onChange={(event) => setAnecdote(event.target.value)}
                 />
+
                 <FormControlLabel
                     control={
                         <Switch
@@ -181,24 +204,24 @@ function EditProfile() {
                     }}
                     label="Afficher sur le classement"
                 />
+
                 <LoadingButton onClick={handleEditSelf} loading={loadingButton}>
                     Appliquer
                 </LoadingButton>
+
                 {errorMessage && (
                     <div>
                         <Alert
                             variant="outlined"
                             severity="error"
-                            sx={{
-                                marginTop: 1,
-                                borderRadius: 0,
-                            }}
+                            sx={{ marginTop: 1, borderRadius: 0 }}
                         >
                             {errorMessage}
                         </Alert>
                     </div>
                 )}
             </FormGroup>
+
             <ImageCropPrompt
                 onClose={handleClose}
                 open={open}

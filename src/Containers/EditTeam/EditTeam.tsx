@@ -1,34 +1,41 @@
-import {Alert, Backdrop, Box, CircularProgress, IconButton, TextField, Typography, useTheme,} from "@mui/material";
-import React, {useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
-import Api from "../../Services/Api";
-import {ITeamUpdateData} from "../../Transforms";
-import {BackButton} from "../../Components/BackButton";
-import {LoadingButton} from "../../Components/LoadingButton";
-import ImageCropPrompt from "../../Components/ImageCropPrompt/ImageCropPrompt";
-
 function EditTeam() {
     const [teamName, setTeamName] = useState<string | null>(null);
-    const [teamPictureId, setTeamPictureId] = useState<string | undefined>(
-        undefined
-    );
-    const [errorMessage, setErrorMessage] = useState<string | undefined>(
-        undefined
-    );
+    const [teamPictureId, setTeamPictureId] = useState<string | undefined>(undefined);
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [loaded, setLoaded] = useState<boolean>(false);
     const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
     const {id} = useParams();
-
     const theme = useTheme();
     const navigate = useNavigate();
 
     const [open, setOpen] = useState<boolean>(false);
     const [preview, setPreview] = useState<string | undefined>(undefined);
     const [newTeamPic, setNewTeamPic] = useState<File | null>(null);
-    const [newTeamPicPreview, setNewTeamPicPreview] = useState<
-        string | undefined
-    >(undefined);
+    const [newTeamPicPreview, setNewTeamPicPreview] = useState<string | undefined>(undefined);
+
+    // ✅ Local resize function (PNG, 768x256)
+    const resizeImage = async (file: File, width: number, height: number): Promise<File> => {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        await new Promise((resolve) => { img.onload = resolve; });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Canvas not supported");
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                if (!blob) throw new Error("Image resize failed");
+                resolve(new File([blob], "banner.png", { type: "image/png" }));
+            }, "image/png");
+        });
+    };
 
     const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
@@ -39,9 +46,12 @@ function EditTeam() {
         event.target.value = "";
     };
 
-    const handleImageCreate = (croppedImage: File | undefined) => {
-        setNewTeamPic(croppedImage!);
-        setNewTeamPicPreview(URL.createObjectURL(croppedImage!));
+    // ✅ Resize before upload
+    const handleImageCreate = async (croppedImage: File | undefined) => {
+        if (!croppedImage) return;
+        const resized = await resizeImage(croppedImage, 768, 256); // banner size
+        setNewTeamPic(resized);
+        setNewTeamPicPreview(URL.createObjectURL(resized));
         setOpen(false);
     };
 
@@ -118,6 +128,7 @@ function EditTeam() {
                     onChange={(event) => setTeamName(event.target.value)}
                     required
                 />
+
                 <Typography color="text.secondary" alignSelf={"flex-start"}>
                     Image
                 </Typography>
@@ -157,25 +168,25 @@ function EditTeam() {
                         <Alert
                             variant="outlined"
                             severity="error"
-                            sx={{
-                                marginTop: 1,
-                                borderRadius: 0,
-                            }}
+                            sx={{ marginTop: 1, borderRadius: 0 }}
                         >
                             {errorMessage}
                         </Alert>
                     </div>
                 )}
             </Box>
+
+            {/* Cropper with enforced banner ratio */}
             <ImageCropPrompt
                 onClose={handleClose}
                 open={open}
                 image={preview}
                 onImageCreate={handleImageCreate}
-                title={""}
+                title={"Recadre ton banner"}
                 aspectRatio={3 / 1}
                 cropShape="rect"
             />
+
             <Backdrop
                 sx={{
                     color: "#fff",
