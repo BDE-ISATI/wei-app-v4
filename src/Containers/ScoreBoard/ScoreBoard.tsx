@@ -71,7 +71,7 @@ const generateUserList = (users: IUserData[] | undefined, isAdmin: boolean) => {
 
 const ScoreBoard = () => {
     const [userList, setUserList] = useState<IUserData[] | undefined>();
-    const isAdmin = useSelector((state: IState) => state.user.is_admin);
+    const isAdmin = useSelector((state: IState) => !!state.user.is_admin);
 
     React.useEffect(() => {
         Api.apiCalls.GET_ALL_USERS().then((response) => {

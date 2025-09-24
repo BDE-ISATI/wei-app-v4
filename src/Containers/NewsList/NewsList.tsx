@@ -118,7 +118,7 @@ const generateNewsList = (aggregatedNews: IAggregatedNewsInfo[] | undefined) => 
 
 const NewsList = () => {
     const [list, setList] = React.useState<IAggregatedNewsInfo[] | undefined>(undefined);
-    const isAdmin = useSelector((state: IState) => state.user.is_admin);
+    const isAdmin = useSelector((state: IState) => !!state.user.is_admin);
 
     React.useEffect(() => {
         Api.apiCalls.GET_ALL_USERS().then(async (usersRes) => {

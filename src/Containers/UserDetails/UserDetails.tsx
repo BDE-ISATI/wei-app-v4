@@ -60,7 +60,7 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined) => {
 const UserDetails = () => {
     const [userData, setUserData] = useState<IUserData | undefined>(undefined);
     const [challenges, setChallenges] = useState<IChallengeData[] | undefined>(undefined);
-    const isAdmin = useSelector((state: IState) => state.user.is_admin);
+    const isAdmin = useSelector((state: IState) => !!state.user.is_admin);
 
     const {username} = useParams();
     const theme = useTheme();
