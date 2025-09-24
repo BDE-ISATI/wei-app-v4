@@ -21,7 +21,6 @@ import {IState} from "../../Reducers";
 interface IUserListItem {
     user: IUserData;
     rank: number;
-    isAdmin: boolean;
 }
 
 const UserListItem = (props: IUserListItem) => {
@@ -45,9 +44,7 @@ const UserListItem = (props: IUserListItem) => {
             <ListItemText
                 primary={props.user.display_name}
                 secondary={
-                    props.isAdmin
-                        ? props.user.points + " point" + (props.user.points > 1 ? "s" : "")
-                        : undefined
+                props.user.points + " point" + (props.user.points > 1 ? "s" : "")
                 }
             />
         </ListItem>
@@ -55,7 +52,7 @@ const UserListItem = (props: IUserListItem) => {
 };
 
 const generateUserList = (users: IUserData[] | undefined, isAdmin: boolean) => {
-    if (users === undefined) {
+    if (users === undefined && !isAdmin) {
         return <></>;
     }
     return users
@@ -63,7 +60,7 @@ const generateUserList = (users: IUserData[] | undefined, isAdmin: boolean) => {
         .filter((data) => data.show)
         .map((data, index) => (
             <div key={index}>
-                <UserListItem user={data} rank={index} isAdmin={isAdmin}/>
+                <UserListItem user={data} rank={index}/>
                 <Divider component="li"/>
             </div>
         ));
