@@ -139,7 +139,7 @@ const NewsList = () => {
                 sx={{
                     bgcolor: "background.paper",
                     boxShadow: `10px 10px 0px black`,
-                    border: "solid black`,
+                    border: "solid black",
                     width: "500px",
                     maxWidth: "90vw",
                 }}
