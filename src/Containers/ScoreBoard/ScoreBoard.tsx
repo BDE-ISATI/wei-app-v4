@@ -7,7 +7,8 @@ import {
     ListItemAvatar,
     ListItemText,
     Typography,
-    useTheme
+    useTheme,
+    Box
 } from "@mui/material";
 import React, {useState} from "react";
 import {UserAvatar} from "../../Components/UserAvatar";
