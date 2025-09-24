@@ -130,11 +130,28 @@ const NewsList = () => {
     }, []);
 
     if (!isAdmin) {
-        return <>
-                <div>
-                    <p>Non disponible</p>
-                </div>
-                </>;
+        return (
+            <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                height="200px"
+                sx={{
+                    bgcolor: "background.paper",
+                    boxShadow: `10px 10px 0px black`,
+                    border: "solid black",
+                    width: "500px",
+                    maxWidth: "90vw",
+                    p: 4,
+                    textAlign: "center",
+                }}
+            >
+                <p style={{ fontWeight: 700, fontSize: "1.2rem", marginBottom: "1rem" }}>
+                    Liste restreinte
+                </p>
+            </Box>
+        );
     }
 
     return (

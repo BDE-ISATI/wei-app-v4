@@ -55,10 +55,27 @@ const generateUserList = (users: IUserData[] | undefined, isAdmin: boolean) => {
     const safeUsers = users ?? [];
     if (safeUsers.length === 0 || !isAdmin) {
         return <>
-                <div>
-                    <p> Pas de classement disponible </p>
-                </div>
-                </>;
+            <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                height="200px"
+                sx={{
+                    bgcolor: "background.paper",
+                    boxShadow: `10px 10px 0px black`,
+                    border: "solid black",
+                    width: "500px",
+                    maxWidth: "90vw",
+                    p: 4,
+                    textAlign: "center",
+                }}
+            >
+                <p style={{ fontWeight: 700, fontSize: "1.2rem", marginBottom: "1rem" }}>
+                    Classement restreint
+                </p>
+            </Box>
+            </>;
     }
     return safeUsers
         .sort((a, b) => b.points - a.points)
