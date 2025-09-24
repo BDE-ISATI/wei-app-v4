@@ -209,7 +209,7 @@ const Team = () => {
                     </Divider>
                     {teamData.members.length > 0 ? (
                         <List sx={{alignSelf: "flex-start", width: "100%"}}>
-                            {generateUserList(teamData.members, isAdmin)}
+                            {generateUserList(teamData.members, !!isAdmin)}
                         </List>
                     ) : (
                         <Typography color="text.secondary">
