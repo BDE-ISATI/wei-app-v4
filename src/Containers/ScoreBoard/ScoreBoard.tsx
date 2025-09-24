@@ -15,10 +15,13 @@ import Api from "../../Services/Api";
 import {IUserData} from "../../Transforms";
 import {reduceUserData} from "../../Transforms/User";
 import {useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {IState} from "../../Reducers";
 
 interface IUserListItem {
     user: IUserData;
     rank: number;
+    isAdmin: boolean;
 }
 
 const UserListItem = (props: IUserListItem) => {
@@ -42,27 +45,25 @@ const UserListItem = (props: IUserListItem) => {
             <ListItemText
                 primary={props.user.display_name}
                 secondary={
-                    props.user.points + " point" + (props.user.points > 1 ? "s" : "")
+                    props.isAdmin
+                        ? props.user.points + " point" + (props.user.points > 1 ? "s" : "")
+                        : undefined
                 }
             />
         </ListItem>
     );
 };
 
-const generateUserList = (users: IUserData[] | undefined) => {
+const generateUserList = (users: IUserData[] | undefined, isAdmin: boolean) => {
     if (users === undefined) {
         return <></>;
     }
     return users
-        .sort((a: IUserData, b: IUserData) => {
-            return b.points - a.points;
-        })
-        .filter((data, index) => {
-            return data.show;
-        })
+        .sort((a: IUserData, b: IUserData) => b.points - a.points)
+        .filter((data) => data.show)
         .map((data, index) => (
             <div key={index}>
-                <UserListItem user={data} rank={index}/>
+                <UserListItem user={data} rank={index} isAdmin={isAdmin}/>
                 <Divider component="li"/>
             </div>
         ));
@@ -70,30 +71,15 @@ const generateUserList = (users: IUserData[] | undefined) => {
 
 const ScoreBoard = () => {
     const [userList, setUserList] = useState<IUserData[] | undefined>();
-    const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // null = still loading
+    const isAdmin = useSelector((state: IState) => state.user.is_admin);
 
     React.useEffect(() => {
-        const fetchData = async () => {
-            const selfRes = await Api.apiCalls.GET_SELF();
-            if (!selfRes.ok || !selfRes.data || !("is_admin" in selfRes.data) || !selfRes.data.is_admin) {
-                setIsAdmin(false);
-                return;
+        Api.apiCalls.GET_ALL_USERS().then((response) => {
+            if (response.ok) {
+                setUserList(response.data);
             }
-            setIsAdmin(true);
-
-            const usersRes = await Api.apiCalls.GET_ALL_USERS();
-            if (usersRes.ok) {
-                setUserList(usersRes.data);
-            }
-        };
-
-        fetchData();
+        });
     }, []);
-
-    // If not admin → render nothing
-    if (isAdmin === false) {
-        return null;
-    }
 
     return (
         <div>
@@ -106,17 +92,16 @@ const ScoreBoard = () => {
                     maxWidth: "90vw",
                 }}
             >
-                {generateUserList(userList)}
+                {generateUserList(userList, isAdmin)}
             </List>
             <Backdrop
-                sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={isAdmin === null || userList === undefined}
+                sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
+                open={userList === undefined}
             >
-                <CircularProgress color="inherit" />
+                <CircularProgress color="inherit"/>
             </Backdrop>
         </div>
     );
 };
-
 
 export default ScoreBoard;

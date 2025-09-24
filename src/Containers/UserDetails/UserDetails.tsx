@@ -16,6 +16,8 @@ import {useParams} from "react-router";
 import Api from "../../Services/Api";
 import {UserAvatar} from "../../Components/UserAvatar";
 import {BackButton} from "../../Components/BackButton";
+import {useSelector} from "react-redux";
+import {IState} from "../../Reducers";
 
 interface IChallengeDataListItem {
     challenge: IChallengeData;
@@ -46,9 +48,7 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined) => {
     }
 
     return challenges
-        .sort((a: IChallengeData, b: IChallengeData) => {
-            return b.points - a.points;
-        })
+        .sort((a: IChallengeData, b: IChallengeData) => b.points - a.points)
         .map((data, index) => (
             <div key={index}>
                 <ChallengeListItem challenge={data}/>
@@ -60,20 +60,13 @@ const generateChallengeList = (challenges: IChallengeData[] | undefined) => {
 const UserDetails = () => {
     const [userData, setUserData] = useState<IUserData | undefined>(undefined);
     const [challenges, setChallenges] = useState<IChallengeData[] | undefined>(undefined);
-    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+    const isAdmin = useSelector((state: IState) => state.user.is_admin);
 
-    const { username } = useParams();
+    const {username} = useParams();
     const theme = useTheme();
 
     React.useEffect(() => {
         const fetchData = async () => {
-            const selfRes = await Api.apiCalls.GET_SELF();
-            if (!selfRes.ok || !selfRes.data || !("is_admin" in selfRes.data) || !selfRes.data.is_admin) {
-                setIsAdmin(false);
-            } else {
-                setIsAdmin(true);
-            }
-
             const [userRes, challengesRes] = await Promise.all([
                 Api.apiCalls.GET_USER(username!),
                 Api.apiCalls.GET_ALL_CHALLENGES(),
@@ -88,13 +81,13 @@ const UserDetails = () => {
 
     return (
         <>
-            <BackButton />
+            <BackButton/>
             {userData && (
                 <Box
                     sx={{
                         bgcolor: "background.paper",
                         boxShadow: `10px 10px 0px black`,
-                        border: "solid black",
+                        border: "solid black`,
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
@@ -109,13 +102,13 @@ const UserDetails = () => {
                     />
                     <Typography
                         color={theme.palette.text.primary}
-                        sx={{ fontWeight: 800, textAlign: "center" }}
+                        sx={{fontWeight: 800, textAlign: "center"}}
                     >
                         {userData.display_name}
                     </Typography>
                     <Typography
                         color={theme.palette.text.secondary}
-                        sx={{ fontWeight: 300, textAlign: "center" }}
+                        sx={{fontWeight: 300, textAlign: "center"}}
                     >
                         {userData.username}
                     </Typography>
@@ -136,7 +129,7 @@ const UserDetails = () => {
                             {userData.challenges_done.length === 0 && (
                                 <Typography
                                     color={theme.palette.text.secondary}
-                                    sx={{ fontWeight: 300, textAlign: "center" }}
+                                    sx={{fontWeight: 300, textAlign: "center"}}
                                 >
                                     Cette personne n&apos;a pas encore réalisé de défis.
                                 </Typography>
@@ -150,14 +143,12 @@ const UserDetails = () => {
                     color: "#fff",
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                 }}
-                open={isAdmin === null || (userData === undefined && challenges === undefined)}
+                open={userData === undefined && challenges === undefined}
             >
-                <CircularProgress color="inherit" />
+                <CircularProgress color="inherit"/>
             </Backdrop>
         </>
     );
 };
-
-
 
 export default UserDetails;

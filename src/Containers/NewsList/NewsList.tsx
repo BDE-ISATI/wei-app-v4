@@ -15,8 +15,8 @@ import {IChallengeData, IUserData} from "../../Transforms";
 import Api from "../../Services/Api";
 import {UserAvatar} from "../../Components/UserAvatar";
 import {IUserSmallData, reduceUserData} from "../../Transforms/User";
-
-// import {useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {IState} from "../../Reducers";
 
 interface INewsInfo {
     user: IUserSmallData;
@@ -40,8 +40,6 @@ interface INewsListItem {
 const NewsListItem = (props: INewsListItem) => {
     const theme = useTheme();
 
-    // const navigate = useNavigate();
-
     return (
         <ListItem
             sx={{
@@ -53,17 +51,19 @@ const NewsListItem = (props: INewsListItem) => {
             </ListItemAvatar>
             <ListItemText>
                 {props.info.user.display_name + ` à réalisé pour ${props.info.points} points ` + (props.info.challenges_display_name.length > 1 ? "les défis " : "le défi ")}
-                {props.info.challenges_display_name.map((dp, index) => <>{!!index && ", "}<Link
-                    href={"/challenges/" + props.info.challenges_id[index]}>{dp}</Link></>)}
+                {props.info.challenges_display_name.map((dp, index) =>
+                    <React.Fragment key={index}>
+                        {!!index && ", "}
+                        <Link href={"/challenges/" + props.info.challenges_id[index]}>{dp}</Link>
+                    </React.Fragment>
+                )}
             </ListItemText>
         </ListItem>
     );
 };
 
 const generateAggregatedNews = (users: IUserData[] | undefined, challenges: IChallengeData[] | undefined) => {
-    if (challenges === undefined || users === undefined) {
-        return undefined;
-    }
+    if (!challenges || !users) return undefined;
 
     let challengesChrono: INewsInfo[] = [];
 
@@ -71,16 +71,14 @@ const generateAggregatedNews = (users: IUserData[] | undefined, challenges: ICha
         let user = reduceUserData(users[i]);
         for (let j = 0; j < users[i].challenges_done.length; j++) {
             challengesChrono.push({
-                user: user,
+                user,
                 challenge: challenges.find((challenge) => challenge.challenge === users[i].challenges_done[j])!,
                 time: users[i].challenges_times[users[i].challenges_done[j]],
             });
         }
     }
 
-    challengesChrono.sort((a, b) => {
-        return b.time - a.time;
-    })
+    challengesChrono.sort((a, b) => b.time - a.time);
 
     let aggregatedNews: IAggregatedNewsInfo[] = [];
 
@@ -104,49 +102,34 @@ const generateAggregatedNews = (users: IUserData[] | undefined, challenges: ICha
 }
 
 const generateNewsList = (aggregatedNews: IAggregatedNewsInfo[] | undefined) => {
-    if (aggregatedNews === undefined) {
-        return <> </>;
-    }
+    if (!aggregatedNews) return <></>;
+
     return (
         <li>
-            {aggregatedNews.map((newsInfo, index) => {
-                return (
-                    <div>
-                        <NewsListItem info={newsInfo}/>
-                        <Divider component="li"/>
-                    </div>)
-            })}
+            {aggregatedNews.map((newsInfo, index) => (
+                <div key={index}>
+                    <NewsListItem info={newsInfo}/>
+                    <Divider component="li"/>
+                </div>
+            ))}
         </li>
     );
 }
 
 const NewsList = () => {
     const [list, setList] = React.useState<IAggregatedNewsInfo[] | undefined>(undefined);
-    const [isAdmin, setIsAdmin] = React.useState<boolean | null>(null);
+    const isAdmin = useSelector((state: IState) => state.user.is_admin);
 
     React.useEffect(() => {
-        const fetchData = async () => {
-            const selfRes = await Api.apiCalls.GET_SELF();
-            if (!selfRes.ok || !selfRes.data || !("is_admin" in selfRes.data) || !selfRes.data.is_admin) {
-                setIsAdmin(false);
-                return;
-            }
-            setIsAdmin(true);
-
-            const [usersRes, challengesRes] = await Promise.all([
-                Api.apiCalls.GET_ALL_USERS(),
-                Api.apiCalls.GET_ALL_CHALLENGES(),
-            ]);
-
+        Api.apiCalls.GET_ALL_USERS().then(async (usersRes) => {
+            const challengesRes = await Api.apiCalls.GET_ALL_CHALLENGES();
             if (usersRes.ok && challengesRes.ok) {
                 setList(generateAggregatedNews(usersRes.data, challengesRes.data));
             }
-        };
-
-        fetchData();
+        });
     }, []);
 
-    if (isAdmin === false) {
+    if (!isAdmin) {
         return null;
     }
 
@@ -156,7 +139,7 @@ const NewsList = () => {
                 sx={{
                     bgcolor: "background.paper",
                     boxShadow: `10px 10px 0px black`,
-                    border: "solid black",
+                    border: "solid black`,
                     width: "500px",
                     maxWidth: "90vw",
                 }}
@@ -168,13 +151,12 @@ const NewsList = () => {
                     color: "#fff",
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                 }}
-                open={isAdmin === null || list === undefined}
+                open={list === undefined}
             >
-                <CircularProgress color="inherit" />
+                <CircularProgress color="inherit"/>
             </Backdrop>
         </Box>
     );
 };
-
 
 export default NewsList;

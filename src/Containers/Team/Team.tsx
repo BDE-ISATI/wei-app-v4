@@ -28,13 +28,15 @@ import {yaUnS} from "../../Utils/yaUnS";
 const UserListItem = (props: { user: IUserSmallData }) => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const isAdmin = useSelector((state: IState) => state.user.is_admin);
+
     return (
         <ListItem
             sx={{
                 color: theme.palette.getContrastText(theme.palette.background.default),
             }}
             onClick={() => {
-                navigate("/users/" + props.user.username)
+                navigate("/users/" + props.user.username);
             }}
         >
             <ListItemAvatar>
@@ -43,12 +45,15 @@ const UserListItem = (props: { user: IUserSmallData }) => {
             <ListItemText
                 primary={props.user.display_name}
                 secondary={
-                    props.user.points + " point" + (props.user.points! > 1 ? "s" : "")
+                    isAdmin
+                        ? props.user.points + " point" + (props.user.points! > 1 ? "s" : "")
+                        : undefined
                 }
             />
         </ListItem>
     );
 };
+
 
 const generateUserList = (users: IUserSmallData[] | undefined) => {
     if (users === undefined) {
