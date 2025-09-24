@@ -87,7 +87,7 @@ const UserDetails = () => {
                     sx={{
                         bgcolor: "background.paper",
                         boxShadow: `10px 10px 0px black`,
-                        border: "solid black`,
+                        border: "solid black",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
