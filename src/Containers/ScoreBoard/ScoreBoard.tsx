@@ -52,16 +52,17 @@ const UserListItem = (props: IUserListItem) => {
 };
 
 const generateUserList = (users: IUserData[] | undefined, isAdmin: boolean) => {
-    if (users === undefined && !isAdmin) {
+    const safeUsers = users ?? [];
+    if (safeUsers.length === 0 && !isAdmin) {
         return <></>;
     }
-    return users
-        .sort((a: IUserData, b: IUserData) => b.points - a.points)
+    return safeUsers
+        .sort((a, b) => b.points - a.points)
         .filter((data) => data.show)
         .map((data, index) => (
             <div key={index}>
-                <UserListItem user={data} rank={index}/>
-                <Divider component="li"/>
+                <UserListItem user={data} rank={index} />
+                <Divider component="li" />
             </div>
         ));
 };
