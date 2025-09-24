@@ -54,7 +54,11 @@ const UserListItem = (props: IUserListItem) => {
 const generateUserList = (users: IUserData[] | undefined, isAdmin: boolean) => {
     const safeUsers = users ?? [];
     if (safeUsers.length === 0 || !isAdmin) {
-        return <></>;
+        return <>
+                <div>
+                    <p> Pas de classement disponible </p>
+                </div>
+                </>;
     }
     return safeUsers
         .sort((a, b) => b.points - a.points)

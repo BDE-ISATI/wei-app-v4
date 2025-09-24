@@ -130,7 +130,11 @@ const NewsList = () => {
     }, []);
 
     if (!isAdmin) {
-        return null;
+        return <>
+                <div>
+                    <p>Non disponible</p>
+                </div>
+                </>;
     }
 
     return (
