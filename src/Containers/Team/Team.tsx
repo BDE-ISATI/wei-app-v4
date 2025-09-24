@@ -55,21 +55,25 @@ const UserListItem = (props: { user: IUserSmallData }) => {
 };
 
 
-const generateUserList = (users: IUserSmallData[] | undefined) => {
-    if (users === undefined) {
-        return <></>;
-    }
-    return users
-        .sort((a: IUserSmallData, b: IUserSmallData) => {
-            return b.points! - a.points!;
-        })
-        .map((data, index) => (
-            <div key={index}>
-                <UserListItem user={data}/>
-                <Divider component="li"/>
-            </div>
-        ));
+const generateUserList = (users: IUserSmallData[] | undefined, isAdmin: boolean) => {
+    if (!users) return <></>;
+
+    const sortedUsers = [...users].sort((a, b) => {
+        if (isAdmin) {
+            return (b.points ?? 0) - (a.points ?? 0);
+        } else {
+            return a.display_name.localeCompare(b.display_name);
+        }
+    });
+
+    return sortedUsers.map((data, index) => (
+        <div key={index}>
+            <UserListItem user={data} />
+            <Divider component="li" />
+        </div>
+    ));
 };
+
 const Team = () => {
     const [teamData, setTeamData] = React.useState<ITeamData | undefined>();
     const [allTeamData, setAllTeamData] = React.useState<ITeamData[] | undefined>();
@@ -205,7 +209,7 @@ const Team = () => {
                     </Divider>
                     {teamData.members.length > 0 ? (
                         <List sx={{alignSelf: "flex-start", width: "100%"}}>
-                            {generateUserList(teamData.members)}
+                            {generateUserList(teamData.members, isAdmin)}
                         </List>
                     ) : (
                         <Typography color="text.secondary">
