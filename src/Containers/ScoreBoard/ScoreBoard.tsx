@@ -72,7 +72,7 @@ const generateUserList = (users: IUserData[] | undefined, isAdmin: boolean) => {
                     textAlign: "center",
                 }}
             >
-                <p style={{ fontWeight: 700, fontSize: "1.2rem", marginBottom: "1rem" }}>
+                <p style={{ fontWeight: 700, fontSize: "1.2rem", marginBottom: "1rem", color: "white" }}>
                     Classement restreint
                 </p>
             </Box>

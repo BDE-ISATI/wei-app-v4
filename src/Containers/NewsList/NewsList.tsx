@@ -147,7 +147,7 @@ const NewsList = () => {
                     textAlign: "center",
                 }}
             >
-                <p style={{ fontWeight: 700, fontSize: "1.2rem", marginBottom: "1rem" }}>
+                <p style={{ fontWeight: 700, fontSize: "1.2rem", marginBottom: "1rem", color: "white" }}>
                     Liste restreinte
                 </p>
             </Box>
