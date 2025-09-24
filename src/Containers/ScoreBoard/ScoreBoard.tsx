@@ -70,14 +70,31 @@ const generateUserList = (users: IUserData[] | undefined) => {
 
 const ScoreBoard = () => {
     const [userList, setUserList] = useState<IUserData[] | undefined>();
-    //const theme = useTheme();
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // null = still loading
+
     React.useEffect(() => {
-        Api.apiCalls.GET_ALL_USERS().then((response) => {
-            if (response.ok) {
-                setUserList(response.data);
+        const fetchData = async () => {
+            const selfRes = await Api.apiCalls.GET_SELF();
+            if (!selfRes.ok || !selfRes.data?.is_admin) {
+                setIsAdmin(false);
+                return;
             }
-        });
+            setIsAdmin(true);
+
+            const usersRes = await Api.apiCalls.GET_ALL_USERS();
+            if (usersRes.ok) {
+                setUserList(usersRes.data);
+            }
+        };
+
+        fetchData();
     }, []);
+
+    // If not admin → render nothing
+    if (isAdmin === false) {
+        return null;
+    }
+
     return (
         <div>
             <List
@@ -92,13 +109,14 @@ const ScoreBoard = () => {
                 {generateUserList(userList)}
             </List>
             <Backdrop
-                sx={{color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1}}
-                open={userList === undefined}
+                sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={isAdmin === null || userList === undefined}
             >
-                <CircularProgress color="inherit"/>
+                <CircularProgress color="inherit" />
             </Backdrop>
         </div>
     );
 };
+
 
 export default ScoreBoard;

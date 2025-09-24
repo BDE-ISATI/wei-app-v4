@@ -122,13 +122,33 @@ const generateNewsList = (aggregatedNews: IAggregatedNewsInfo[] | undefined) => 
 
 const NewsList = () => {
     const [list, setList] = React.useState<IAggregatedNewsInfo[] | undefined>(undefined);
+    const [isAdmin, setIsAdmin] = React.useState<boolean | null>(null);
 
     React.useEffect(() => {
-        Promise.all([Api.apiCalls.GET_ALL_USERS(), Api.apiCalls.GET_ALL_CHALLENGES()]).then((res) => {
-            if (res[0].ok && res[1].ok)
-                setList(generateAggregatedNews(res[0].data, res[1].data));
-        });
+        const fetchData = async () => {
+            const selfRes = await Api.apiCalls.GET_SELF();
+            if (!selfRes.ok || !selfRes.data?.is_admin) {
+                setIsAdmin(false);
+                return;
+            }
+            setIsAdmin(true);
+
+            const [usersRes, challengesRes] = await Promise.all([
+                Api.apiCalls.GET_ALL_USERS(),
+                Api.apiCalls.GET_ALL_CHALLENGES(),
+            ]);
+
+            if (usersRes.ok && challengesRes.ok) {
+                setList(generateAggregatedNews(usersRes.data, challengesRes.data));
+            }
+        };
+
+        fetchData();
     }, []);
+
+    if (isAdmin === false) {
+        return null;
+    }
 
     return (
         <Box flex={1} position={"relative"}>
@@ -148,12 +168,13 @@ const NewsList = () => {
                     color: "#fff",
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                 }}
-                open={list === undefined}
+                open={isAdmin === null || list === undefined}
             >
-                <CircularProgress color="inherit"/>
+                <CircularProgress color="inherit" />
             </Backdrop>
         </Box>
     );
 };
+
 
 export default NewsList;
