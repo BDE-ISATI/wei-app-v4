@@ -75,7 +75,7 @@ const ScoreBoard = () => {
     React.useEffect(() => {
         const fetchData = async () => {
             const selfRes = await Api.apiCalls.GET_SELF();
-            if (!selfRes.ok || !selfRes.data?.is_admin) {
+            if (!selfRes.ok || !selfRes.data || !("is_admin" in selfRes.data) || !selfRes.data.is_admin) {
                 setIsAdmin(false);
                 return;
             }
